@@ -1,0 +1,455 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import FAQAccordion from '@components/sections/FAQAccordion.astro';
+import Button from '@components/ui/Button.astro';
+import { siteConfig, siteData } from '@data/site';
+import { getCollection } from 'astro:content';
+
+// 1. Fetch Lake Placid FAQs from content collection
+const allFaqs = await getCollection('faq');
+const lakePlacidQuestions = [
+  'What makes Lake Placid, FL one of Florida\'s premier lakefront real estate markets?',
+  'How does the seasonal snowbird market affect home sales in Lake Placid, FL?',
+  'What should you not do before selling your house in Sebring, FL?',
+];
+
+const selectedFaqs = allFaqs.filter((f) =>
+  lakePlacidQuestions.some(
+    (q) => f.data.question.toLowerCase().includes(q.toLowerCase()) ||
+           q.toLowerCase().includes(f.data.question.toLowerCase())
+  )
+);
+
+// Supplement with additional Lake Placid specific FAQs
+const lakePlacidFaqList = [
+  ...selectedFaqs.map((f) => ({ question: f.data.question, answer: f.data.answer })),
+  {
+    question: 'Can I build or expand a private dock and boathouse in Lake Placid?',
+    answer:
+      'Yes, private docks and boathouses are permitted on most Lake Placid freshwater lakes, including Lake June-in-Winter and Lake Placid, subject to Highlands County building codes and Florida Department of Environmental Protection (DEP) guidelines. Permitting evaluates shoreline frontage, water depth, and environmental buffer zones. When selling or purchasing lakefront property, verifying existing dock permits and seawall condition is essential for protecting property value.',
+  },
+  {
+    question: "Why is Lake Placid called the 'Caladium Capital of the World'?",
+    answer:
+      'The unique climate and fertile, organic muck soils surrounding Lake Placid produce over 95% of the entire world’s caladium bulb supply. Celebrated every summer at the annual Caladium Festival, these agricultural fields create vibrant patchwork colors across the countryside, anchoring the town’s agricultural heritage alongside citrus groves and cattle ranching.',
+  },
+];
+
+// 2. Structured Data: RealEstateAgent (areaServed: Lake Placid) + Service + BreadcrumbList + FAQPage
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${siteConfig.domain}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Highlands County Communities',
+          item: `${siteConfig.domain}/sebring-neighborhoods/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: 'Lake Placid Real Estate',
+          item: `${siteConfig.domain}/lake-placid-real-estate/`,
+        },
+      ],
+    },
+    {
+      '@type': 'RealEstateAgent',
+      '@id': `${siteConfig.domain}/#agent-lake-placid`,
+      name: siteConfig.businessName,
+      url: `${siteConfig.domain}/lake-placid-real-estate/`,
+      telephone: siteConfig.phone,
+      image: `${siteConfig.domain}/social-preview-image.png`,
+      priceRange: '$$',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: siteConfig.address.locality,
+        addressRegion: siteConfig.address.region,
+        postalCode: siteConfig.address.postalCode,
+        addressCountry: siteConfig.address.country,
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: siteData.geo.latitude,
+        longitude: siteData.geo.longitude,
+      },
+      areaServed: {
+        '@type': 'City',
+        name: 'Lake Placid',
+        sameAs: 'https://en.wikipedia.org/wiki/Lake_Placid,_Florida',
+      },
+      parentOrganization: {
+        '@type': 'Organization',
+        name: siteConfig.brokerage,
+        url: siteConfig.domain,
+      },
+    },
+    {
+      '@type': 'Service',
+      '@id': `${siteConfig.domain}/lake-placid-real-estate/#service`,
+      name: 'Lake Placid Real Estate Listing & Waterfront Representation',
+      serviceType: 'Residential, Waterfront & Seasonal Home Sales',
+      description: 'Expert real estate guidance, comparative market analyses, and tailored marketing for waterfront estates, golf communities, and seasonal homes in Lake Placid, Florida.',
+      provider: {
+        '@id': `${siteConfig.domain}/#agent-lake-placid`,
+      },
+      areaServed: {
+        '@type': 'City',
+        name: 'Lake Placid',
+      },
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: lakePlacidFaqList.map((f) => ({
+        '@type': 'Question',
+        name: f.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: f.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<PageLayout
+  title="Lake Placid, FL Real Estate & Homes for Sale | Town of Murals Guide"
+  description="Explore Lake Placid, FL real estate: Lake June-in-Winter luxury waterfront homes, Town of Murals heritage, Caladium Festival, and seasonal snowbird market trends."
+  canonicalUrl={`${siteConfig.domain}/lake-placid-real-estate/`}
+  schema={pageSchema}
+>
+  <!-- Breadcrumb Navigation -->
+  <nav class="bg-stone-100 border-b border-stone-200 py-3 px-4 sm:px-6" aria-label="Breadcrumb">
+    <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs sm:text-sm text-stone-600">
+      <a href="/" class="hover:text-[#1b3a5c] hover:underline">Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <a href="/sebring-neighborhoods/" class="hover:text-[#1b3a5c] hover:underline">Communities</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <span class="text-stone-900 font-semibold" aria-current="page">Lake Placid Real Estate</span>
+    </div>
+  </nav>
+
+  <article class="py-12 sm:py-16 px-4 sm:px-6 font-sans">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header -->
+      <header class="mb-10">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-sky-100 text-sky-900 border border-sky-300 mb-3">
+          Highlands County Waterfront & Culture Guide
+        </span>
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1b3a5c] tracking-tight mb-5 leading-tight">
+          Lake Placid, FL Real Estate: "Town of Murals" & Waterfront Market Guide
+        </h1>
+        <p class="text-lg sm:text-xl text-stone-700 leading-relaxed">
+          Tucked along the southern crest of the Lake Wales Ridge, Lake Placid is celebrated nationally as both Florida's "Town of Murals" and the "Caladium Capital of the World." With 27 freshwater lakes nestled within and immediately around the town limits, Lake Placid offers one of Florida’s most tranquil, scenic freshwater lifestyle environments.
+        </p>
+        <p class="text-base text-stone-600 leading-relaxed mt-4">
+          From multi-million-dollar custom estates on the sandy shores of Lake June-in-Winter to peaceful canal-front residences, golf villas in Placid Lakes, and historic in-town bungalows, Lake Placid presents a vibrant second-home and retirement real estate market defined by clean water, artistic civic pride, and robust seasonal demand.
+        </p>
+      </header>
+
+      <!-- Market Snapshot: Lake Placid Data Placeholders -->
+      <section class="mb-14 p-6 sm:p-8 bg-stone-50 rounded-2xl border border-stone-200 shadow-sm" aria-labelledby="market-snapshot-heading">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-200 pb-4 mb-6">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Highlands County Market Intelligence</span>
+            <h2 id="market-snapshot-heading" class="font-serif text-2xl font-bold text-[#1b3a5c] mt-0.5">
+              Lake Placid Real Estate Market Snapshot
+            </h2>
+          </div>
+          <span class="text-xs text-stone-500 font-medium">
+            Highlands County MLS Data • Updated Monthly
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+          <div class="p-4 bg-white rounded-xl border border-stone-200 text-center shadow-xs">
+            <span class="block text-xs uppercase tracking-wider text-stone-500 font-semibold mb-1">Median Sale Price</span>
+            <span class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c]">$272,000</span>
+            <span class="block text-[11px] text-stone-500 mt-1">[Overall Residential]</span>
+          </div>
+
+          <div class="p-4 bg-white rounded-xl border border-stone-200 text-center shadow-xs">
+            <span class="block text-xs uppercase tracking-wider text-stone-500 font-semibold mb-1">Price Per Sq. Ft.</span>
+            <span class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c]">$168</span>
+            <span class="block text-[11px] text-stone-500 mt-1">[Single-Family Median]</span>
+          </div>
+
+          <div class="p-4 bg-white rounded-xl border border-stone-200 text-center shadow-xs">
+            <span class="block text-xs uppercase tracking-wider text-stone-500 font-semibold mb-1">Days on Market</span>
+            <span class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c]">58 Days</span>
+            <span class="block text-[11px] text-stone-500 mt-1">[Average to Contract]</span>
+          </div>
+
+          <div class="p-4 bg-white rounded-xl border border-stone-200 text-center shadow-xs">
+            <span class="block text-xs uppercase tracking-wider text-stone-500 font-semibold mb-1">Lakefront Range</span>
+            <span class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c]">$450k–$1.5M+</span>
+            <span class="block text-[11px] text-stone-500 mt-1">[Ridge Water Access]</span>
+          </div>
+        </div>
+
+        <p class="text-xs text-stone-500 italic mt-5">
+          * Market statistics reflect rolling median residential transactions in Lake Placid zip code 33852. Lakefront properties carry significant premiums based on water frontage, dock depth, and water clarity. Contact Alyson Thomas for a specialized Lake Placid property valuation.
+        </p>
+      </section>
+
+      <!-- Section 1: Unique Cultural Identity & Heritage -->
+      <section class="mb-14 space-y-6 text-stone-700 leading-relaxed" aria-labelledby="cultural-identity-heading">
+        <h2 id="cultural-identity-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Lake Placid Community Profile: Art, Agriculture & Historic Roots
+        </h2>
+        <p>
+          Originally chartered as "Lake Stearns," the town was renamed in 1927 under the visionary influence of <strong>Dr. Melvil Dewey</strong>, inventor of the Dewey Decimal Classification system and founder of the famed Lake Placid Club in the Adirondacks of New York. Dewey envisioned the Highlands County community as a twin southern retreat where intellectuals and athletes could enjoy outdoor sports and winter sunshine. Today, Lake Placid honors that legacy with three distinctive cultural pillars:
+        </p>
+
+        <div class="space-y-6 my-6">
+          <!-- The Town of Murals -->
+          <div class="p-6 bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col sm:flex-row gap-5">
+            <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-900 flex items-center justify-center text-2xl flex-shrink-0">
+              🎨
+            </div>
+            <div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold text-[#1b3a5c] mb-2">
+                "The Town of Murals": Outdoor Gallery of Over 45 Masterpieces
+              </h3>
+              <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                In 1992, community leaders launched an initiative to revitalize downtown through public art. Today, Lake Placid features more than <strong>45 outdoor, hand-painted murals</strong> adorning historic brick walls across the downtown corridor. Depicting Florida wildlife, citrus harvests, indigenous Calusa heritage, the early cattle trade, and steam locomotive history, many murals incorporate hidden sound installations and whimsical scavenger hunts. This visual identity fosters an exceptional sense of community pride and year-round tourist walkability around Stuart Park and Interlake Boulevard.
+              </p>
+            </div>
+          </div>
+
+          <!-- Caladium Capital of the World -->
+          <div class="p-6 bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col sm:flex-row gap-5">
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-900 flex items-center justify-center text-2xl flex-shrink-0">
+              🌿
+            </div>
+            <div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold text-[#1b3a5c] mb-2">
+                "Caladium Capital of the World" & The Annual Caladium Festival
+              </h3>
+              <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                Surrounding Lake Placid are hundreds of acres of rich, sub-tropical muck land that grow over <strong>95% of the entire globe’s caladium bulbs</strong>. In late summer, these fields erupt in radiant hues of crimson, white, and emerald green. The annual <strong>Caladium Festival</strong> draws thousands of gardening enthusiasts for guided bus tours through commercial bulb fields, arts and craft displays, antique car exhibitions, and local culinary festivities, celebrating Lake Placid’s agricultural backbone.
+              </p>
+            </div>
+          </div>
+
+          <!-- Toby the Clown & Performing Arts -->
+          <div class="p-6 bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col sm:flex-row gap-5">
+            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-900 flex items-center justify-center text-2xl flex-shrink-0">
+              🎭
+            </div>
+            <div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold text-[#1b3a5c] mb-2">
+                The American Clown Museum & Cultural Whimsy
+              </h3>
+              <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                Lake Placid also boasts a delightfully eccentric performing arts history as the former home of the Toby the Clown Foundation and clown school, which trained over 2,000 professional performers and fostered the American Clown Museum. This artistic spirit is mirrored in Lake Placid’s welcoming civic clubs, active garden societies, and intimate live theatrical performances at the Lake Placid Historical Society Depot.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Lake June-in-Winter & The 27 Lakes Lifestyle -->
+      <section class="mb-14 space-y-6 text-stone-700 leading-relaxed" aria-labelledby="lake-lifestyle-heading">
+        <h2 id="lake-lifestyle-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Lake June-in-Winter & The 27 Lakes Lifestyle
+        </h2>
+        <p>
+          Water is the central heartbeat of Lake Placid real estate. Unlike dark tannin waters found in northern rivers or marshy bayous, the ancient sand ridge lakes of Lake Placid are renowned for spring-fed clarity, hard sandy bottoms, and exceptional water-sports quality:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+          <!-- Lake June-in-Winter -->
+          <div class="p-6 bg-white rounded-xl border border-stone-200 shadow-sm space-y-3">
+            <div class="text-2xl" aria-hidden="true">🌊</div>
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c]">
+              Lake June-in-Winter: Highlands County’s Crown Jewel
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Spanning approximately 3,726 acres, Lake June-in-Winter is widely regarded as one of Central Florida’s most prestigious bodies of water. Boaters flock to its famed shallow sandbars on sunny weekends, while shoreline residents enjoy world-class waterskiing, sailing, and sunset views from private multi-slip boathouses. The lake is also home to the 845-acre <strong>Lake June-in-Winter Scrub State Park</strong>, preserving rare Florida scrub-jays and ancient white-sand ridges.
+            </p>
+          </div>
+
+          <!-- Lake Placid & Surrounding Lakes -->
+          <div class="p-6 bg-white rounded-xl border border-stone-200 shadow-sm space-y-3">
+            <div class="text-2xl" aria-hidden="true">🎣</div>
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c]">
+              Lake Placid, Lake Clay & Lake Istokpoga Access
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Adjacent to downtown lies <strong>Lake Placid</strong> itself—a 3,320-acre deep water body reaching depths over 50 feet, making it one of Florida’s deepest natural lakes. Nearby <strong>Lake Clay</strong> (popular for year-round paddleboarding and wakeboarding), <strong>Lake Huntley</strong>, and <strong>Lake Francis</strong> provide diverse waterfront living options. Just to the east, <strong>Lake Istokpoga</strong> (27,000+ acres) offers world-renowned tournament bass and crappie fishing.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Seasonal Snowbird Demand & Lakefront Valuation Nuances -->
+      <section class="mb-14 space-y-5 text-stone-700 leading-relaxed" aria-labelledby="seasonal-demand-heading">
+        <h2 id="seasonal-demand-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          The Snowbird Dynamic: Seasonal Demand & Lakefront Valuation Nuances
+        </h2>
+        <p>
+          Real estate in Lake Placid operates on a pronounced seasonal cadence. Understanding this seasonal cycle is crucial whether you are timing a home sale or seeking a winter second home:
+        </p>
+
+        <div class="space-y-4 my-6">
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200">
+            <h3 class="font-serif text-base font-bold text-[#1b3a5c] mb-1.5">
+              1. The Winter Influx (November through April)
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Every autumn, thousands of seasonal snowbirds from Ohio, Michigan, New York, Pennsylvania, Indiana, and Ontario arrive in Lake Placid to escape harsh northern winters. In-person showings, open house attendance, and cash offer submissions surge dramatically during these months. Sellers who list in October or November position their homes directly in front of motivated winter shoppers ready to close before returning north in the spring.
+            </p>
+          </div>
+
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200">
+            <h3 class="font-serif text-base font-bold text-[#1b3a5c] mb-1.5">
+              2. Lakefront Valuation Drivers
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Appraising and pricing a lakefront home in Lake Placid requires hyper-local expertise. True value is determined by much more than square footage: water depth at the dock end (critical for powerboats), linear feet of sandy shoreline, seawall condition (rip-rap vs. concrete), western exposure for sunset orientation, and navigable canal access versus direct lake frontage. Alyson Thomas evaluates these nuanced variables to ensure sellers never leave equity on the table.
+            </p>
+          </div>
+
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200">
+            <h3 class="font-serif text-base font-bold text-[#1b3a5c] mb-1.5">
+              3. Vacation & Second-Home Appeal
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Unlike primary bedroom communities, Lake Placid has a high concentration of second homes and seasonal residences. Buyers prioritize low-maintenance landscaping, hurricane shutters, screened lanais, and garage space for golf carts and boat trailers. Turnkey properties that can be locked and left safely for six months command strong price premiums.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Key Lake Placid Neighborhoods & Enclaves -->
+      <section class="mb-14 space-y-6 text-stone-700 leading-relaxed" aria-labelledby="neighborhoods-heading">
+        <h2 id="neighborhoods-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Lake Placid Real Estate Sectors & Neighborhoods
+        </h2>
+        <p>
+          From golf enclaves to lakefront luxury, Lake Placid offers distinct neighborhoods tailored to diverse lifestyle aspirations:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="p-5 bg-white rounded-xl border border-stone-200 shadow-sm">
+            <h3 class="font-serif text-base font-bold text-[#1b3a5c] mb-2">Placid Lakes & Golf</h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Located on the southwest side of Lake June, Placid Lakes features single-family homes, canal residences, and vacant home-sites surrounding Placid Lakes Country Club. Residents enjoy a private community park with an exclusive boat ramp providing direct access to Lake June.
+            </p>
+          </div>
+
+          <div class="p-5 bg-white rounded-xl border border-stone-200 shadow-sm">
+            <h3 class="font-serif text-base font-bold text-[#1b3a5c] mb-2">Lake June-in-Winter Estates</h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Highlands County’s most prestigious waterfront address. Features custom architectural residences with private docks, multi-bay boathouses, sugar-sand shorelines, and expansive panoramic views across 3,700 acres of open water.
+            </p>
+          </div>
+
+          <div class="p-5 bg-white rounded-xl border border-stone-200 shadow-sm">
+            <h3 class="font-serif text-base font-bold text-[#1b3a5c] mb-2">Historic Downtown & In-Town</h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Surrounding Interlake Boulevard and Stuart Park, in-town neighborhoods offer craftsman cottages, mid-century ranch homes, and walkable access to mural walking tours, local cafes, grocery markets, and Lake Verona/Lake Clay parks.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Selling Fast in Lake Placid (Strategic Listing vs Wholesalers) -->
+      <section class="mb-14 p-6 sm:p-8 bg-amber-50/80 rounded-2xl border border-amber-300 shadow-sm space-y-4" aria-labelledby="fast-sale-heading">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-200 text-amber-900 border border-amber-400">
+          Seller Advisory
+        </span>
+        <h2 id="fast-sale-heading" class="font-serif text-2xl font-bold text-[#1b3a5c]">
+          Selling a Lake Placid Home Fast: Protecting Your Equity
+        </h2>
+        <p class="text-xs sm:text-sm text-stone-700 leading-relaxed">
+          Whether managing an inherited family home, liquidating a seasonal property, or facing a sudden relocation, Lake Placid homeowners often receive aggressive unsolicited cash offers from off-market wholesalers. These flippers routinely pitch quick 7-day closings while taking 25% to 35% of your home's equity off the table.
+        </p>
+        <p class="text-xs sm:text-sm text-stone-700 leading-relaxed">
+          Because Lake Placid boasts intense demand from retail cash buyers and relocating retirees, you do not have to accept a steep wholesale penalty to close quickly. Alyson Thomas launches rapid MLS campaigns with rush HDR media, targeted out-of-state digital advertising, and verified buyer pre-qualification, routinely delivering full-market-value offers and smooth 14- to 30-day closings.
+        </p>
+        <div class="pt-2">
+          <a href="/sell-house-fast-sebring-fl/" class="text-xs sm:text-sm font-bold text-[#1b3a5c] underline hover:text-[#122840]">
+            Explore our Fast-Sale & Equity Protection Blueprint →
+          </a>
+        </div>
+      </section>
+
+      <!-- Section 6: Valuation Call-to-Action Card -->
+      <section class="mb-14 p-6 sm:p-8 bg-white rounded-2xl border border-stone-200 shadow-lg text-center" aria-label="Lake Placid Valuation Request">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-sky-100 text-sky-900 border border-sky-300 mb-3">
+          Lake Placid Property Analysis
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mb-3">
+          What Is Your Lake Placid Property Really Worth?
+        </h2>
+        <p class="text-xs sm:text-sm text-stone-600 max-w-xl mx-auto mb-6 leading-relaxed">
+          Automated online estimates cannot verify your water depth, boathouse condition, or sunset angle. Request a handcrafted Comparative Market Analysis prepared specifically for your Lake Placid neighborhood by Alyson Thomas.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button href="/free-home-valuation/" variant="primary" size="lg">
+            Request Free Lake Placid Valuation →
+          </Button>
+          <a
+            href={`tel:${siteConfig.phone}`}
+            class="px-6 py-3 rounded-lg border border-stone-300 text-[#1b3a5c] font-bold text-sm hover:bg-stone-50 transition-colors"
+          >
+            Call {siteConfig.phoneDisplay}
+          </a>
+        </div>
+      </section>
+
+      <!-- Section 7: Frequently Asked Questions -->
+      <section class="mb-14" aria-labelledby="placid-faq-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Frequently Asked Questions</span>
+          <h2 id="placid-faq-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+            Frequently Asked Questions: Living & Investing in Lake Placid, FL
+          </h2>
+          <p class="text-xs sm:text-sm text-stone-600 mt-1">
+            Practical insights on lakes, seasonal demand, and real estate values:
+          </p>
+        </div>
+
+        <FAQAccordion items={lakePlacidFaqList} title="" />
+      </section>
+
+      <!-- Section 8: Related Resources & Community Links -->
+      <section class="p-6 bg-stone-50 rounded-xl border border-stone-200 mb-10">
+        <h2 class="font-serif text-lg font-bold text-[#1b3a5c] mb-3">Explore Neighboring Communities & Guides</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm">
+          <a href="/sebring-neighborhoods/lakefront-homes/" class="p-3.5 bg-white rounded-lg border border-stone-200 hover:border-[#1b3a5c] transition-colors block">
+            <span class="font-bold text-[#1b3a5c] block mb-1">Sebring Lakefront Homes</span>
+            <span class="text-stone-600 text-xs">Explore waterfront properties on Lake Jackson, Dinner Lake, and Lake Sebring.</span>
+          </a>
+          <a href="/avon-park-real-estate/" class="p-3.5 bg-white rounded-lg border border-stone-200 hover:border-[#1b3a5c] transition-colors block">
+            <span class="font-bold text-[#1b3a5c] block mb-1">Avon Park Real Estate</span>
+            <span class="text-stone-600 text-xs">Highlands County’s historic northern community and South Florida State College hub.</span>
+          </a>
+          <a href="/sell-my-home-sebring-fl/" class="p-3.5 bg-white rounded-lg border border-stone-200 hover:border-[#1b3a5c] transition-colors block">
+            <span class="font-bold text-[#1b3a5c] block mb-1">Highlands County Selling Guide</span>
+            <span class="text-stone-600 text-xs">Comprehensive 5-step roadmap from pricing and staging to contract closing.</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Back Link -->
+      <div class="text-center pt-4 border-t border-stone-200">
+        <a href="/sebring-neighborhoods/" class="text-sm font-bold text-[#1b3a5c] hover:underline inline-flex items-center gap-1.5">
+          <span>← Back to Highlands County Communities</span>
+        </a>
+      </div>
+    </div>
+  </article>
+</PageLayout>

@@ -1,0 +1,24 @@
+{
+  "name": "Spring Lake",
+  "slug": "spring-lake",
+  "city": "Sebring",
+  "primaryKeyword": "spring lake sebring fl",
+  "secondaryKeywords": [
+    "homes for sale in spring lake sebring fl",
+    "spring lake real estate sebring fl"
+  ],
+  "medianPrice": "$190,000 - $340,000",
+  "daysOnMarket": "60 days",
+  "description": "Located southeast of downtown Sebring, Spring Lake offers generous homesites, golf resort living, peaceful countryside ambiance, and immediate proximity to trophy bass fishing on Lake Istokpoga.",
+  "amenities": [
+    "Spring Lake Golf Resort",
+    "Community Eco-Park & Walking Trails",
+    "Direct Access to Lake Istokpoga",
+    "Spacious Acreage Parcels"
+  ],
+  "crossLinkSlugs": [
+    "golf-hammock",
+    "sun-n-lake",
+    "lakefront-homes"
+  ]
+}

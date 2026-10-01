@@ -1,0 +1,814 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import TestimonialCard from '@components/ui/TestimonialCard.astro';
+import FAQAccordion from '@components/sections/FAQAccordion.astro';
+import Button from '@components/ui/Button.astro';
+import { siteConfig, siteData } from '@data/site';
+import { getCollection } from 'astro:content';
+
+// 1. Fetch seller testimonials
+const allTestimonials = await getCollection('testimonials');
+const topTestimonial = allTestimonials[0]; // e.g. Tanglewood seller story
+const processTestimonial = allTestimonials[1] || allTestimonials[0]; // e.g. Golf Hammock seller story
+
+// 2. Fetch FAQ items for sell-my-home
+const allFaqs = await getCollection('faq');
+const pageFaqs = allFaqs.filter((item) => item.data.page === 'sell-my-home');
+const faqAccordionItems = pageFaqs.map((item) => ({
+  question: item.data.question,
+  answer: item.data.answer,
+}));
+
+// 3. Schema markup: Service + BreadcrumbList + FAQPage + RealEstateAgent (nested)
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${siteConfig.domain}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Sell Your Home in Sebring, FL',
+          item: `${siteConfig.domain}/sell-my-home-sebring-fl/`,
+        },
+      ],
+    },
+    {
+      '@type': 'RealEstateAgent',
+      '@id': `${siteConfig.domain}/#agent`,
+      name: siteConfig.businessName,
+      url: `${siteConfig.domain}/sell-my-home-sebring-fl/`,
+      telephone: siteConfig.phone,
+      image: `${siteConfig.domain}/social-preview-image.png`,
+      priceRange: '$$',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: siteConfig.address.locality,
+        addressRegion: siteConfig.address.region,
+        postalCode: siteConfig.address.postalCode,
+        addressCountry: siteConfig.address.country,
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: siteData.geo.latitude,
+        longitude: siteData.geo.longitude,
+      },
+      areaServed: [
+        { '@type': 'City', name: 'Sebring' },
+        { '@type': 'AdministrativeArea', name: 'Highlands County' },
+      ],
+      parentOrganization: {
+        '@type': 'Organization',
+        name: siteConfig.brokerage,
+        url: siteConfig.domain,
+      },
+    },
+    {
+      '@type': 'Service',
+      '@id': `${siteConfig.domain}/sell-my-home-sebring-fl/#service`,
+      name: 'Sebring Home Selling and Listing Representation',
+      serviceType: 'Real Estate Sales and Marketing',
+      description: 'Comprehensive seller representation including precision Comparative Market Analysis (CMA), HDR photography, targeted digital MLS syndication, expert contract negotiation, and escrow management across Sebring and Highlands County.',
+      provider: {
+        '@id': `${siteConfig.domain}/#agent`,
+      },
+      areaServed: [
+        { '@type': 'City', name: 'Sebring' },
+        { '@type': 'AdministrativeArea', name: 'Highlands County' },
+      ],
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+        name: 'Complimentary Precision Comparative Market Analysis (CMA)',
+      },
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: pageFaqs.map((f) => ({
+        '@type': 'Question',
+        name: f.data.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: f.data.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<PageLayout
+  title="Sell My Home in Sebring, FL | Maximize Your Equity with Alyson Thomas"
+  description="Ready to sell your house in Sebring, FL? Get a precision home valuation, aggressive multi-channel marketing, and expert negotiation from Alyson Thomas of Premier Plus Realty."
+  canonicalUrl={`${siteConfig.domain}/sell-my-home-sebring-fl/`}
+  schema={pageSchema}
+>
+  <!-- Breadcrumb Navigation -->
+  <nav class="bg-stone-100 border-b border-stone-200 py-3 px-4 sm:px-6" aria-label="Breadcrumb">
+    <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs sm:text-sm text-stone-600">
+      <a href="/" class="hover:text-[#1b3a5c] hover:underline">Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <span class="text-stone-900 font-semibold" aria-current="page">Sell My Home in Sebring, FL</span>
+    </div>
+  </nav>
+
+  <article class="py-12 sm:py-16 px-4 sm:px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Above the Fold: Header & Value Proposition -->
+      <header class="mb-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-4">
+          <span>Highlands County Premier Listing Representation</span>
+        </div>
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1b3a5c] tracking-tight mb-4 leading-tight">
+          Sell My Home in Sebring, FL
+        </h1>
+        <p class="text-xl sm:text-2xl text-[#8A4700] font-serif italic mb-6">
+          Maximize Your Equity, Minimize Market Days, and Experience Seamless Transaction Guidance
+        </p>
+        <p class="text-base sm:text-lg text-stone-700 leading-relaxed font-sans">
+          Selling your Sebring home represents years of equity and your next chapter. Achieving top-dollar results requires precision pricing, professional visual storytelling, multi-MLS digital marketing to out-of-state buyers, and rigorous contract negotiation from listing to closing.
+        </p>
+      </header>
+
+      <!-- Key Value Proposition Highlights (CRO Guide 1.1) -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 bg-stone-50 rounded-xl border border-stone-200 mb-8">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Marketing Reach</span>
+          <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">Multi-MLS + Web</span>
+        </div>
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Visual Standard</span>
+          <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">HDR & Drone Media</span>
+        </div>
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Average Market Days</span>
+          <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">30–45 Days</span>
+        </div>
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Consultation</span>
+          <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">100% Free & No-Obligation</span>
+        </div>
+      </div>
+
+      <!-- Testimonial 1 Placement: Near the Top (After value prop, before CTA form per CRO Guide 1.1) -->
+      {topTestimonial && (
+        <section class="mb-10 bg-amber-50/70 border border-amber-200 rounded-xl p-6 shadow-sm" aria-label="Featured Seller Success Story">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="flex text-amber-500 text-sm" aria-hidden="true">★★★★★</div>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-900">Proven Seller Results in Sebring</span>
+          </div>
+          <blockquote class="italic text-stone-700 text-sm sm:text-base leading-relaxed mb-4">
+            "{topTestimonial.data.quote}"
+          </blockquote>
+          <div class="flex items-center justify-between text-xs text-stone-600 font-sans border-t border-amber-200/60 pt-3">
+            <span class="font-bold text-[#1b3a5c]">— Verified Seller in {topTestimonial.data.neighborhood}, Sebring, FL</span>
+            <span>Transaction Year: {topTestimonial.data.year}</span>
+          </div>
+        </section>
+      )}
+
+      <!-- Primary Form / CTA: Above the Fold (Per CRO Guide Section 4.1 CTA Table) -->
+      <section class="mb-14 bg-stone-50 rounded-2xl p-6 sm:p-8 border-2 border-[#1b3a5c]/20 shadow-lg" id="seller-inquiry-top" aria-labelledby="top-form-heading">
+        <div class="max-w-2xl mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Step 1: Discover Your Home's True Value</span>
+          <h2 id="top-form-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+            Request Your Personalized Sebring Market Valuation
+          </h2>
+          <p class="text-sm text-stone-600 mt-2">
+            Automated online algorithms miss golf course views, lake access, and recent structural upgrades. Enter your details below for a handcrafted, verified Comparative Market Analysis (CMA) prepared directly by Alyson Thomas.
+          </p>
+        </div>
+
+        <form class="space-y-4" onsubmit="event.preventDefault(); document.getElementById('top-form-success').classList.remove('hidden');">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-stone-700 mb-1" for="top-name">Your Full Name *</label>
+              <input type="text" id="top-name" required class="w-full px-3.5 py-2.5 border border-stone-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#1b3a5c]" placeholder="Jane & John Smith" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-700 mb-1" for="top-email">Email Address *</label>
+              <input type="email" id="top-email" required class="w-full px-3.5 py-2.5 border border-stone-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#1b3a5c]" placeholder="jane@example.com" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-stone-700 mb-1" for="top-phone">Phone Number *</label>
+              <input type="tel" id="top-phone" required class="w-full px-3.5 py-2.5 border border-stone-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#1b3a5c]" placeholder="(863) 555-0199" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-700 mb-1" for="top-timeline">Estimated Selling Timeline</label>
+              <select id="top-timeline" class="w-full px-3.5 py-2.5 border border-stone-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#1b3a5c]">
+                <option value="immediate">Immediately (Next 30 days)</option>
+                <option value="1-3-months">1 to 3 Months</option>
+                <option value="3-6-months">3 to 6 Months</option>
+                <option value="curious">Exploring Value / Planning Ahead</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-stone-700 mb-1" for="top-address">Property Address in Sebring / Highlands County *</label>
+            <input type="text" id="top-address" required class="w-full px-3.5 py-2.5 border border-stone-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#1b3a5c]" placeholder="e.g. 1042 Fairway Vista Dr, Sebring, FL 33872" />
+          </div>
+
+          <div class="pt-2 flex flex-col sm:flex-row items-center gap-4">
+            <button type="submit" class="w-full sm:w-auto px-7 py-3.5 bg-[#1b3a5c] text-white font-bold rounded-lg hover:bg-[#122840] transition-colors text-sm shadow-md cursor-pointer">
+              Get My Complimentary Valuation Report →
+            </button>
+            <span class="text-xs text-stone-500">
+              🔒 100% Confidential. Zero spam. Never shared.
+            </span>
+          </div>
+        </form>
+
+        <div id="top-form-success" class="hidden mt-4 p-4 bg-emerald-50 border border-emerald-300 rounded-lg text-xs sm:text-sm text-emerald-900 font-medium">
+          ✓ Thank you! Alyson Thomas has received your valuation request and is compiling recent comparable sales for your Sebring neighborhood. Expect your detailed report shortly.
+        </div>
+      </section>
+
+      <!-- Section 1: Why Sell Your Sebring Home with Alyson Thomas? -->
+      <section class="mb-14 space-y-5 text-stone-700 text-base sm:text-lg leading-relaxed font-sans" aria-labelledby="why-sell-heading">
+        <h2 id="why-sell-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Why Sell Your Sebring Home with Alyson Thomas?
+        </h2>
+        <p>
+          Selecting a real estate listing agent is one of the most consequential financial decisions you will make. While national corporate brokerages often treat Sebring properties as generic transaction numbers, Alyson Thomas delivers boutique, white-glove listing representation backed by Premier Plus Realty.
+        </p>
+        <p>
+          Highlands County is a diverse patchwork of micro-markets—from 55+ enclaves like <a href="/sebring-neighborhoods/tanglewood/" class="text-[#1b3a5c] font-bold underline">Tanglewood</a> to championship golf communities in <a href="/sebring-neighborhoods/sun-n-lake/" class="text-[#1b3a5c] font-bold underline">Sun 'N Lake</a> and <a href="/sebring-neighborhoods/golf-hammock/" class="text-[#1b3a5c] font-bold underline">Golf Hammock</a>, and prized shoreline estates on <a href="/sebring-neighborhoods/lakefront-homes/" class="text-[#1b3a5c] font-bold underline">Lake Jackson</a>.
+        </p>
+        <p>
+          When you partner with Alyson Thomas, you receive:
+        </p>
+        <ul class="space-y-3 pl-2 sm:pl-4 text-base">
+          <li class="flex items-start gap-2.5">
+            <span class="text-emerald-700 font-bold" aria-hidden="true">✓</span>
+            <div><strong>Hyper-Localized Market Acumen:</strong> Deep familiarity with Highlands County appraisals, flood zones, deed restrictions, land leases, and CDD assessments.</div>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <span class="text-emerald-700 font-bold" aria-hidden="true">✓</span>
+            <div><strong>Professional Visual Storytelling:</strong> Every listing receives magazine-grade HDR photography, twilight exterior captures, and FAA-certified drone aerial footage highlighting lot boundaries and water or golf views.</div>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <span class="text-emerald-700 font-bold" aria-hidden="true">✓</span>
+            <div><strong>Out-of-State Relocation Reach:</strong> Strategic syndication targeting inbound retirees and second-home buyers from the Midwest, Northeast, and coastal Florida metros.</div>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <span class="text-emerald-700 font-bold" aria-hidden="true">✓</span>
+            <div><strong>Fierce Fiduciary Advocacy:</strong> Uncompromising negotiation on purchase price, appraisal gaps, repair credits, and timelines, backed by strict adherence to Florida statutory disclosures.</div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Section 2: How Much Is Your Sebring Home Worth? Online Estimates vs. Local CMAs -->
+      <section class="mb-14 space-y-5 text-stone-700 text-base sm:text-lg leading-relaxed font-sans" aria-labelledby="home-worth-heading">
+        <h2 id="home-worth-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          How Much Is Your Sebring Home Worth? Online Estimates vs. Local CMAs
+        </h2>
+        <p>
+          Before deciding to list, nearly every homeowner consults automated valuation models (AVMs) online. While algorithms offer quick curiosity, relying on them to establish your listing price in Sebring can cost you tens of thousands of dollars in lost equity or lead to months of stagnation.
+        </p>
+        <p>
+          Automated online algorithms rely on public tax records, square footage equations, and broad zip code averages. A computer program cannot account for your new 2026 metal roof, high-efficiency heat pump, quartz countertops, or that your screened lanai overlooks the fairway rather than a drainage canal.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+          <div class="p-6 bg-red-50/60 rounded-xl border border-red-200">
+            <h3 class="font-serif text-lg font-bold text-red-900 mb-2">Automated Online "Zestimates"</h3>
+            <ul class="text-xs sm:text-sm text-red-800 space-y-2">
+              <li>✕ Blind to interior remodeling, granite/quartz finishes, and layout flow.</li>
+              <li>✕ Confuses land-lease manufactured homes with deeded fee-simple real property.</li>
+              <li>✕ Ignores premiums for seawalls, private boat docks, and canal access.</li>
+              <li>✕ Uses outdated comps sold 9 to 12 months ago in shifting interest rate climates.</li>
+            </ul>
+          </div>
+          <div class="p-6 bg-emerald-50/60 rounded-xl border border-emerald-200">
+            <h3 class="font-serif text-lg font-bold text-emerald-900 mb-2">Alyson Thomas's Handcrafted CMA</h3>
+            <ul class="text-xs sm:text-sm text-emerald-800 space-y-2">
+              <li>✓ Verified on-site inspection of property condition, upgrades, and views.</li>
+              <li>✓ Precise micro-comps within identical sub-HOAs and school zones.</li>
+              <li>✓ Direct adjustments for roof age, HVAC SEER rating, and impact glass.</li>
+              <li>✓ Active market absorption analysis to determine your optimal launch window.</li>
+            </ul>
+          </div>
+        </div>
+
+        <p>
+          To discover what your home will genuinely command, request a <a href="/free-home-valuation/" class="text-[#1b3a5c] font-bold underline">Free Sebring Home Valuation</a> today.
+        </p>
+      </section>
+
+      <!-- Section 3: The 5-Step Sebring Home Selling Process (CRO Guide 5.1 Tactic 2) -->
+      <section class="mb-14" aria-labelledby="process-heading">
+        <div class="border-b border-stone-200 pb-4 mb-8">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Tactic 2: Process Transparency</span>
+          <h2 id="process-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+            The 5-Step Sebring Home Selling Process
+          </h2>
+          <p class="text-sm text-stone-600 mt-1">
+            We eliminate anxiety through complete operational clarity. Here is how Alyson Thomas guides your sale from preparation to closing:
+          </p>
+        </div>
+
+        <div class="space-y-6">
+          <!-- Step 1 -->
+          <div class="p-6 sm:p-7 bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col md:flex-row gap-5 items-start">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-[#1b3a5c] text-white flex items-center justify-center font-serif text-xl font-bold">
+              1
+            </div>
+            <div class="space-y-2">
+              <h3 class="font-serif text-xl font-bold text-[#1b3a5c]">
+                Step 1: Discovery Consultation & Comprehensive Market Evaluation
+              </h3>
+              <p class="text-sm text-stone-700 leading-relaxed font-sans">
+                We begin with a thorough walkthrough of your property to catalog special features, mechanical updates, and your personal timeline and financial goals. Alyson conducts a forensic examination of pending and closed comparable sales within your immediate enclave to establish an airtight pricing strategy that commands top dollar without triggering appraisal hurdles.
+              </p>
+              <div class="text-xs font-semibold text-stone-500 bg-stone-50 p-2.5 rounded border border-stone-200">
+                <strong>Key Deliverables:</strong> Detailed Comparative Market Analysis (CMA), estimated net sheet illustrating proceeds after closing costs, and seller disclosure review.
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="p-6 sm:p-7 bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col md:flex-row gap-5 items-start">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-[#1b3a5c] text-white flex items-center justify-center font-serif text-xl font-bold">
+              2
+            </div>
+            <div class="space-y-2">
+              <h3 class="font-serif text-xl font-bold text-[#1b3a5c]">
+                Step 2: Strategic Pricing & Pre-Listing Property Enhancement
+              </h3>
+              <p class="text-sm text-stone-700 leading-relaxed font-sans">
+                First impressions dictate final sale prices. Alyson provides tailored pre-listing recommendations designed to maximize return on investment (ROI). This includes decluttering guidance, curb appeal touch-ups, pressure washing, and professional staging advice. We address potential inspection red flags early to prevent buyer renegotiations later.
+              </p>
+              <div class="text-xs font-semibold text-stone-500 bg-stone-50 p-2.5 rounded border border-stone-200">
+                <strong>Key Deliverables:</strong> Customized Pre-Listing Checklist, trusted vendor referrals, and finalized list-price agreement.
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="p-6 sm:p-7 bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col md:flex-row gap-5 items-start">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-[#1b3a5c] text-white flex items-center justify-center font-serif text-xl font-bold">
+              3
+            </div>
+            <div class="space-y-2">
+              <h3 class="font-serif text-xl font-bold text-[#1b3a5c]">
+                Step 3: High-Impact Media Production & Multi-MLS Marketing Launch
+              </h3>
+              <p class="text-sm text-stone-700 leading-relaxed font-sans">
+                Our creative team deploys professional architectural photography, drone aerial panoramas, and immersive virtual tours. Your listing is simultaneously broadcast across Heartland MLS, Mid-Florida Regional MLS (Stellar MLS), and syndicated to Zillow, Realtor.com, Trulia, and hundreds of regional brokerage sites, paired with targeted digital campaigns reaching relocating out-of-state buyers.
+              </p>
+              <div class="text-xs font-semibold text-stone-500 bg-stone-50 p-2.5 rounded border border-stone-200">
+                <strong>Key Deliverables:</strong> High-res photo suite, MLS listing activation, luxury digital brochures, and cross-channel paid ad campaigns.
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="p-6 sm:p-7 bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col md:flex-row gap-5 items-start">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-[#1b3a5c] text-white flex items-center justify-center font-serif text-xl font-bold">
+              4
+            </div>
+            <div class="space-y-2">
+              <h3 class="font-serif text-xl font-bold text-[#1b3a5c]">
+                Step 4: Showings Coordination, Buyer Vetting & Master Negotiation
+              </h3>
+              <p class="text-sm text-stone-700 leading-relaxed font-sans">
+                Showings are coordinated securely via professional lockbox software with automated feedback notifications. When offers arrive, Alyson rigorously vets every prospective buyer: confirming mortgage pre-approval strength with lenders, verifying liquid funds for cash buyers, and analyzing contract contingencies. We negotiate assertively to extract the highest net proceeds and favorable seller terms.
+              </p>
+              <div class="text-xs font-semibold text-stone-500 bg-stone-50 p-2.5 rounded border border-stone-200">
+                <strong>Key Deliverables:</strong> Side-by-side offer comparison matrix, counter-offer strategy execution, and fully executed purchase contract.
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5 -->
+          <div class="p-6 sm:p-7 bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col md:flex-row gap-5 items-start">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-[#1b3a5c] text-white flex items-center justify-center font-serif text-xl font-bold">
+              5
+            </div>
+            <div class="space-y-2">
+              <h3 class="font-serif text-xl font-bold text-[#1b3a5c]">
+                Step 5: Escrow Management, Inspection Resolution & Closing Day Success
+              </h3>
+              <p class="text-sm text-stone-700 leading-relaxed font-sans">
+                Securing a contract is only half the journey. Alyson actively manages the critical 30-to-45-day escrow period: attending the inspection, vetting repair requests against Florida contract terms, coordinating with the appraiser, and liaising with the local Highlands County title company to ensure clean title transfer. We review the final settlement statement line-by-line to guarantee you receive every dollar of your rightful equity.
+              </p>
+              <div class="text-xs font-semibold text-stone-500 bg-stone-50 p-2.5 rounded border border-stone-200">
+                <strong>Key Deliverables:</strong> Inspection repair addenda management, appraisal clearance, closing statement audit, and smooth disbursement of funds.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Mid-Page Form / CTA: After the Process Section (Per CRO Guide Section 4.1 CTA Table) -->
+      <section class="mb-14 bg-[#1b3a5c] rounded-2xl p-8 sm:p-10 text-white shadow-xl" id="seller-inquiry-mid" aria-labelledby="mid-form-heading">
+        <div class="max-w-3xl mb-6">
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/30 mb-3">
+            Ready to Begin the 5-Step Process?
+          </span>
+          <h2 id="mid-form-heading" class="font-serif text-2xl sm:text-3xl font-bold mb-3">
+            Schedule Your Confidential Seller Strategy Session
+          </h2>
+          <p class="text-stone-200 text-sm sm:text-base leading-relaxed font-sans">
+            Connect with Alyson Thomas today to review recent sales in your neighborhood, discuss custom pricing strategies, and establish an optimal timeline for listing your Sebring home.
+          </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-6">
+          <Button href="/free-home-valuation/" variant="primary" size="lg">
+            Request Full Valuation Analysis →
+          </Button>
+          <Button href="/contact/" variant="outline" size="lg">
+            Book an In-Home Consultation
+          </Button>
+          <a
+            href={`tel:${siteConfig.phone}`}
+            class="inline-flex items-center justify-center px-4 py-3 rounded-md font-bold text-amber-300 hover:text-white transition-all text-sm text-center"
+            aria-label={`Call Alyson Thomas directly at ${siteConfig.phoneDisplay}`}
+          >
+            📞 Call {siteConfig.phoneDisplay}
+          </a>
+        </div>
+        <p class="text-xs text-stone-300 italic">
+          * Need an expedited sale or exploring all options? We also coordinate rapid sales. Learn more about how to <a href="/sell-house-fast-sebring-fl/" class="text-amber-300 underline font-semibold">sell your house fast in Sebring</a>.
+        </p>
+      </section>
+
+      <!-- Testimonial 2 Placement: After Process Steps (Per CRO Guide 1.1 Placement Rules) -->
+      {processTestimonial && (
+        <section class="mb-14 bg-stone-50 border border-stone-200 rounded-xl p-6 sm:p-8" aria-label="Client Experience Following 5-Step Process">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Transaction Spotlight</span>
+              <span class="text-xs text-stone-400">•</span>
+              <span class="text-xs font-medium text-stone-600">{processTestimonial.data.neighborhood} Community</span>
+            </div>
+            <div class="flex text-amber-500 text-sm" aria-hidden="true">★★★★★</div>
+          </div>
+          <blockquote class="italic text-stone-800 text-base sm:text-lg leading-relaxed mb-4">
+            "{processTestimonial.data.quote}"
+          </blockquote>
+          <div class="flex items-center justify-between text-xs text-stone-600 pt-3 border-t border-stone-200">
+            <span class="font-bold text-[#1b3a5c]">Verified Seller Client, Sebring, FL</span>
+            <a href="/testimonials/" class="text-[#1b3a5c] font-bold hover:underline">Read All Client Reviews →</a>
+          </div>
+        </section>
+      )}
+
+      <!-- Section 4: Sebring Neighborhood Selling Dynamics: Pricing for Local Micro-Markets -->
+      <section class="mb-14 space-y-5 text-stone-700 text-base sm:text-lg leading-relaxed font-sans" aria-labelledby="neighborhood-dynamics-heading">
+        <h2 id="neighborhood-dynamics-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Sebring Neighborhood Selling Dynamics: Pricing for Local Micro-Markets
+        </h2>
+        <p>
+          Successful selling in Sebring demands an intimate appreciation for neighborhood micro-markets. What attracts a buyer to an active 55+ manufactured community in southern Sebring is fundamentally different from what motivates an executive or retiree purchasing a custom fairway pool home in Sun 'N Lake.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+          <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
+            <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">
+              <a href="/sebring-neighborhoods/sun-n-lake/" class="hover:underline">Sun 'N Lake Golf Community</a>
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed mb-3">
+              Sebring's largest master-planned golf community with 36 championship holes and AdventHealth proximity. Marketing must navigate Community Development District (CDD) assessments and accentuate fairway and lake orientations.
+            </p>
+            <div class="text-xs font-semibold text-[#8A4700]">Typical Range: $220k – $650k+</div>
+          </div>
+
+          <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
+            <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">
+              <a href="/sebring-neighborhoods/tanglewood/" class="hover:underline">Tanglewood 55+ Resort</a>
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed mb-3">
+              Gated active adult living with 60+ social clubs. Listing presentation highlights land-lease terms, roof-over age, Florida rooms, and resort amenities like the heated pool and pickleball complex.
+            </p>
+            <div class="text-xs font-semibold text-[#8A4700]">Typical Range: $115k – $275k</div>
+          </div>
+
+          <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
+            <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">
+              <a href="/sebring-neighborhoods/golf-hammock/" class="hover:underline">Golf Hammock</a>
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed mb-3">
+              Shaded by live oaks adjacent to Highlands Hammock State Park. Buyers prioritize solid CBS build, generous quarter- to half-acre lots, low HOA dues, and Ron Garl fairway views with no mandatory golf buy-in.
+            </p>
+            <div class="text-xs font-semibold text-[#8A4700]">Typical Range: $240k – $480k</div>
+          </div>
+
+          <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
+            <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">
+              <a href="/sebring-neighborhoods/lakefront-homes/" class="hover:underline">Lake Jackson & Lake Josephine Waterfront</a>
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed mb-3">
+              Waterfront property demands marketing linear shoreline, seawall stability, boat dock capacity, and navigable water depth for boating, skiing, and trophy bass fishing.
+            </p>
+            <div class="text-xs font-semibold text-[#8A4700]">Typical Range: $350k – $1.2M+</div>
+          </div>
+
+          <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
+            <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">
+              <a href="/sebring-neighborhoods/whisper-lake/" class="hover:underline">Whisper Lake 55+ Community</a>
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed mb-3">
+              Serene lake-centered active adult community prized for low HOA fees, deeded lot ownership options, clubhouse events, and peaceful nature walks.
+            </p>
+            <div class="text-xs font-semibold text-[#8A4700]">Typical Range: $125k – $250k</div>
+          </div>
+
+          <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
+            <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">
+              <a href="/sebring-neighborhoods/buttonwood-bay/" class="hover:underline">Buttonwood Bay Resort</a>
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed mb-3">
+              Situated directly on Lake Josephine and Lake Jackson canal access, Buttonwood Bay attracts buyers desiring private boat ramps, fishing piers, and resort amenities.
+            </p>
+            <div class="text-xs font-semibold text-[#8A4700]">Typical Range: $95k – $220k</div>
+          </div>
+
+          <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
+            <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">
+              <a href="/sebring-neighborhoods/spring-lake/" class="hover:underline">Spring Lake & Eco Park</a>
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed mb-3">
+              Minutes from Sebring International Raceway, offering oversized acreage lots, custom newer single-family construction, community park trails, and peaceful rural-suburban living.
+            </p>
+            <div class="text-xs font-semibold text-[#8A4700]">Typical Range: $190k – $420k</div>
+          </div>
+
+          <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
+            <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">
+              <a href="/sebring-neighborhoods/sebring-village/" class="hover:underline">Sebring Village 55+</a>
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed mb-3">
+              Centrally located active adult enclave featuring affordable, well-maintained manufactured residences, heated pool, shuffleboard courts, and social gathering spaces.
+            </p>
+            <div class="text-xs font-semibold text-[#8A4700]">Typical Range: $85k – $180k</div>
+          </div>
+        </div>
+
+        <!-- Specialty Property Representation Grid -->
+        <div class="bg-stone-50 rounded-2xl p-6 sm:p-8 border border-stone-200 my-8">
+          <div class="max-w-2xl mb-6">
+            <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Property Type Specialization</span>
+            <h3 class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c] mt-1">
+              Specialty Real Estate Categories We Represent
+            </h3>
+            <p class="text-sm text-stone-600 mt-2">
+              Whether your property borders a fairway, sits on open water, or offers low-maintenance villa living, our specialized marketing targets the precise buyer profile:
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <a href="/golf-course-homes-sebring-fl/" class="p-4 bg-white rounded-xl border border-stone-200 hover:border-[#1b3a5c] hover:shadow-sm transition-all group block">
+              <div class="font-serif font-bold text-stone-900 group-hover:text-[#1b3a5c] mb-1">
+                🏌️ Golf Course Homes
+              </div>
+              <p class="text-xs text-stone-600">
+                Fairway vistas & clubhouse living across Sun 'N Lake and Golf Hammock.
+              </p>
+              <span class="text-xs font-bold text-[#1b3a5c] mt-2 inline-block">Explore Golf Homes →</span>
+            </a>
+
+            <a href="/lakefront-homes-for-sale-sebring-fl/" class="p-4 bg-white rounded-xl border border-stone-200 hover:border-[#1b3a5c] hover:shadow-sm transition-all group block">
+              <div class="font-serif font-bold text-stone-900 group-hover:text-[#1b3a5c] mb-1">
+                🌅 Lakefront Homes
+              </div>
+              <p class="text-xs text-stone-600">
+                Freshwater shoreline living on Lake Jackson, Josephine, and June.
+              </p>
+              <span class="text-xs font-bold text-[#1b3a5c] mt-2 inline-block">Explore Waterfront →</span>
+            </a>
+
+            <a href="/mobile-homes-for-sale-sebring-fl/" class="p-4 bg-white rounded-xl border border-stone-200 hover:border-[#1b3a5c] hover:shadow-sm transition-all group block">
+              <div class="font-serif font-bold text-stone-900 group-hover:text-[#1b3a5c] mb-1">
+                🏡 Mobile & 55+ Homes
+              </div>
+              <p class="text-xs text-stone-600">
+                Active adult communities, land-lease vs. owned lot guidance.
+              </p>
+              <span class="text-xs font-bold text-[#1b3a5c] mt-2 inline-block">Explore 55+ Homes →</span>
+            </a>
+
+            <a href="/condos-villas-sebring-fl/" class="p-4 bg-white rounded-xl border border-stone-200 hover:border-[#1b3a5c] hover:shadow-sm transition-all group block">
+              <div class="font-serif font-bold text-stone-900 group-hover:text-[#1b3a5c] mb-1">
+                🏙️ Condos & Villas
+              </div>
+              <p class="text-xs text-stone-600">
+                Maintenance-free single-story living, patio villas, and HOA amenities.
+              </p>
+              <span class="text-xs font-bold text-[#1b3a5c] mt-2 inline-block">Explore Condos & Villas →</span>
+            </a>
+          </div>
+
+          <!-- Dual Conversion Pillars Navigation -->
+          <div class="mt-6 pt-6 border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm">
+            <span class="text-stone-600 font-medium">
+              Dual Market Access: Looking to buy after selling, or exploring available inventory?
+            </span>
+            <div class="flex items-center gap-3">
+              <a href="/sell-my-home-sebring-fl/" class="font-bold text-[#1b3a5c] underline">
+                Seller Consultation Pillar
+              </a>
+              <span class="text-stone-300">|</span>
+              <a href="/homes-for-sale-sebring-fl/" class="font-bold text-[#1b3a5c] underline">
+                Buyer Search Pillar (All Listings) →
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <p>
+          Alyson Thomas crafts marketing campaigns tailored specifically to the unique buyer profile of your neighborhood to maximize qualified interest upon MLS launch.
+        </p>
+      </section>
+
+      <!-- Section 5: What Not to Do Before Selling Your Sebring Home: Costly Mistakes to Avoid -->
+      <section class="mb-14 space-y-5 text-stone-700 text-base sm:text-lg leading-relaxed font-sans" aria-labelledby="mistakes-heading">
+        <h2 id="mistakes-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          What Not to Do Before Selling Your Sebring Home: Costly Mistakes to Avoid
+        </h2>
+        <p>
+          Steering clear of common pre-listing pitfalls is just as crucial as executing the right marketing plan. In Highlands County, these four mistakes frequently jeopardize seller equity:
+        </p>
+
+        <div class="space-y-4 my-6">
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200">
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c] mb-1.5">
+              1. Don't Over-Improve with Luxury Remodels
+            </h3>
+            <p class="text-sm text-stone-600 leading-relaxed">
+              Gutting kitchens or installing luxury tile rarely recoups 100% of costs in Central Florida. Buyers prefer selecting their own finishes. Instead, invest in cost-effective cosmetic updates: warm neutral paint, modern cabinet pulls, fresh mulch, and power-washed driveways.
+            </p>
+          </div>
+
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200">
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c] mb-1.5">
+              2. Never Conceal Roof Age or Prior Water Leaks
+            </h3>
+            <p class="text-sm text-stone-600 leading-relaxed">
+              Under Florida law (<em>Johnson v. Davis</em>), sellers must disclose known material defects. Buyer insurers require a 4-Point Inspection and Roof Certification. Masking an aging roof leads to collapsed escrows. Disclosing upfront allows us to price strategically or offer closing credits.
+            </p>
+          </div>
+
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200">
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c] mb-1.5">
+              3. Avoid "Testing the Market" with an Inflated Price
+            </h3>
+            <p class="text-sm text-stone-600 leading-relaxed">
+              The first two weeks on MLS generate your highest buyer enthusiasm. Overpricing by 7% to 10% causes serious buyers to bypass the listing. Extended days on market signal distress, leading to low-ball offers. Accurate upfront pricing ignites urgency and multiple bids.
+            </p>
+          </div>
+
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200">
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c] mb-1.5">
+              4. Don't Attend or Hover During Showings
+            </h3>
+            <p class="text-sm text-stone-600 leading-relaxed">
+              When sellers remain during walkthroughs, buyers feel hurried and unable to speak candidly or visualize living there. Secure your pets, step out during showings, and allow the buyer and their agent the space to connect with your home.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 6: Comparing Your Selling Options: Full-Service Realtor vs. Cash Investor vs. FSBO -->
+      <section class="mb-14 space-y-5 text-stone-700 text-base sm:text-lg leading-relaxed font-sans" aria-labelledby="options-heading">
+        <h2 id="options-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Comparing Your Selling Options: Full-Service Realtor vs. Cash Investor vs. FSBO
+        </h2>
+        <p>
+          When you decide to sell your Sebring property, you have three primary paths to market: hiring a full-service real estate specialist, accepting an off-market cash investor offer, or attempting to sell For Sale By Owner (FSBO). Understanding how each option impacts your final take-home net proceeds is essential.
+        </p>
+
+        <!-- Comparison Table -->
+        <div class="overflow-x-auto my-6">
+          <table class="w-full border-collapse bg-white rounded-xl overflow-hidden shadow-sm border border-stone-200 text-left text-xs sm:text-sm">
+            <thead class="bg-[#1b3a5c] text-white">
+              <tr>
+                <th class="p-3.5 sm:p-4 font-serif font-bold">Selling Method</th>
+                <th class="p-3.5 sm:p-4 font-serif font-bold">Net Proceeds</th>
+                <th class="p-3.5 sm:p-4 font-serif font-bold">Typical Timeline</th>
+                <th class="p-3.5 sm:p-4 font-serif font-bold">Seller Effort & Risk</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-200">
+              <tr class="bg-amber-50/50">
+                <td class="p-3.5 sm:p-4 font-bold text-[#1b3a5c]">
+                  Full-Service Realtor (Alyson Thomas)
+                </td>
+                <td class="p-3.5 sm:p-4 text-emerald-800 font-bold">
+                  Highest Net Proceeds (100% fair market value via competing retail buyers)
+                </td>
+                <td class="p-3.5 sm:p-4 text-stone-700">
+                  30–60 Days (Controlled and optimized)
+                </td>
+                <td class="p-3.5 sm:p-4 text-stone-700">
+                  Minimal effort; professional legal protection & full representation
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">
+                  Wholesale Cash Investor / "We Buy Houses"
+                </td>
+                <td class="p-3.5 sm:p-4 text-red-800">
+                  Lowest Net Proceeds (Typically 15%–30% below market value)
+                </td>
+                <td class="p-3.5 sm:p-4 text-stone-700">
+                  7–14 Days (Ultra fast)
+                </td>
+                <td class="p-3.5 sm:p-4 text-stone-700">
+                  Low effort, but sacrifices substantial homeowner equity
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">
+                  For Sale By Owner (FSBO)
+                </td>
+                <td class="p-3.5 sm:p-4 text-amber-900">
+                  Moderate to Low (Statistically sells for 10%–15% less than MLS-listed homes)
+                </td>
+                <td class="p-3.5 sm:p-4 text-stone-700">
+                  60–120+ Days (Limited exposure)
+                </td>
+                <td class="p-3.5 sm:p-4 text-stone-700">
+                  High effort; legal disclosure liability; unqualified buyers
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          While wholesale investors offer fast closings, sellers sacrifice substantial equity. Likewise, FSBO sales miss the 90%+ of out-of-state buyers who tour Sebring homes exclusively through licensed buyer agents.
+        </p>
+        <p>
+          Learn more about our dedicated seller guides:
+        </p>
+        <ul class="space-y-1.5 pl-4 text-sm font-semibold">
+          <li>• Explore our detailed <a href="/fsbo-vs-listing-agent-sebring/" class="text-[#1b3a5c] underline">FSBO vs. Listing Agent Sebring Comparison Guide</a>.</li>
+          <li>• Need a fast resolution? Read our strategies to <a href="/sell-house-fast-sebring-fl/" class="text-[#1b3a5c] underline">Sell Your House Fast in Sebring</a>.</li>
+          <li>• Request an immediate <a href="/free-home-valuation/" class="text-[#1b3a5c] underline">Free Sebring Home Valuation Report</a>.</li>
+        </ul>
+      </section>
+
+      <!-- Section 7: Frequently Asked Questions About Selling a Home in Sebring, FL -->
+      <section class="mb-14" aria-labelledby="faq-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Answers for Homeowners</span>
+          <h2 id="faq-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+            Frequently Asked Questions About Selling a Home in Sebring, FL
+          </h2>
+          <p class="text-sm text-stone-600 mt-1">
+            Expert insights addressing closing costs, pricing methods, timing, and selling strategies:
+          </p>
+        </div>
+
+        <FAQAccordion items={faqAccordionItems} title="" />
+      </section>
+
+      <!-- Bottom Final Conversion Banner -->
+      <section class="bg-stone-50 border border-stone-300 rounded-2xl p-8 sm:p-12 text-center" aria-labelledby="bottom-cta-heading">
+        <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700] block mb-2">Let's Discuss Your Real Estate Goals</span>
+        <h2 id="bottom-cta-heading" class="font-serif text-2xl sm:text-4xl font-bold text-[#1b3a5c] mb-4">
+          Ready to Discover Your Sebring Home's True Value?
+        </h2>
+        <p class="max-w-2xl mx-auto text-stone-700 text-sm sm:text-base leading-relaxed mb-6 font-sans">
+          Whether you are preparing to list this month or simply planning for next season, Alyson Thomas provides the verified market insight, aggressive marketing, and dedicated support you deserve.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button href="/free-home-valuation/" variant="primary" size="lg">
+            Get Your Free Home Valuation →
+          </Button>
+          <Button href="/contact/" variant="outline" size="lg">
+            Contact Alyson Thomas
+          </Button>
+          <a
+            href={`tel:${siteConfig.phone}`}
+            class="inline-flex items-center justify-center px-4 py-3 rounded-md font-bold text-[#1b3a5c] hover:text-[#8A4700] transition-colors text-sm"
+            aria-label={`Call Alyson Thomas directly at ${siteConfig.phoneDisplay}`}
+          >
+            📞 Call {siteConfig.phoneDisplay}
+          </a>
+        </div>
+      </section>
+
+      <!-- Back Link -->
+      <div class="text-center pt-8 border-t border-stone-200 mt-8">
+        <a href="/homes-for-sale-sebring-fl/" class="text-sm font-bold text-[#1b3a5c] hover:underline inline-flex items-center gap-1.5">
+          <span>← Back to All Sebring Homes & Communities</span>
+        </a>
+      </div>
+    </div>
+  </article>
+</PageLayout>

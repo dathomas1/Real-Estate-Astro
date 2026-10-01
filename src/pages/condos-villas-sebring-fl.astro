@@ -1,0 +1,329 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import ListingCard from '@components/sections/ListingCard.astro';
+import Button from '@components/ui/Button.astro';
+import { siteConfig, siteData } from '@data/site';
+import { getCollection } from 'astro:content';
+
+// 1. Fetch relevant listings from Content Collection (villas & condos)
+const allListings = await getCollection('listings');
+const condoVillaListings = allListings.filter(
+  (listing) =>
+    listing.data.city === 'Sebring' &&
+    listing.data.status === 'active' &&
+    (listing.data.sqft < 1600 || listing.data.beds <= 2 || listing.data.neighborhood === "Sun 'N Lake")
+);
+
+// 2. Schema markup: BreadcrumbList + RealEstateAgent (nested)
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${siteConfig.domain}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Homes for Sale in Sebring, FL',
+          item: `${siteConfig.domain}/homes-for-sale-sebring-fl/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: 'Condos & Villas for Sale in Sebring, FL',
+          item: `${siteConfig.domain}/condos-villas-sebring-fl/`,
+        },
+      ],
+    },
+    {
+      '@type': 'RealEstateAgent',
+      '@id': `${siteConfig.domain}/#agent`,
+      name: siteConfig.businessName,
+      url: `${siteConfig.domain}/condos-villas-sebring-fl/`,
+      telephone: siteConfig.phone,
+      image: `${siteConfig.domain}/social-preview-image.png`,
+      priceRange: '$$',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: siteConfig.address.locality,
+        addressRegion: siteConfig.address.region,
+        postalCode: siteConfig.address.postalCode,
+        addressCountry: siteConfig.address.country,
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: siteData.geo.latitude,
+        longitude: siteData.geo.longitude,
+      },
+      areaServed: [
+        { '@type': 'City', name: 'Sebring' },
+        { '@type': 'AdministrativeArea', name: 'Highlands County' },
+      ],
+      parentOrganization: {
+        '@type': 'Organization',
+        name: siteConfig.brokerage,
+        url: siteConfig.domain,
+      },
+    },
+  ],
+};
+---
+
+<PageLayout
+  title="Condos & Villas for Sale in Sebring, FL | Low-Maintenance Living"
+  description="Find condos and attached villas for sale in Sebring, FL. Explore maintenance-free retirement communities, golf villas, and lakeside condos with Alyson Thomas."
+  canonicalUrl={`${siteConfig.domain}/condos-villas-sebring-fl/`}
+  schema={pageSchema}
+>
+  <!-- Breadcrumb Navigation -->
+  <nav class="bg-stone-100 border-b border-stone-200 py-3 px-4 sm:px-6" aria-label="Breadcrumb">
+    <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs sm:text-sm text-stone-600">
+      <a href="/" class="hover:text-[#1b3a5c] hover:underline">Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <a href="/homes-for-sale-sebring-fl/" class="hover:text-[#1b3a5c] hover:underline">Homes for Sale</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <span class="text-stone-900 font-semibold" aria-current="page">Condos & Villas</span>
+    </div>
+  </nav>
+
+  <article class="py-12 sm:py-16 px-4 sm:px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Page Hero Header -->
+      <header class="mb-12">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-4">
+          <span>Highlands County Maintenance-Free Living</span>
+        </div>
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1b3a5c] tracking-tight mb-4 leading-tight">
+          Condos & Villas for Sale in Sebring, FL
+        </h1>
+        <p class="text-xl text-[#8A4700] font-serif italic mb-6">
+          Effortless Lock-and-Leave Living, Fairway Villas, and Lakeside Condominiums
+        </p>
+        <p class="text-base sm:text-lg text-stone-700 leading-relaxed font-sans mb-8">
+          For retirees, seasonal snowbirds, and busy professionals who value their leisure time, condominiums and attached paired villas in Sebring represent the pinnacle of carefree Florida living. Forget about spending hot weekend afternoons mowing grass, cleaning gutters, or repairing irrigation pumps. In a Sebring condo or villa community, your comprehensive association dues handle exterior maintenance, allowing you to spend every day enjoying golf, boating, and sunshine.
+        </p>
+
+        <!-- Quick Facts Pill Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 bg-stone-50 rounded-xl border border-stone-200">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Price Range</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">$140k – $325k</span>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Lifestyle</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">Lock-and-Leave</span>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Typical Dues</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">$250 – $475/mo</span>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Exterior Care</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">100% HOA Covered</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Curated Sample Listings with MLS Disclosure -->
+      <section class="mb-14 bg-stone-50 rounded-2xl p-6 sm:p-8 border border-stone-200" aria-labelledby="sample-listings-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Low-Maintenance Properties</span>
+            <h2 id="sample-listings-heading" class="font-serif text-2xl font-bold text-[#1b3a5c] mt-1">
+              Sample Sebring Condo & Villa Listings
+            </h2>
+          </div>
+          <div class="p-3 bg-amber-50 border border-amber-300 rounded-lg text-xs text-amber-900 max-w-lg">
+            <strong>Inventory Notice:</strong> The property cards displayed below represent sample curated listings illustrating local Sebring condo and villa price points pending direct live MLS/IDX feed integration. Contact Alyson at <a href={`tel:${siteConfig.phone}`} class="font-bold underline">{siteConfig.phoneDisplay}</a> for instantaneous MLS availability.
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {condoVillaListings.map((listing) => (
+            <ListingCard
+              title={`${listing.data.beds} Bed, ${listing.data.baths} Bath in ${listing.data.neighborhood}`}
+              price={listing.data.price}
+              address={listing.data.address}
+              bedrooms={listing.data.beds}
+              bathrooms={listing.data.baths}
+              squareFeet={listing.data.sqft}
+              neighborhood={listing.data.neighborhood}
+              status="Active"
+              slug="/contact/"
+            />
+          ))}
+        </div>
+      </section>
+
+      <!-- Section 1: Attached Villas vs. Traditional Condominiums -->
+      <section class="mb-14 space-y-5 text-stone-700 text-base sm:text-lg leading-relaxed font-sans" aria-labelledby="villas-vs-condos-heading">
+        <h2 id="villas-vs-condos-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Attached Villas vs. Condominiums: Choosing Your Low-Maintenance Style
+        </h2>
+        <p>
+          While the terms are occasionally used interchangeably by home searchers, attached paired villas and traditional condominiums offer different architectural formats and daily living experiences in Highlands County.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+          <div class="p-6 bg-stone-50 rounded-xl border border-stone-200">
+            <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">1. Paired Attached Villas</h3>
+            <p class="text-sm text-stone-600 leading-relaxed mb-3">
+              Villas are single-story residences connected to one adjacent neighbor by a shared party wall. They feel like a traditional single-family home:
+            </p>
+            <ul class="text-xs text-stone-600 space-y-1.5">
+              <li>• <strong>No Upstairs Neighbors:</strong> True ground-level living with zero stairs or elevators.</li>
+              <li>• <strong>Private Attached Garage:</strong> Direct-entry one- or two-car garages plus private driveways.</li>
+              <li>• <strong>Outdoor Lanais:</strong> Screened rear porches and private patios ideal for container gardens or barbecues.</li>
+              <li>• <strong>Pet Friendly:</strong> Many villa associations offer generous pet weight limits compared to multi-story buildings.</li>
+            </ul>
+          </div>
+
+          <div class="p-6 bg-stone-50 rounded-xl border border-stone-200">
+            <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">2. Traditional Condominiums</h3>
+            <p class="text-sm text-stone-600 leading-relaxed mb-3">
+              Condominiums in Sebring are typically two- to four-story garden complexes situated around community pools, golf fairways, or Lake Jackson shorelines:
+            </p>
+            <ul class="text-xs text-stone-600 space-y-1.5">
+              <li>• <strong>Maximum Lock-and-Leave Security:</strong> Shared entryways, exterior building lighting, and upper-floor privacy.</li>
+              <li>• <strong>Waterfront or Fairway Vistas:</strong> Second- and third-floor balconies provide elevated sunset views.</li>
+              <li>• <strong>Comprehensive Insurance Coverage:</strong> The master HOA policy insures the building exterior, roof, and common grounds.</li>
+              <li>• <strong>Lowest Upfront Maintenance:</strong> The association handles roofs, exterior stucco painting, and landscaping.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Premier Sebring Condo & Villa Locations -->
+      <section class="mb-14" aria-labelledby="communities-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Popular Enclaves</span>
+          <h2 id="communities-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+            Top Communities for Condos & Villas in Sebring
+          </h2>
+          <p class="text-sm text-stone-600 mt-1">
+            Sebring features several premier destinations known for meticulously maintained attached properties:
+          </p>
+        </div>
+
+        <div class="space-y-6">
+          <div class="bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-amber-400 transition-colors">
+            <div>
+              <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">
+                <a href="/sebring-neighborhoods/sun-n-lake/" class="hover:underline">
+                  Sun 'N Lake Golf Villas & Manor Homes
+                </a>
+              </h3>
+              <p class="text-sm text-stone-600 leading-relaxed mb-3">
+                Sun 'N Lake features several distinct villa sub-neighborhoods directly bordering the fairways of Deer Run and Turtle Run. These properties range from two-bedroom, two-bath layouts around 1,300 sq ft to expansive three-bedroom golf homes exceeding 1,800 sq ft. Residents enjoy low monthly maintenance, private carports or garages, community pools, and golf cart connectivity to the Island View Restaurant.
+              </p>
+            </div>
+            <div class="pt-3 border-t border-stone-100 flex items-center justify-between">
+              <a href="/sebring-neighborhoods/sun-n-lake/" class="text-xs font-bold text-[#1b3a5c] hover:underline">
+                Explore Sun 'N Lake Real Estate →
+              </a>
+              <span class="text-xs text-stone-500">$175,000 – $265,000</span>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-amber-400 transition-colors">
+            <div>
+              <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">
+                <a href="/sebring-neighborhoods/spring-lake/" class="hover:underline">
+                  Spring Lake Fairway & Eco-Park Villas
+                </a>
+              </h3>
+              <p class="text-sm text-stone-600 leading-relaxed mb-3">
+                Nestled near Lake Istokpoga, Spring Lake offers attractive attached patio homes and fairway villas with manicured grounds, quiet residential streets, community tennis and pickleball, and immediate access to the Spring Lake Golf Club. Ideal for buyers seeking tranquil country-club ambiance at an affordable price point.
+              </p>
+            </div>
+            <div class="pt-3 border-t border-stone-100 flex items-center justify-between">
+              <a href="/sebring-neighborhoods/spring-lake/" class="text-xs font-bold text-[#1b3a5c] hover:underline">
+                Explore Spring Lake Real Estate →
+              </a>
+              <span class="text-xs text-stone-500">$150,000 – $230,000</span>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-amber-400 transition-colors">
+            <div>
+              <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">
+                <a href="/sebring-neighborhoods/lakefront-homes/" class="hover:underline">
+                  Lake Jackson Lakeside Condominiums
+                </a>
+              </h3>
+              <p class="text-sm text-stone-600 leading-relaxed mb-3">
+                Situated along the scenic shores of Lake Jackson, Sebring's lakefront condominiums offer private community boat docks, sparkling swimming pools, and unobstructed sunset vistas over 3,200 acres of freshwater. Perfect for seasonal winter retreats or effortless full-time lakeside living.
+              </p>
+            </div>
+            <div class="pt-3 border-t border-stone-100 flex items-center justify-between">
+              <a href="/sebring-neighborhoods/lakefront-homes/" class="text-xs font-bold text-[#1b3a5c] hover:underline">
+                Explore Lake Jackson Real Estate →
+              </a>
+              <span class="text-xs text-stone-500">$185,000 – $325,000</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Understanding HOA Health & Florida Condo Laws -->
+      <section class="mb-14 space-y-5 text-stone-700 text-base sm:text-lg leading-relaxed font-sans" aria-labelledby="hoa-laws-heading">
+        <h2 id="hoa-laws-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Navigating HOA Financial Health & Florida Condo Regulations
+        </h2>
+        <p>
+          Following Florida's updated condominium legislation (Senate Bills 4-D and 154), evaluating association financial health has become more critical than ever. In multi-story buildings, associations are now required to maintain fully funded reserve accounts for roofs, structural painting, and primary building elements based on Structural Integrity Reserve Studies (SIRS).
+        </p>
+        <p>
+          Fortunately, the vast majority of Sebring's low-maintenance housing stock consists of <strong>single-story paired villas and two-story garden condominiums</strong>, which are largely exempt from the onerous milestone inspections required of high-rise coastal towers. However, reviewing the association's annual budget, reserve funds, and current insurance coverage is still paramount.
+        </p>
+        <p>
+          Alyson Thomas assists buyers by reviewing association estoppel certificates, verifying monthly fee coverage (cable, trash, water, roof reserves, exterior lawn care), and ensuring there are no impending special assessments on the horizon.
+        </p>
+      </section>
+
+      <!-- Section 4: Dual CTA (Valuation + Buyer Showing) -->
+      <section class="mb-14 bg-[#1b3a5c] rounded-2xl p-8 sm:p-12 text-white shadow-xl" aria-labelledby="cta-heading">
+        <div class="max-w-3xl">
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/30 mb-4">
+            Sebring Condo & Villa Advisory
+          </span>
+          <h2 id="cta-heading" class="font-serif text-2xl sm:text-4xl font-bold mb-4">
+            Own a Condo or Villa in Sebring? Find Out What It's Worth
+          </h2>
+          <p class="text-stone-200 text-base sm:text-lg leading-relaxed mb-6 font-sans">
+            Low-maintenance properties in Sebring are in high demand from out-of-state retirees and downsizers. Alyson Thomas provides verified market valuations tailored to your association, floor plan, and recent neighborhood sales.
+          </p>
+
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <Button href="/free-home-valuation/" variant="primary" size="lg">
+              Get Your Free Property Valuation →
+            </Button>
+            <Button href="/contact/" variant="outline" size="lg">
+              Schedule a Villa or Condo Tour
+            </Button>
+            <a
+              href={`tel:${siteConfig.phone}`}
+              class="inline-flex items-center justify-center px-4 py-3 rounded-md font-bold text-amber-300 hover:text-white transition-all text-sm text-center"
+              aria-label={`Call Alyson Thomas directly at ${siteConfig.phoneDisplay}`}
+            >
+              📞 Call {siteConfig.phoneDisplay}
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Back Link -->
+      <div class="text-center pt-6 border-t border-stone-200">
+        <a href="/homes-for-sale-sebring-fl/" class="text-sm font-bold text-[#1b3a5c] hover:underline inline-flex items-center gap-1.5">
+          <span>← Back to All Sebring Homes & Communities</span>
+        </a>
+      </div>
+    </div>
+  </article>
+</PageLayout>

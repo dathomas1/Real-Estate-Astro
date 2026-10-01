@@ -1,0 +1,99 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Card from '@components/ui/Card.astro';
+import Badge from '@components/ui/Badge.astro';
+import { listingPlaceholdersByAddress, defaultListingPlaceholder } from '@data/placeholderImages';
+
+interface Props {
+  title: string;
+  price: number;
+  formattedPrice?: string;
+  address: string;
+  bedrooms: number;
+  bathrooms: number;
+  squareFeet?: number;
+  neighborhood: string;
+  status: 'Active' | 'Pending' | 'Sold';
+  slug?: string;
+  image?: ImageMetadata;
+  imageAlt?: string;
+}
+
+const {
+  title,
+  price,
+  formattedPrice = `$${price.toLocaleString()}`,
+  address,
+  bedrooms,
+  bathrooms,
+  squareFeet,
+  neighborhood,
+  status,
+  slug = '#',
+  image,
+  imageAlt,
+} = Astro.props;
+
+const placeholderData = listingPlaceholdersByAddress[address] || defaultListingPlaceholder;
+const cardImage = image || placeholderData.image;
+const cardAlt = imageAlt || placeholderData.alt;
+
+const badgeVariant = status === 'Active' ? 'success' : status === 'Pending' ? 'warning' : 'neutral';
+---
+
+<Card class="flex flex-col justify-between overflow-hidden p-0 group">
+  <div>
+    <!-- Property Photo Slot with Astro <Image />: Explicit width & height to prevent CLS, loading="lazy" per CRO Section 3.1 -->
+    <div class="relative w-full aspect-[3/2] bg-stone-100 overflow-hidden border-b border-stone-200">
+      <Image
+        src={cardImage}
+        alt={cardAlt}
+        width={600}
+        height={400}
+        loading="lazy"
+        decoding="async"
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+      />
+      <div class="absolute top-3 left-3">
+        <Badge variant={badgeVariant}>{status}</Badge>
+      </div>
+      <div class="absolute bottom-2 right-2 bg-stone-900/80 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded">
+        Local Sample
+      </div>
+    </div>
+
+    <div class="p-5 sm:p-6">
+      <div class="flex justify-between items-baseline mb-2">
+        <span class="font-serif text-2xl font-bold text-[#1b3a5c]">
+          {formattedPrice}
+        </span>
+      </div>
+
+      <h3 class="font-serif text-lg font-bold text-gray-900 mb-1 group-hover:text-amber-700 transition-colors">
+        {title}
+      </h3>
+      <p class="text-xs text-amber-700 font-semibold mb-1.5">
+        {neighborhood}, Sebring FL
+      </p>
+      <p class="text-xs sm:text-sm text-gray-600 mb-4">
+        {address}
+      </p>
+
+      <div class="flex items-center gap-4 text-xs font-bold text-gray-700 pt-3 border-t border-stone-100">
+        <span>🛏 {bedrooms} Beds</span>
+        <span>🚿 {bathrooms} Baths</span>
+        {squareFeet && <span>📐 {squareFeet.toLocaleString()} Sq Ft</span>}
+      </div>
+    </div>
+  </div>
+
+  <div class="p-4 bg-stone-50 border-t border-stone-100 flex items-center justify-between text-xs">
+    <a href={slug} class="font-bold text-[#1b3a5c] hover:underline">
+      View Listing Details →
+    </a>
+    <a href="/contact/" class="text-amber-700 font-semibold hover:underline">
+      Schedule Showing
+    </a>
+  </div>
+</Card>

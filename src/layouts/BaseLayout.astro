@@ -1,0 +1,128 @@
+---
+import '@styles/global.css';
+import SkipLink from '@components/layout/SkipLink.astro';
+import Header from '@components/layout/Header.astro';
+import Footer from '@components/layout/Footer.astro';
+import MobileStickyBar from '@components/layout/MobileStickyBar.astro';
+import { siteConfig, siteData } from '@data/site';
+import { seoDefaults } from '@data/seo-defaults';
+import { ClientRouter } from 'astro:transitions';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  canonicalUrl?: string;
+  canonical?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  schema?: Record<string, any> | Array<Record<string, any>>;
+  noindex?: boolean;
+}
+
+const {
+  title = seoDefaults.title,
+  description = seoDefaults.description,
+  canonicalUrl,
+  canonical,
+  image = seoDefaults.defaultImage,
+  type = 'website',
+  schema,
+  noindex = false,
+} = Astro.props;
+
+// Compute self-referencing canonical URL from Astro.url and site config domain
+const canonicalPath = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
+const computedCanonical = canonicalUrl || canonical || new URL(canonicalPath, siteConfig.domain).href;
+
+const pageTitle = title.includes('Alyson Thomas') ? title : `${title} | Alyson Thomas Real Estate Sebring FL`;
+const fullImageUrl = new URL(image, Astro.site || siteConfig.domain).href;
+
+// Canonical LocalBusiness/RealEstateAgent Schema
+const realEstateAgentSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'RealEstateAgent',
+  name: siteConfig.businessName,
+  description: description,
+  url: siteConfig.domain,
+  telephone: siteConfig.phone,
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: siteConfig.address.locality,
+    addressRegion: siteConfig.address.region,
+    postalCode: siteConfig.address.postalCode,
+    addressCountry: siteConfig.address.country,
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: siteData.geo.latitude,
+    longitude: siteData.geo.longitude,
+  },
+  areaServed: siteConfig.serviceAreas.map((area) => ({
+    '@type': 'City',
+    name: area,
+  })),
+  priceRange: '$$',
+};
+---
+
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <link rel="canonical" href={computedCanonical} />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={computedCanonical} />
+    <meta property="og:type" content={type} />
+    <meta property="og:image" content={fullImageUrl} />
+    <meta property="og:site_name" content={siteConfig.businessName} />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={fullImageUrl} />
+
+    <!-- Google Web Fonts: Merriweather + Source Sans 3 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Structured Data -->
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(schema || realEstateAgentSchema)}
+    />
+
+    <!-- Astro Client Router for Transitions -->
+    <ClientRouter />
+  </head>
+  <body class="min-h-screen flex flex-col bg-[#faf7f2] text-stone-900 overflow-x-hidden">
+    <!-- Accessible Skip to Main Content Link -->
+    <SkipLink />
+
+    <!-- Persistent Global Header -->
+    <Header />
+
+    <!-- Main Content Landmark Region -->
+    <main id="main-content" class="flex-1 w-full focus:outline-none" tabindex="-1">
+      <slot />
+    </main>
+
+    <!-- Mobile-Only Fixed Bottom Conversion Bar -->
+    <MobileStickyBar />
+
+    <!-- Global Footer with 4-Column Navigation & Canonical NAP -->
+    <Footer />
+  </body>
+</html>

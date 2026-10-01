@@ -1,0 +1,6 @@
+{
+  "name": "alyson-thomas-realty",
+  "description": "Alyson Thomas of Premier Plus Realty - Seller-focused real estate agent serving Sebring, Avon Park, Lake Placid, and Highlands County, Florida.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

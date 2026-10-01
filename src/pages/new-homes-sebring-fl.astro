@@ -1,0 +1,312 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import ListingCard from '@components/sections/ListingCard.astro';
+import Button from '@components/ui/Button.astro';
+import { siteConfig, siteData } from '@data/site';
+import { getCollection } from 'astro:content';
+
+// 1. Fetch relevant listings from Content Collection (new construction & modern homes)
+const allListings = await getCollection('listings');
+const newHomeListings = allListings.filter(
+  (listing) =>
+    listing.data.city === 'Sebring' &&
+    listing.data.status === 'active' &&
+    (listing.data.neighborhood === 'Spring Lake' || listing.data.neighborhood === "Sun 'N Lake")
+);
+
+// 2. Schema markup: BreadcrumbList + RealEstateAgent (nested)
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${siteConfig.domain}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Homes for Sale in Sebring, FL',
+          item: `${siteConfig.domain}/homes-for-sale-sebring-fl/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: 'New Homes for Sale in Sebring, FL',
+          item: `${siteConfig.domain}/new-homes-sebring-fl/`,
+        },
+      ],
+    },
+    {
+      '@type': 'RealEstateAgent',
+      '@id': `${siteConfig.domain}/#agent`,
+      name: siteConfig.businessName,
+      url: `${siteConfig.domain}/new-homes-sebring-fl/`,
+      telephone: siteConfig.phone,
+      image: `${siteConfig.domain}/social-preview-image.png`,
+      priceRange: '$$$',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: siteConfig.address.locality,
+        addressRegion: siteConfig.address.region,
+        postalCode: siteConfig.address.postalCode,
+        addressCountry: siteConfig.address.country,
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: siteData.geo.latitude,
+        longitude: siteData.geo.longitude,
+      },
+      areaServed: [
+        { '@type': 'City', name: 'Sebring' },
+        { '@type': 'AdministrativeArea', name: 'Highlands County' },
+      ],
+      parentOrganization: {
+        '@type': 'Organization',
+        name: siteConfig.brokerage,
+        url: siteConfig.domain,
+      },
+    },
+  ],
+};
+---
+
+<PageLayout
+  title="New Homes for Sale in Sebring, FL | New Construction Real Estate"
+  description="Find new homes for sale and new construction in Sebring, FL. Explore modern floor plans, builder warranties, and custom construction with Alyson Thomas."
+  canonicalUrl={`${siteConfig.domain}/new-homes-sebring-fl/`}
+  schema={pageSchema}
+>
+  <!-- Breadcrumb Navigation -->
+  <nav class="bg-stone-100 border-b border-stone-200 py-3 px-4 sm:px-6" aria-label="Breadcrumb">
+    <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs sm:text-sm text-stone-600">
+      <a href="/" class="hover:text-[#1b3a5c] hover:underline">Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <a href="/homes-for-sale-sebring-fl/" class="hover:text-[#1b3a5c] hover:underline">Homes for Sale</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <span class="text-stone-900 font-semibold" aria-current="page">New Homes for Sale</span>
+    </div>
+  </nav>
+
+  <article class="py-12 sm:py-16 px-4 sm:px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Page Hero Header -->
+      <header class="mb-12">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-4">
+          <span>Highlands County New Construction</span>
+        </div>
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1b3a5c] tracking-tight mb-4 leading-tight">
+          New Homes for Sale in Sebring, FL
+        </h1>
+        <p class="text-xl text-[#8A4700] font-serif italic mb-6">
+          Modern Energy-Efficient Floor Plans, Builder Warranties, and Custom Builds
+        </p>
+        <p class="text-base sm:text-lg text-stone-700 leading-relaxed font-sans mb-8">
+          The demand for new construction homes in Sebring and Highlands County has reached historic highs. Discerning homebuyers are increasingly choosing new builds to secure modern open-concept layouts, state-of-the-art hurricane resilience, dramatic insurance savings, and the multi-year peace of mind that only brand-new mechanicals and structural builder warranties can provide.
+        </p>
+
+        <!-- Quick Facts Pill Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 bg-stone-50 rounded-xl border border-stone-200">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Price Range</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">$275k – $550k+</span>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Construction</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">CBS & Impact Glass</span>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Warranty</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">1-2-10 Year Builder</span>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Insurance Cost</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">Up to 40% Lower</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Curated Sample Listings with MLS Disclosure -->
+      <section class="mb-14 bg-stone-50 rounded-2xl p-6 sm:p-8 border border-stone-200" aria-labelledby="sample-listings-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Featured Construction</span>
+            <h2 id="sample-listings-heading" class="font-serif text-2xl font-bold text-[#1b3a5c] mt-1">
+              Sample Sebring New Home Listings
+            </h2>
+          </div>
+          <div class="p-3 bg-amber-50 border border-amber-300 rounded-lg text-xs text-amber-900 max-w-lg">
+            <strong>Inventory Notice:</strong> The property cards displayed below represent sample curated listings illustrating local Sebring new construction inventory pending direct live MLS/IDX feed integration. Contact Alyson at <a href={`tel:${siteConfig.phone}`} class="font-bold underline">{siteConfig.phoneDisplay}</a> for instantaneous MLS availability.
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {newHomeListings.map((listing) => (
+            <ListingCard
+              title={`${listing.data.beds} Bed, ${listing.data.baths} Bath in ${listing.data.neighborhood}`}
+              price={listing.data.price}
+              address={listing.data.address}
+              bedrooms={listing.data.beds}
+              bathrooms={listing.data.baths}
+              squareFeet={listing.data.sqft}
+              neighborhood={listing.data.neighborhood}
+              status="Active"
+              slug="/contact/"
+            />
+          ))}
+        </div>
+      </section>
+
+      <!-- Section 1: The New Construction Advantage in Florida -->
+      <section class="mb-14 space-y-5 text-stone-700 text-base sm:text-lg leading-relaxed font-sans" aria-labelledby="advantages-heading">
+        <h2 id="advantages-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          The New Construction Advantage: Insurance, Efficiency & Modern Building Codes
+        </h2>
+        <p>
+          In today's Florida real estate market, purchasing a newly constructed home is often the most financially prudent choice a buyer can make. Under current Florida Building Code mandates, new homes built in Sebring are constructed using reinforced concrete block (CBS), engineered hurricane roof tie-down trusses, and impact-resistant low-E thermal windows and doors.
+        </p>
+        <p>
+          These structural advancements yield significant financial dividends:
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+          <div class="p-6 bg-stone-50 rounded-xl border border-stone-200">
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c] mb-2">Drastic Homeowners Insurance Savings</h3>
+            <p class="text-sm text-stone-600 leading-relaxed">
+              Because new homes comply with all modern wind mitigation standards and feature brand-new roofs, insurance underwriters offer top-tier rating discounts. Homeowners in new construction often pay 30% to 50% less in annual insurance premiums compared to 1980s or 1990s resale homes.
+            </p>
+          </div>
+          <div class="p-6 bg-stone-50 rounded-xl border border-stone-200">
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c] mb-2">Cutting-Edge Energy Efficiency</h3>
+            <p class="text-sm text-stone-600 leading-relaxed">
+              High-SEER central air conditioning systems, spray foam or advanced blown-in attic insulation, and programmable smart thermostats keep summer cooling bills remarkably modest—even through peak July and August Central Florida temperatures.
+            </p>
+          </div>
+        </div>
+        <p>
+          Additionally, new homes are covered by standard 1-2-10 year builder warranties: 1 year of comprehensive workmanship coverage, 2 years of mechanical/electrical systems coverage, and 10 full years of major structural defect protection. This eliminates the unexpected expense of replacing aging air conditioning compressors, water heaters, or repairing failed plumbing lines during your early retirement years.
+        </p>
+        <p>
+          Beyond mechanical resilience, today's architectural standards emphasize high 9-to-10-foot ceilings, recessed LED lighting packages, open culinary islands with solid quartz or granite countertops, soft-close shaker cabinetry, and luxury vinyl plank (LVP) flooring that stands up to pets, sand, and Florida pool humidity.
+        </p>
+      </section>
+
+      <!-- Section 2: Where to Build or Buy New Homes in Sebring -->
+      <section class="mb-14" aria-labelledby="communities-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Growth Corridors</span>
+          <h2 id="communities-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+            Where to Find New Construction in Sebring
+          </h2>
+          <p class="text-sm text-stone-600 mt-1">
+            New residential construction in Sebring follows two primary pathways: master-planned subdivisions and scattered-lot custom construction:
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-amber-400 transition-colors">
+            <div>
+              <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">
+                <a href="/sebring-neighborhoods/sun-n-lake/" class="hover:underline">
+                  Sun 'N Lake New Construction
+                </a>
+              </h3>
+              <p class="text-xs text-stone-600 leading-relaxed mb-4">
+                Sebring's premier destination for new custom and semi-custom golf homes. Regional and custom builders actively build on vacant fairway lots, offering contemporary open-concept floor plans, three-car garages, and custom screened pool lanais moments from AdventHealth Sebring.
+              </p>
+              <ul class="text-xs text-stone-600 space-y-1 mb-4">
+                <li>• <strong>Typical Pricing:</strong> $320,000 – $575,000+</li>
+                <li>• <strong>Lot Settings:</strong> Fairway views, quiet cul-de-sacs, natural preserve lots</li>
+              </ul>
+            </div>
+            <a href="/sebring-neighborhoods/sun-n-lake/" class="text-xs font-bold text-[#1b3a5c] hover:underline">
+              Explore Sun 'N Lake Real Estate →
+            </a>
+          </div>
+
+          <div class="bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-amber-400 transition-colors">
+            <div>
+              <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">
+                <a href="/sebring-neighborhoods/spring-lake/" class="hover:underline">
+                  Spring Lake & Scattered Lots
+                </a>
+              </h3>
+              <p class="text-xs text-stone-600 leading-relaxed mb-4">
+                For buyers desiring larger acreage or homes without restrictive HOA covenants, Highlands County offers hundreds of affordable platted building parcels. Local builders offer turnkey packages on scattered residential sites across Spring Lake, Sebring Hills, and orange grove settings.
+              </p>
+              <ul class="text-xs text-stone-600 space-y-1 mb-4">
+                <li>• <strong>Typical Pricing:</strong> $265,000 – $410,000</li>
+                <li>• <strong>Lot Settings:</strong> Quarter-acre to full-acre parcels, boat and RV friendly</li>
+              </ul>
+            </div>
+            <a href="/sebring-neighborhoods/spring-lake/" class="text-xs font-bold text-[#1b3a5c] hover:underline">
+              Explore Spring Lake Real Estate →
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Why You Need an Independent Agent for New Construction -->
+      <section class="mb-14 space-y-5 text-stone-700 text-base sm:text-lg leading-relaxed font-sans" aria-labelledby="representation-heading">
+        <h2 id="representation-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Why You Need Independent Buyer Representation for New Construction
+        </h2>
+        <p>
+          When you walk into a builder's model home or sales office, the friendly on-site sales representative will greet you warmly and guide you through the property. However, it is essential to understand that <strong>the builder's sales agent represents the builder exclusively</strong>. Their legal fiduciary duty is to maximize the builder's profit and enforce builder-favorable contract terms.
+        </p>
+        <p>
+          Having Alyson Thomas represent you as your independent buyer's agent costs you nothing—builder commissions are factored into construction overhead regardless—yet provides indispensable protections:
+        </p>
+        <ul class="space-y-2 pl-4 text-sm sm:text-base">
+          <li>• <strong>Contract Negotiation:</strong> Negotiating lot premiums, structural upgrades, closing cost credits, and builder mortgage incentives on your behalf.</li>
+          <li>• <strong>Phase Inspections:</strong> Arranging independent third-party inspections at critical stages: pre-pour foundation, pre-drywall framing, and final pre-closing walk-through.</li>
+          <li>• <strong>Punch List Accountability:</strong> Ensuring that every detail, finish, and cosmetic item is fully resolved before you sign closing documents and release funds.</li>
+        </ul>
+        <p class="text-xs sm:text-sm font-semibold text-amber-900 bg-amber-50 p-4 rounded-lg border border-amber-300">
+          <strong>Important Tip:</strong> Always contact Alyson Thomas before visiting a builder model center or registering online so your independent representation is officially protected from day one.
+        </p>
+      </section>
+
+      <!-- Section 4: Dual CTA (Valuation + New Build Consultation) -->
+      <section class="mb-14 bg-[#1b3a5c] rounded-2xl p-8 sm:p-12 text-white shadow-xl" aria-labelledby="cta-heading">
+        <div class="max-w-3xl">
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/30 mb-4">
+            New Home Advisory & Builder Representation
+          </span>
+          <h2 id="cta-heading" class="font-serif text-2xl sm:text-4xl font-bold mb-4">
+            Considering a New Construction Home in Sebring?
+          </h2>
+          <p class="text-stone-200 text-base sm:text-lg leading-relaxed mb-6 font-sans">
+            Whether you want to build on your own lot or purchase a move-in ready spec home, partner with Alyson Thomas for independent advocacy, builder price negotiations, and complete peace of mind.
+          </p>
+
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <Button href="/contact/" variant="primary" size="lg">
+              Book a New Construction Consultation →
+            </Button>
+            <Button href="/free-home-valuation/" variant="outline" size="lg">
+              Selling Existing Home? Get Valuation
+            </Button>
+            <a
+              href={`tel:${siteConfig.phone}`}
+              class="inline-flex items-center justify-center px-4 py-3 rounded-md font-bold text-amber-300 hover:text-white transition-all text-sm text-center"
+              aria-label={`Call Alyson Thomas directly at ${siteConfig.phoneDisplay}`}
+            >
+              📞 Call {siteConfig.phoneDisplay}
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Back Link -->
+      <div class="text-center pt-6 border-t border-stone-200">
+        <a href="/homes-for-sale-sebring-fl/" class="text-sm font-bold text-[#1b3a5c] hover:underline inline-flex items-center gap-1.5">
+          <span>← Back to All Sebring Homes & Communities</span>
+        </a>
+      </div>
+    </div>
+  </article>
+</PageLayout>

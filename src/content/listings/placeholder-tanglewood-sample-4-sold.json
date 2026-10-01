@@ -1,0 +1,15 @@
+{
+  "address": "321 Orange Blossom Blvd",
+  "neighborhood": "Tanglewood",
+  "city": "Sebring",
+  "price": 210000,
+  "beds": 2,
+  "baths": 2,
+  "sqft": 1560,
+  "status": "sold",
+  "daysOnMarket": 11,
+  "saleToListRatio": 1.02,
+  "photo": "/social-preview-image.png",
+  "description": "[PLACEHOLDER LISTING — SAMPLE DATA ONLY] Recently sold Tanglewood home. Alyson Thomas represented the sellers, generating multiple competing offers within the first two weeks on market and closing at 102% of list price.",
+  "isPlaceholder": true
+}

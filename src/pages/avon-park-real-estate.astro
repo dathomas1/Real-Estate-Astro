@@ -1,0 +1,472 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import FAQAccordion from '@components/sections/FAQAccordion.astro';
+import Button from '@components/ui/Button.astro';
+import { siteConfig, siteData } from '@data/site';
+import { getCollection } from 'astro:content';
+
+// 1. Fetch Avon Park FAQs from content collection
+const allFaqs = await getCollection('faq');
+const avonParkQuestions = [
+  'What is the cost of living in Avon Park, FL?',
+  'How does buying real estate in Avon Park compare to Sebring?',
+  'What should you not do before selling your house in Sebring, FL?',
+];
+
+const selectedFaqs = allFaqs.filter((f) =>
+  avonParkQuestions.some(
+    (q) => f.data.question.toLowerCase().includes(q.toLowerCase()) ||
+           q.toLowerCase().includes(f.data.question.toLowerCase())
+  )
+);
+
+// Supplement with additional Avon Park specific FAQs if needed
+const avonParkFaqList = [
+  ...selectedFaqs.map((f) => ({ question: f.data.question, answer: f.data.answer })),
+  {
+    question: 'What are the premier lakes for waterfront homes in Avon Park?',
+    answer:
+      'Lake Lotela is Avon Park\'s crown jewel—an 800+ acre spring-fed lake renowned for pristine water clarity, waterskiing, and premier residences bordering Pinecrest Golf Club. Lake Verona sits adjacent to historic downtown offering scenic lakeside parks, while Lake Byrd and Lake Glenada feature established single-family homes with private docks and tranquil fishing waters.',
+  },
+  {
+    question: 'Can I sell an older Avon Park home quickly in as-is condition?',
+    answer:
+      'Yes. Many historic downtown homes or mid-century residences in Avon Park have older roofs or original mechanicals. By listing on the open MLS with comprehensive Florida disclosures and strategic pricing, Alyson Thomas markets directly to buyers and investors using conventional renovation financing or cash, securing true market value without paying steep 25% to 35% wholesale discounts.',
+  },
+];
+
+// 2. Structured Data: RealEstateAgent (areaServed: Avon Park) + Service + BreadcrumbList + FAQPage
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${siteConfig.domain}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Highlands County Communities',
+          item: `${siteConfig.domain}/sebring-neighborhoods/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: 'Avon Park Real Estate',
+          item: `${siteConfig.domain}/avon-park-real-estate/`,
+        },
+      ],
+    },
+    {
+      '@type': 'RealEstateAgent',
+      '@id': `${siteConfig.domain}/#agent-avon-park`,
+      name: siteConfig.businessName,
+      url: `${siteConfig.domain}/avon-park-real-estate/`,
+      telephone: siteConfig.phone,
+      image: `${siteConfig.domain}/social-preview-image.png`,
+      priceRange: '$$',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: siteConfig.address.locality,
+        addressRegion: siteConfig.address.region,
+        postalCode: siteConfig.address.postalCode,
+        addressCountry: siteConfig.address.country,
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: siteData.geo.latitude,
+        longitude: siteData.geo.longitude,
+      },
+      areaServed: {
+        '@type': 'City',
+        name: 'Avon Park',
+        sameAs: 'https://en.wikipedia.org/wiki/Avon_Park,_Florida',
+      },
+      parentOrganization: {
+        '@type': 'Organization',
+        name: siteConfig.brokerage,
+        url: siteConfig.domain,
+      },
+    },
+    {
+      '@type': 'Service',
+      '@id': `${siteConfig.domain}/avon-park-real-estate/#service`,
+      name: 'Avon Park Real Estate Listing & Buyer Representation',
+      serviceType: 'Residential & Rural Real Estate Services',
+      description: 'Full-service real estate sales, accurate property valuations, and tailored marketing for homes, lakefront estates, and acreage in Avon Park, Florida.',
+      provider: {
+        '@id': `${siteConfig.domain}/#agent-avon-park`,
+      },
+      areaServed: {
+        '@type': 'City',
+        name: 'Avon Park',
+      },
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: avonParkFaqList.map((f) => ({
+        '@type': 'Question',
+        name: f.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: f.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<PageLayout
+  title="Avon Park Real Estate & Homes for Sale | Market Guide & Valuation"
+  description="Explore Avon Park, FL real estate: historic downtown charm, Lake Lotela waterfront estates, South Florida State College proximity, and local market trends."
+  canonicalUrl={`${siteConfig.domain}/avon-park-real-estate/`}
+  schema={pageSchema}
+>
+  <!-- Breadcrumb Navigation -->
+  <nav class="bg-stone-100 border-b border-stone-200 py-3 px-4 sm:px-6" aria-label="Breadcrumb">
+    <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs sm:text-sm text-stone-600">
+      <a href="/" class="hover:text-[#1b3a5c] hover:underline">Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <a href="/sebring-neighborhoods/" class="hover:text-[#1b3a5c] hover:underline">Communities</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <span class="text-stone-900 font-semibold" aria-current="page">Avon Park Real Estate</span>
+    </div>
+  </nav>
+
+  <article class="py-12 sm:py-16 px-4 sm:px-6 font-sans">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header -->
+      <header class="mb-10">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-900 border border-emerald-300 mb-3">
+          Highlands County Community Guide
+        </span>
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1b3a5c] tracking-tight mb-5 leading-tight">
+          Avon Park, FL Real Estate: "The City of Charm" Market Guide
+        </h1>
+        <p class="text-lg sm:text-xl text-stone-700 leading-relaxed">
+          Known affectionately throughout Central Florida as "The City of Charm," Avon Park is Highlands County’s oldest incorporated municipality, founded in 1886 and chartered in 1891. Situated just 10 miles north of Sebring along the US-27 ridge, Avon Park blends historic Old Florida architecture, deep freshwater lakes, active agricultural heritage, and a relaxed small-town pace.
+        </p>
+        <p class="text-base text-stone-600 leading-relaxed mt-4">
+          For homebuyers and sellers, Avon Park presents an appealing profile: median home prices sit approximately 10% to 15% below neighboring Sebring, lot sizes are frequently more generous, and its northern location shaves 15 to 20 minutes off the commute to Winter Haven, Lakeland, and the Greater Orlando metroplex.
+        </p>
+      </header>
+
+      <!-- Market Snapshot: Avon Park Data Placeholders -->
+      <section class="mb-14 p-6 sm:p-8 bg-stone-50 rounded-2xl border border-stone-200 shadow-sm" aria-labelledby="market-snapshot-heading">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-200 pb-4 mb-6">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Local Market Intelligence</span>
+            <h2 id="market-snapshot-heading" class="font-serif text-2xl font-bold text-[#1b3a5c] mt-0.5">
+              Avon Park Real Estate Market Snapshot
+            </h2>
+          </div>
+          <span class="text-xs text-stone-500 font-medium">
+            Highlands County MLS Data • Updated Monthly
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+          <div class="p-4 bg-white rounded-xl border border-stone-200 text-center shadow-xs">
+            <span class="block text-xs uppercase tracking-wider text-stone-500 font-semibold mb-1">Median Sale Price</span>
+            <span class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c]">$236,500</span>
+            <span class="block text-[11px] text-stone-500 mt-1">[MLS Benchmark Metric]</span>
+          </div>
+
+          <div class="p-4 bg-white rounded-xl border border-stone-200 text-center shadow-xs">
+            <span class="block text-xs uppercase tracking-wider text-stone-500 font-semibold mb-1">Price Per Sq. Ft.</span>
+            <span class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c]">$154</span>
+            <span class="block text-[11px] text-stone-500 mt-1">[Single-Family Median]</span>
+          </div>
+
+          <div class="p-4 bg-white rounded-xl border border-stone-200 text-center shadow-xs">
+            <span class="block text-xs uppercase tracking-wider text-stone-500 font-semibold mb-1">Days on Market</span>
+            <span class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c]">52 Days</span>
+            <span class="block text-[11px] text-stone-500 mt-1">[Listing to Contract]</span>
+          </div>
+
+          <div class="p-4 bg-white rounded-xl border border-stone-200 text-center shadow-xs">
+            <span class="block text-xs uppercase tracking-wider text-stone-500 font-semibold mb-1">Active Inventory</span>
+            <span class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c]">~115 Homes</span>
+            <span class="block text-[11px] text-stone-500 mt-1">[Residential Listings]</span>
+          </div>
+        </div>
+
+        <p class="text-xs text-stone-500 italic mt-5">
+          * Market statistics represent rolling median single-family residential transactions across Avon Park zip code 33825. Values adjust seasonally with winter resident demand. Contact Alyson Thomas for a real-time micro-market comparative analysis.
+        </p>
+      </section>
+
+      <!-- Section 1: Distinctive Avon Park Community Profile -->
+      <section class="mb-14 space-y-6 text-stone-700 leading-relaxed" aria-labelledby="community-profile-heading">
+        <h2 id="community-profile-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Avon Park Community Profile: Culture, Heritage & Lifestyle
+        </h2>
+        <p>
+          Unlike modern planned bedroom communities, Avon Park has a deep, authentic civic soul rooted in early Florida railroad expansion, citrus agriculture, and military aviation. Five distinctive community pillars define daily life in Avon Park:
+        </p>
+
+        <div class="space-y-6 my-6">
+          <!-- SFSC -->
+          <div class="p-6 bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col sm:flex-row gap-5">
+            <div class="w-12 h-12 rounded-xl bg-blue-50 text-[#1b3a5c] flex items-center justify-center text-2xl flex-shrink-0">
+              🎓
+            </div>
+            <div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold text-[#1b3a5c] mb-2">
+                South Florida State College (SFSC) Highlands Campus
+              </h3>
+              <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                Avon Park is home to the main 147-acre campus of South Florida State College, serving Highlands, Hardee, and DeSoto counties. SFSC is the academic, healthcare training, and cultural epicenter of the region, featuring highly regarded nursing and applied technology programs. The campus also houses the 1,460-seat <strong>Alan Jay Wildstein Center for the Performing Arts</strong>—bringing touring Broadway musicals, symphony concerts, and celebrity performers to Highlands County—along with the <strong>Museum of Florida Art and Culture (MOFAC)</strong>, celebrating regional visual artists.
+              </p>
+            </div>
+          </div>
+
+          <!-- Historic Downtown & Mile-Long Mall -->
+          <div class="p-6 bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col sm:flex-row gap-5">
+            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-900 flex items-center justify-center text-2xl flex-shrink-0">
+              🌴
+            </div>
+            <div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold text-[#1b3a5c] mb-2">
+                Historic Downtown & Main Street's "Mile-Long Mall"
+              </h3>
+              <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                Avon Park’s Main Street is famous for its centerpiece "Mile-Long Mall"—a 100-foot-wide landscaped park promenade running down the center of the avenue for a full mile. Shaded by mature cabbage palms, flowering jacarandas, and oak canopies, the Mall provides a peaceful walking path linking local diners, bakery shops, antique emporiums, and the historic 1926 Seaboard Air Line Depot Museum. The district hosts vibrant community parades, holiday light displays, and farmers markets throughout the winter season.
+              </p>
+            </div>
+          </div>
+
+          <!-- Jacaranda Hotel -->
+          <div class="p-6 bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col sm:flex-row gap-5">
+            <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-900 flex items-center justify-center text-2xl flex-shrink-0">
+              🏨
+            </div>
+            <div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold text-[#1b3a5c] mb-2">
+                The Historic Jacaranda Hotel (1926 Landmark)
+              </h3>
+              <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                Dominating Main Street since 1926, the historic Jacaranda Hotel is a magnificent Mediterranean Revival landmark affectionately known as "The Grand Dame of Highlands County." Operating continuously for nearly a century, the hotel once welcomed spring training baseball legend Babe Ruth and Hollywood icons Clark Gable and Bette Davis. Today, its elegant dining room, grand fireplace parlor, and famous Sunday grand buffets draw visitors from across South-Central Florida.
+              </p>
+            </div>
+          </div>
+
+          <!-- Lake Verona -->
+          <div class="p-6 bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col sm:flex-row gap-5">
+            <div class="w-12 h-12 rounded-xl bg-cyan-50 text-cyan-900 flex items-center justify-center text-2xl flex-shrink-0">
+              ⛵
+            </div>
+            <div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold text-[#1b3a5c] mb-2">
+                Lake Verona & Lakeside Recreation
+              </h3>
+              <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                Nestled just two blocks south of Main Street, Lake Verona is a picturesque 90-acre circular sinkhole lake bordered by Verona Park. The lake offers paved waterfront exercise loops, covered picnic pavilions, a public boat launch, and excellent freshwater bass fishing. Along its banks, historic 1920s craftsman bungalows and mid-century homes enjoy calm water breezes within walking distance of downtown cafes.
+              </p>
+            </div>
+          </div>
+
+          <!-- Air Force Range -->
+          <div class="p-6 bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col sm:flex-row gap-5">
+            <div class="w-12 h-12 rounded-xl bg-stone-100 text-stone-800 flex items-center justify-center text-2xl flex-shrink-0">
+              ✈️
+            </div>
+            <div>
+              <h3 class="font-serif text-lg sm:text-xl font-bold text-[#1b3a5c] mb-2">
+                Avon Park Air Force Range: History, Economics & Conservation
+              </h3>
+              <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                Stretching east of the city toward the Kissimmee River basin lies the <strong>Avon Park Air Force Range (APAFR)</strong>, spanning over 106,000 acres across Highlands and Polk counties. As the largest Department of Defense training range east of the Mississippi, APAFR plays a vital role in national defense readiness and serves as an economic engine supporting local civilian defense contractors and service personnel. Through an innovative partnership with the Florida Fish and Wildlife Conservation Commission (FWC), over 82,000 acres of the range are open to the public for world-class regulated hunting, primitive camping, hiking, and birdwatching in pristine pine flatwoods.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Avon Park Housing Sectors & Neighborhoods -->
+      <section class="mb-14 space-y-6 text-stone-700 leading-relaxed" aria-labelledby="housing-sectors-heading">
+        <h2 id="housing-sectors-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Avon Park Housing Sectors: Lakes, Fairways & Country Living
+        </h2>
+        <p>
+          Avon Park’s real estate inventory is remarkably diverse, catering to retirees seeking golf villas, families wanting historic neighborhoods near schools, and buyers seeking equestrian acreage:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200">
+            <h3 class="font-serif text-base font-bold text-[#1b3a5c] mb-2">Lake Lotela Waterfront & Golf</h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Lake Lotela is Avon Park’s premier watersports lake (800+ acres). Custom homes along its shoreline boast private boathouses, white sandy beaches, and golf course vistas from adjacent <strong>Pinecrest Golf Club</strong>, one of Florida’s historic Donald Ross-designed championship layouts.
+            </p>
+          </div>
+
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200">
+            <h3 class="font-serif text-base font-bold text-[#1b3a5c] mb-2">55+ Golf & Lake Communities</h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Neighborhoods like <strong>Crystal Lake Club</strong> and <strong>River Greens</strong> offer affordable active-adult living. Residents enjoy golf clubhouses, heated swimming pools, tennis courts, and private access to pristine water bodies with modest HOA fees.
+            </p>
+          </div>
+
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200">
+            <h3 class="font-serif text-base font-bold text-[#1b3a5c] mb-2">Rural Acreage & Ranchettes</h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              East of US-27 and along SR-64, Avon Park features 2- to 20-acre parcels ideal for horse lovers, hobby farms, or agricultural outbuildings. These unrestricted parcels offer seclusion and freedom without municipal deed restrictions.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Cost of Living Analysis -->
+      <section class="mb-14 space-y-5 text-stone-700 leading-relaxed" aria-labelledby="cost-of-living-heading">
+        <h2 id="cost-of-living-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Cost of Living in Avon Park, FL: Exceptional Central Florida Affordability
+        </h2>
+        <p>
+          One of Avon Park’s most compelling advantages is its cost of living. Overall living expenses in Avon Park sit roughly <strong>15% to 18% below the U.S. national average</strong> and nearly <strong>10% below the Florida statewide average</strong>.
+        </p>
+        <div class="overflow-x-auto my-6">
+          <table class="w-full text-xs sm:text-sm bg-white rounded-xl border border-stone-200 overflow-hidden text-left">
+            <thead class="bg-[#1b3a5c] text-white">
+              <tr>
+                <th class="p-3.5 sm:p-4 font-serif font-bold">Cost Factor</th>
+                <th class="p-3.5 sm:p-4 font-serif font-bold">Avon Park, FL</th>
+                <th class="p-3.5 sm:p-4 font-serif font-bold">Sebring, FL</th>
+                <th class="p-3.5 sm:p-4 font-serif font-bold">Florida State Average</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-200">
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">Median Home Price</td>
+                <td class="p-3.5 sm:p-4 text-emerald-800 font-bold">$236,500</td>
+                <td class="p-3.5 sm:p-4 text-stone-700">$265,000</td>
+                <td class="p-3.5 sm:p-4 text-stone-700">$395,000+</td>
+              </tr>
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">Overall Cost Index (100 = Avg)</td>
+                <td class="p-3.5 sm:p-4 text-emerald-800 font-bold">84.2</td>
+                <td class="p-3.5 sm:p-4 text-stone-700">86.7</td>
+                <td class="p-3.5 sm:p-4 text-stone-700">102.8</td>
+              </tr>
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">Highlands County Property Taxes</td>
+                <td class="p-3.5 sm:p-4 text-stone-700">Moderate (~1.0%–1.2% effective)</td>
+                <td class="p-3.5 sm:p-4 text-stone-700">Moderate (~1.1%–1.3% effective)</td>
+                <td class="p-3.5 sm:p-4 text-stone-700">Varies widely (higher in coastal metros)</td>
+              </tr>
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">Florida Homestead Exemption</td>
+                <td class="p-3.5 sm:p-4 text-emerald-800 font-bold">Up to $50,000 assessed value</td>
+                <td class="p-3.5 sm:p-4 text-emerald-800 font-bold">Up to $50,000 assessed value</td>
+                <td class="p-3.5 sm:p-4 text-emerald-800 font-bold">Up to $50,000 assessed value</td>
+              </tr>
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">State Personal Income Tax</td>
+                <td class="p-3.5 sm:p-4 text-emerald-800 font-bold">0.0%</td>
+                <td class="p-3.5 sm:p-4 text-emerald-800 font-bold">0.0%</td>
+                <td class="p-3.5 sm:p-4 text-emerald-800 font-bold">0.0%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Because Florida imposes zero state personal income tax and shields primary residences with the constitutional Save Our Homes assessment cap (limiting annual property tax valuation increases to 3% or the rate of inflation), retirees stretching fixed pensions or remote workers relocating from high-tax northeastern states enjoy dramatic ongoing tax savings.
+        </p>
+      </section>
+
+      <!-- Section 4: Fast & Urgent Sale Solutions in Avon Park -->
+      <section class="mb-14 p-6 sm:p-8 bg-amber-50/80 rounded-2xl border border-amber-300 shadow-sm space-y-4" aria-labelledby="fast-sale-heading">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-200 text-amber-900 border border-amber-400">
+          Seller Advisory
+        </span>
+        <h2 id="fast-sale-heading" class="font-serif text-2xl font-bold text-[#1b3a5c]">
+          Selling Fast in Avon Park: Inherited Estates, Acreage & As-Is Homes
+        </h2>
+        <p class="text-xs sm:text-sm text-stone-700 leading-relaxed">
+          Avon Park real estate frequently involves unique seller circumstances: inheriting an older mid-century family home on an expansive lot, managing the sale of vacant citrus acreage, or needing an expedited 14- to 30-day closing due to employment changes or financial pressure.
+        </p>
+        <p class="text-xs sm:text-sm text-stone-700 leading-relaxed">
+          When urgency strikes, many Avon Park homeowners assume their only option is to accept a rock-bottom cash offer from an out-of-town wholesaler. Wholesale flippers routinely solicit Avon Park mailboxes offering 30% below true market value, only to turn around and assign the contract for a quick profit.
+        </p>
+        <p class="text-xs sm:text-sm text-stone-700 leading-relaxed">
+          <strong>There is a better way:</strong> Alyson Thomas crafts expedited listing plans that expose your property to retail cash buyers across Heartland MLS and Stellar MLS. By staging effectively, coordinating quick pre-listing inspections, and marketing as-is with Florida standard FAR/BAR contracts, we routinely protect $25,000 to $50,000 in seller equity while meeting aggressive closing deadlines.
+        </p>
+        <div class="pt-2">
+          <a href="/sell-house-fast-sebring-fl/" class="text-xs sm:text-sm font-bold text-[#1b3a5c] underline hover:text-[#122840]">
+            Learn more about our Fast-Sale & Equity Protection Blueprint →
+          </a>
+        </div>
+      </section>
+
+      <!-- Section 5: Lead Capture Valuation Card -->
+      <section class="mb-14 p-6 sm:p-8 bg-white rounded-2xl border border-stone-200 shadow-lg text-center" aria-label="Avon Park Valuation Request">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-3">
+          Local Market Valuation
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mb-3">
+          What Is Your Avon Park Property Worth Today?
+        </h2>
+        <p class="text-xs sm:text-sm text-stone-600 max-w-xl mx-auto mb-6 leading-relaxed">
+          Automated online algorithms often miss the distinct value drivers in Avon Park—such as Lake Lotela water frontage, acreage zoning, or historic downtown appeal. Request an expert comparative market analysis prepared personally by Alyson Thomas.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button href="/free-home-valuation/" variant="primary" size="lg">
+            Get My Free Avon Park Valuation →
+          </Button>
+          <a
+            href={`tel:${siteConfig.phone}`}
+            class="px-6 py-3 rounded-lg border border-stone-300 text-[#1b3a5c] font-bold text-sm hover:bg-stone-50 transition-colors"
+          >
+            Call {siteConfig.phoneDisplay}
+          </a>
+        </div>
+      </section>
+
+      <!-- Section 6: Avon Park FAQ Section -->
+      <section class="mb-14" aria-labelledby="avon-faq-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Frequently Asked Questions</span>
+          <h2 id="avon-faq-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+            Frequently Asked Questions: Living & Investing in Avon Park, FL
+          </h2>
+          <p class="text-xs sm:text-sm text-stone-600 mt-1">
+            Clear, honest answers regarding cost of living, lakes, and real estate values:
+          </p>
+        </div>
+
+        <FAQAccordion items={avonParkFaqList} title="" />
+      </section>
+
+      <!-- Section 7: Internal Resource Links -->
+      <section class="p-6 bg-stone-50 rounded-xl border border-stone-200 mb-10">
+        <h2 class="font-serif text-lg font-bold text-[#1b3a5c] mb-3">Explore Neighboring Communities & Guides</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm">
+          <a href="/sebring-neighborhoods/sun-n-lake/" class="p-3.5 bg-white rounded-lg border border-stone-200 hover:border-[#1b3a5c] transition-colors block">
+            <span class="font-bold text-[#1b3a5c] block mb-1">Sun 'N Lake Sebring</span>
+            <span class="text-stone-600 text-xs">Highlands County’s largest golf enclave, located just 5 minutes south of Avon Park.</span>
+          </a>
+          <a href="/sell-my-home-sebring-fl/" class="p-3.5 bg-white rounded-lg border border-stone-200 hover:border-[#1b3a5c] transition-colors block">
+            <span class="font-bold text-[#1b3a5c] block mb-1">Selling in Highlands County</span>
+            <span class="text-stone-600 text-xs">Our comprehensive 5-step selling roadmap from staging to closing.</span>
+          </a>
+          <a href="/free-home-valuation/" class="p-3.5 bg-white rounded-lg border border-stone-200 hover:border-[#1b3a5c] transition-colors block">
+            <span class="font-bold text-[#1b3a5c] block mb-1">Free Property Valuation</span>
+            <span class="text-stone-600 text-xs">Accurate comparative market analysis for your Avon Park residence.</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Back Link -->
+      <div class="text-center pt-4 border-t border-stone-200">
+        <a href="/sebring-neighborhoods/" class="text-sm font-bold text-[#1b3a5c] hover:underline inline-flex items-center gap-1.5">
+          <span>← Back to Highlands County Communities</span>
+        </a>
+      </div>
+    </div>
+  </article>
+</PageLayout>

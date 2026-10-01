@@ -1,0 +1,44 @@
+---
+import Card from '@components/ui/Card.astro';
+
+interface Props {
+  quote: string;
+  author: string;
+  neighborhood: string;
+  year?: number;
+  result?: string;
+  rating?: number;
+}
+
+const {
+  quote,
+  author,
+  neighborhood,
+  year = 2024,
+  result,
+  rating = 5,
+} = Astro.props;
+---
+
+<Card class="relative border-l-4 !border-l-[#d4923a] bg-[#f0ebe1]/50 p-6 sm:p-8">
+  <div class="flex items-center gap-1 text-amber-500 mb-3" aria-label={`${rating} out of 5 stars`}>
+    {Array.from({ length: rating }).map(() => (
+      <span aria-hidden="true">★</span>
+    ))}
+  </div>
+
+  <blockquote class="font-serif italic text-base sm:text-lg text-gray-800 mb-4 leading-relaxed">
+    "{quote}"
+  </blockquote>
+
+  {result && (
+    <div class="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 inline-block px-2.5 py-1 rounded mb-3">
+      ✓ {result}
+    </div>
+  )}
+
+  <footer class="text-sm font-bold text-gray-900 border-t border-stone-200 pt-3 flex items-center justify-between">
+    <span>— {author}</span>
+    <span class="text-xs font-normal text-gray-600">{neighborhood}, Sebring FL ({year})</span>
+  </footer>
+</Card>

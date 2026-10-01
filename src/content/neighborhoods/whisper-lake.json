@@ -1,0 +1,25 @@
+{
+  "name": "Whisper Lake",
+  "slug": "whisper-lake",
+  "city": "Sebring",
+  "primaryKeyword": "whisper lake sebring fl",
+  "secondaryKeywords": [
+    "mobile homes for sale in whisper lake sebring fl",
+    "whisper lake homes for sale sebring fl"
+  ],
+  "medianPrice": "$85,000 - $160,000",
+  "daysOnMarket": "50 days",
+  "description": "Whisper Lake is a peaceful, welcoming 55+ community centered around scenic freshwater lake views in Sebring, renowned for low-maintenance living and friendly neighborhood warmth.",
+  "amenities": [
+    "Freshwater Lake Access",
+    "Community Clubhouse",
+    "Heated Swimming Pool",
+    "Shuffleboard Courts",
+    "Social Event Calendar"
+  ],
+  "crossLinkSlugs": [
+    "tanglewood",
+    "buttonwood-bay",
+    "sebring-village"
+  ]
+}

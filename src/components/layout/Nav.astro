@@ -1,0 +1,187 @@
+---
+import { primaryNav } from '@data/nav';
+
+const currentPath = Astro.url.pathname;
+// Filter out isCTA item because persistent CTA button is rendered distinctly
+const navItems = primaryNav.filter(item => !item.isCTA);
+---
+
+<nav id="desktop-navigation" aria-label="Main Navigation" class="hidden lg:flex items-center gap-6">
+  <ul class="flex items-center gap-5 list-none m-0 p-0 text-sm font-semibold">
+    {
+      navItems.map((item, index) => {
+        const hasDropdown = item.children && item.children.length > 0;
+        const isActive = currentPath === item.href || (item.children && item.children.some(child => currentPath === child.href));
+        const dropdownId = `nav-dropdown-${index}`;
+
+        if (hasDropdown) {
+          return (
+            <li class="relative nav-dropdown-item">
+              <button
+                type="button"
+                id={`dropdown-btn-${index}`}
+                class="flex items-center gap-1.5 py-2 text-stone-100 hover:text-amber-300 focus-visible:outline-2 focus-visible:outline-amber-300 rounded-md transition-colors cursor-pointer"
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-controls={dropdownId}
+              >
+                <span>{item.label}</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-4 h-4 transition-transform duration-200 dropdown-arrow"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+
+              <ul
+                id={dropdownId}
+                class="nav-dropdown-menu hidden absolute left-0 top-full pt-1 min-w-[260px] bg-white rounded-lg shadow-xl border border-stone-200 z-50 text-stone-800 py-2 list-none"
+                role="menu"
+                aria-labelledby={`dropdown-btn-${index}`}
+              >
+                {item.children?.map((child) => {
+                  const isChildActive = currentPath === child.href;
+                  return (
+                    <li role="none">
+                      <a
+                        href={child.href}
+                        role="menuitem"
+                        class={`block px-4 py-2.5 text-sm hover:bg-[#faf7f2] hover:text-[#1b3a5c] transition-colors ${
+                          isChildActive ? 'font-bold text-[#1b3a5c] bg-amber-50/70 border-l-4 border-[#d4923a]' : 'text-stone-700'
+                        }`}
+                      >
+                        {child.label}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </li>
+          );
+        }
+
+        return (
+          <li>
+            <a
+              href={item.href}
+              class={`py-2 hover:text-amber-300 transition-colors rounded focus-visible:outline-2 focus-visible:outline-amber-300 ${
+                isActive ? 'text-amber-300 font-bold border-b-2 border-amber-400 pb-1' : 'text-stone-100'
+              }`}
+            >
+              {item.label}
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>
+
+<script>
+  function setupDesktopDropdowns() {
+    const dropdownItems = document.querySelectorAll('.nav-dropdown-item');
+
+    dropdownItems.forEach((item) => {
+      const button = item.querySelector<HTMLButtonElement>('button[aria-haspopup="true"]');
+      const menu = item.querySelector<HTMLUListElement>('.nav-dropdown-menu');
+      const arrow = item.querySelector<SVGElement>('.dropdown-arrow');
+
+      if (!button || !menu) return;
+
+      const openDropdown = () => {
+        // Close others
+        dropdownItems.forEach((other) => {
+          if (other !== item) {
+            const otherBtn = other.querySelector<HTMLButtonElement>('button[aria-haspopup="true"]');
+            const otherMenu = other.querySelector<HTMLUListElement>('.nav-dropdown-menu');
+            const otherArrow = other.querySelector<SVGElement>('.dropdown-arrow');
+            otherBtn?.setAttribute('aria-expanded', 'false');
+            otherMenu?.classList.add('hidden');
+            otherArrow?.classList.remove('rotate-180');
+          }
+        });
+
+        button.setAttribute('aria-expanded', 'true');
+        menu.classList.remove('hidden');
+        arrow?.classList.add('rotate-180');
+      };
+
+      const closeDropdown = () => {
+        button.setAttribute('aria-expanded', 'false');
+        menu.classList.add('hidden');
+        arrow?.classList.remove('rotate-180');
+      };
+
+      const toggleDropdown = () => {
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+        if (isExpanded) {
+          closeDropdown();
+        } else {
+          openDropdown();
+        }
+      };
+
+      // Click trigger
+      button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleDropdown();
+      });
+
+      // Hover triggers for smooth desktop pointer UX
+      item.addEventListener('mouseenter', () => {
+        openDropdown();
+      });
+
+      item.addEventListener('mouseleave', () => {
+        closeDropdown();
+      });
+
+      // Keyboard navigation
+      button.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openDropdown();
+          const firstLink = menu.querySelector<HTMLAnchorElement>('a');
+          firstLink?.focus();
+        } else if (e.key === 'Escape') {
+          closeDropdown();
+        }
+      });
+
+      menu.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          closeDropdown();
+          button.focus();
+        }
+      });
+    });
+
+    // Close dropdowns on outside click
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.nav-dropdown-item')) {
+        dropdownItems.forEach((item) => {
+          const button = item.querySelector<HTMLButtonElement>('button[aria-haspopup="true"]');
+          const menu = item.querySelector<HTMLUListElement>('.nav-dropdown-menu');
+          const arrow = item.querySelector<SVGElement>('.dropdown-arrow');
+          button?.setAttribute('aria-expanded', 'false');
+          menu?.classList.add('hidden');
+          arrow?.classList.remove('rotate-180');
+        });
+      }
+    });
+  }
+
+  // Support initial load and Astro client-router page swaps
+  document.addEventListener('DOMContentLoaded', setupDesktopDropdowns);
+  document.addEventListener('astro:page-load', setupDesktopDropdowns);
+</script>

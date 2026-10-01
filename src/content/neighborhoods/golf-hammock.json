@@ -1,0 +1,24 @@
+{
+  "name": "Golf Hammock",
+  "slug": "golf-hammock",
+  "city": "Sebring",
+  "primaryKeyword": "golf hammock sebring fl",
+  "secondaryKeywords": [
+    "homes for sale golf hammock sebring fl",
+    "golf hammock sebring fl real estate"
+  ],
+  "medianPrice": "$240,000 - $425,000",
+  "daysOnMarket": "48 days",
+  "description": "Golf Hammock is an established residential golf community in northwest Sebring featuring custom single-family residences nestled along an 18-hole championship course and magnificent mature oak hammocks.",
+  "amenities": [
+    "18-Hole Championship Golf Course",
+    "Pro Shop & Driving Range",
+    "Restaurant & Full Lounge",
+    "Tennis Courts"
+  ],
+  "crossLinkSlugs": [
+    "sun-n-lake",
+    "spring-lake",
+    "tanglewood"
+  ]
+}

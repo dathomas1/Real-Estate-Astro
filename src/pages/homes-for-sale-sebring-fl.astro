@@ -1,0 +1,519 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import ListingCard from '@components/sections/ListingCard.astro';
+import FAQAccordion from '@components/sections/FAQAccordion.astro';
+import Button from '@components/ui/Button.astro';
+import { siteConfig, siteData } from '@data/site';
+import { getCollection } from 'astro:content';
+
+// 1. Fetch active Sebring listings from Content Collection
+const allListings = await getCollection('listings');
+const activeSebringListings = allListings.filter(
+  (listing) => listing.data.city === 'Sebring' && listing.data.status === 'active'
+);
+
+// 2. Fetch all 8 neighborhoods from Content Collection
+const allNeighborhoods = await getCollection('neighborhoods');
+const preferredOrder = [
+  'tanglewood',
+  'golf-hammock',
+  'sun-n-lake',
+  'whisper-lake',
+  'buttonwood-bay',
+  'spring-lake',
+  'sebring-village',
+  'lakefront-homes',
+];
+const neighborhoods = [...allNeighborhoods].sort((a, b) => {
+  const indexA = preferredOrder.indexOf(a.data.slug);
+  const indexB = preferredOrder.indexOf(b.data.slug);
+  if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+  return a.data.name.localeCompare(b.data.name);
+});
+
+// 3. Fetch FAQ content for this page
+const allFaqs = await getCollection('faq');
+const pageFaqs = allFaqs.filter((item) => item.data.page === 'homes-for-sale-sebring');
+const faqAccordionItems = pageFaqs.map((item) => ({
+  question: item.data.question,
+  answer: item.data.answer,
+}));
+
+// 4. Schema markup: BreadcrumbList + FAQPage + RealEstateAgent (nested)
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${siteConfig.domain}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Homes for Sale in Sebring, FL',
+          item: `${siteConfig.domain}/homes-for-sale-sebring-fl/`,
+        },
+      ],
+    },
+    {
+      '@type': 'RealEstateAgent',
+      '@id': `${siteConfig.domain}/#agent`,
+      name: siteConfig.businessName,
+      url: `${siteConfig.domain}/homes-for-sale-sebring-fl/`,
+      telephone: siteConfig.phone,
+      image: `${siteConfig.domain}/social-preview-image.png`,
+      priceRange: '$$',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: siteConfig.address.locality,
+        addressRegion: siteConfig.address.region,
+        postalCode: siteConfig.address.postalCode,
+        addressCountry: siteConfig.address.country,
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: siteData.geo.latitude,
+        longitude: siteData.geo.longitude,
+      },
+      areaServed: [
+        { '@type': 'City', name: 'Sebring' },
+        { '@type': 'City', name: 'Avon Park' },
+        { '@type': 'City', name: 'Lake Placid' },
+        { '@type': 'AdministrativeArea', name: 'Highlands County' },
+      ],
+      parentOrganization: {
+        '@type': 'Organization',
+        name: siteConfig.brokerage,
+        url: siteConfig.domain,
+      },
+      sameAs: [
+        siteConfig.directoryLinks.realtorDotCom,
+        siteConfig.directoryLinks.myStateMLS,
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: pageFaqs.map((f) => ({
+        '@type': 'Question',
+        name: f.data.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: f.data.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<PageLayout
+  title="Homes for Sale in Sebring, FL | Real Estate & Neighborhoods"
+  description="Explore homes for sale in Sebring, FL with Alyson Thomas of Premier Plus Realty. Discover 55+ communities, golf homes, lakefront properties, and local market trends."
+  canonicalUrl={`${siteConfig.domain}/homes-for-sale-sebring-fl/`}
+  schema={pageSchema}
+>
+  <!-- Breadcrumb Navigation -->
+  <nav class="bg-stone-100 border-b border-stone-200 py-3 px-4 sm:px-6" aria-label="Breadcrumb">
+    <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs sm:text-sm text-stone-600">
+      <a href="/" class="hover:text-[#1b3a5c] hover:underline">Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <span class="text-stone-900 font-semibold" aria-current="page">Homes for Sale in Sebring, FL</span>
+    </div>
+  </nav>
+
+  <article class="py-12 sm:py-16 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto">
+      <!-- Page Hero Header -->
+      <header class="max-w-4xl mb-12">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-4">
+          <span>Highlands County Property Guide</span>
+        </div>
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1b3a5c] tracking-tight mb-6 leading-tight">
+          Homes for Sale in Sebring, FL
+        </h1>
+        <p class="text-lg sm:text-xl text-stone-700 leading-relaxed font-sans mb-6">
+          Known as "The City on the Circle," Sebring combines peaceful Florida Heartland charm, over 80 freshwater lakes, championship golf courses, and an exceptionally accessible cost of living. Whether you are seeking a premier 55+ active adult community, a fairway estate, or a private lakefront sanctuary, Alyson Thomas provides the local market insight you need.
+        </p>
+        <div class="flex flex-wrap items-center gap-4 text-sm font-semibold text-stone-600">
+          <span class="flex items-center gap-1.5"><span class="text-amber-700 font-bold">✓</span> Verified Micro-Market Pricing</span>
+          <span class="flex items-center gap-1.5"><span class="text-amber-700 font-bold">✓</span> Premier Plus Realty Affiliation</span>
+          <span class="flex items-center gap-1.5"><span class="text-amber-700 font-bold">✓</span> Direct Agent Representation</span>
+        </div>
+      </header>
+
+      <!-- Curated Listings Section (Clear MLS Disclosure Included) -->
+      <section class="mb-16 bg-stone-50 rounded-2xl p-6 sm:p-8 border border-stone-200" aria-labelledby="curated-listings-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Featured Properties</span>
+            <h2 id="curated-listings-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+              Sample Sebring Listings
+            </h2>
+          </div>
+          <!-- MLS Disclaimer per CRO & Architecture instructions -->
+          <div class="p-3 bg-amber-50 border border-amber-300 rounded-lg text-xs text-amber-900 max-w-xl">
+            <strong>Inventory Notice:</strong> The property cards displayed below represent sample curated listings illustrating local Sebring price points and architectural styles pending direct live MLS/IDX feed integration. Please contact Alyson directly at <a href={`tel:${siteConfig.phone}`} class="font-bold underline">{siteConfig.phoneDisplay}</a> for instantaneous MLS availability, private showings, or new listing alerts.
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {activeSebringListings.map((listing) => (
+            <ListingCard
+              title={`${listing.data.beds} Bed, ${listing.data.baths} Bath Home in ${listing.data.neighborhood}`}
+              price={listing.data.price}
+              address={listing.data.address}
+              bedrooms={listing.data.beds}
+              bathrooms={listing.data.baths}
+              squareFeet={listing.data.sqft}
+              neighborhood={listing.data.neighborhood}
+              status="Active"
+              slug="/contact/"
+            />
+          ))}
+        </div>
+      </section>
+
+      <!-- Content Section 1: Why Buy in Sebring FL (Exact H2) -->
+      <section class="mb-16 max-w-4xl" aria-labelledby="why-buy-heading">
+        <h2 id="why-buy-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mb-6">
+          Why Buy in Sebring FL
+        </h2>
+        <div class="space-y-5 text-stone-700 text-base sm:text-lg leading-relaxed">
+          <p>
+            Nestled in the center of the Florida peninsula, Sebring represents one of the state's most compelling destinations for full-time relocations, seasonal winter residents, and active retirees. While coastal Florida cities such as Tampa, Sarasota, and West Palm Beach have experienced steep price surges and congested traffic corridors, Sebring maintains an authentic, relaxed pace of life paired with unmatched real estate value.
+          </p>
+          <p>
+            One of the primary catalysts for purchasing a home in Sebring is affordability. The median single-family home price in Sebring sits roughly 30% to 40% below coastal Florida averages, giving buyers significantly more square footage, larger lot sizes, and modern community amenities for their investment. Furthermore, Florida residents benefit from zero state income tax, zero inheritance tax, and substantial property tax relief through Florida's constitutional $50,000 Homestead Exemption.
+          </p>
+          <p>
+            Beyond economic value, Sebring offers a vibrant outdoor lifestyle centered around natural beauty:
+          </p>
+          <ul class="space-y-3 pl-2 sm:pl-4 my-6">
+            <li class="flex items-start gap-3">
+              <span class="text-amber-700 font-bold text-lg leading-none" aria-hidden="true">■</span>
+              <div>
+                <strong class="text-stone-900">Abundant Freshwater Lakes:</strong> Sebring is anchored by Lake Jackson, an expansive 3,200-acre public lake ideal for boating, jet-skiing, paddle boarding, and lakeside dining. Across Highlands County, more than 80 named freshwater lakes—including Lake Josephine, Lake Istokpoga, and Dinner Lake—provide world-renowned trophy largemouth bass fishing.
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-amber-700 font-bold text-lg leading-none" aria-hidden="true">■</span>
+              <div>
+                <strong class="text-stone-900">Highlands Hammock State Park:</strong> As one of Florida's oldest and most treasured state parks, Highlands Hammock encompasses ancient virgin hardwood forests, 1,000-year-old live oaks, elevated catwalk swamp trails, and abundant wildlife viewing opportunities.
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-amber-700 font-bold text-lg leading-none" aria-hidden="true">■</span>
+              <div>
+                <strong class="text-stone-900">Historic Downtown Circle:</strong> Sebring's distinctive circular downtown plaza—listed on the National Register of Historic Places—hosts weekly farmers markets, craft festivals, classic car gatherings, boutique shopping, and independently owned cafes.
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-amber-700 font-bold text-lg leading-none" aria-hidden="true">■</span>
+              <div>
+                <strong class="text-stone-900">Motorsports & International Acclaim:</strong> Home to the world-famous Sebring International Raceway, the city welcomes racing enthusiasts from across the globe every March for the Mobil 1 Twelve Hours of Sebring endurance race.
+              </div>
+            </li>
+          </ul>
+          <p>
+            Centrally situated just 90 minutes from Orlando and Tampa and two hours from South Florida, Sebring allows residents to enjoy quiet small-town living while keeping major international airports, premier medical centers, and Atlantic and Gulf beaches within easy reach for weekend day trips.
+          </p>
+        </div>
+      </section>
+
+      <!-- Content Section 2: Sebring Neighborhoods & Communities (Exact H2) -->
+      <section class="mb-16" aria-labelledby="neighborhoods-heading">
+        <div class="max-w-4xl mb-8">
+          <h2 id="neighborhoods-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mb-4">
+            Sebring Neighborhoods & Communities
+          </h2>
+          <p class="text-base sm:text-lg text-stone-700 leading-relaxed font-sans">
+            Every subdivision in Sebring presents a distinct lifestyle, ownership structure, and amenity package. Whether you prioritize golf privileges, active 55+ social calendars, or boat slips, explore our comprehensive neighborhood guides below:
+          </p>
+        </div>
+
+        <!-- 8 Neighborhood Hub Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {neighborhoods.map((n) => (
+            <div class="bg-white rounded-xl border border-stone-200 p-6 flex flex-col justify-between hover:shadow-md transition-shadow group">
+              <div>
+                <div class="flex items-start justify-between gap-2 mb-2">
+                  <h3 class="font-serif text-lg font-bold text-[#1b3a5c] group-hover:text-amber-700 transition-colors">
+                    <a href={`/sebring-neighborhoods/${n.data.slug}/`} class="focus:outline-none focus:underline">
+                      {n.data.name}
+                    </a>
+                  </h3>
+                  {n.data.medianPrice && (
+                    <span class="text-[11px] font-bold px-2 py-0.5 bg-amber-100 text-amber-900 rounded shrink-0">
+                      {n.data.medianPrice}
+                    </span>
+                  )}
+                </div>
+                <p class="text-xs text-stone-600 leading-relaxed mb-4 line-clamp-3">
+                  {n.data.description}
+                </p>
+                {n.data.amenities && (
+                  <div class="mb-4">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-stone-500 block mb-1">Highlights:</span>
+                    <ul class="text-xs text-stone-600 space-y-1">
+                      {n.data.amenities.slice(0, 2).map((a) => (
+                        <li class="flex items-center gap-1.5">
+                          <span class="text-amber-600" aria-hidden="true">•</span>
+                          <span>{a}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+              <div class="pt-3 border-t border-stone-100 flex items-center justify-between">
+                <a
+                  href={`/sebring-neighborhoods/${n.data.slug}/`}
+                  class="text-xs font-bold text-[#1b3a5c] hover:text-[#b87a2e] transition-colors inline-flex items-center gap-1"
+                >
+                  <span>Explore Guide</span>
+                  <span aria-hidden="true">→</span>
+                </a>
+                <span class="text-[11px] text-stone-500">Sebring, FL</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-8 p-6 bg-stone-100 rounded-xl text-sm text-stone-700 leading-relaxed max-w-4xl">
+          <p>
+            <strong>Community Insight from Alyson:</strong> When evaluating Sebring communities, it is vital to understand the difference between fee-simple single-family subdivisions (such as Golf Hammock and Sun 'N Lake) and land-lease or cooperative manufactured home communities (such as Tanglewood or Buttonwood Bay). Each model impacts monthly carrying costs, financing options, and long-term resale dynamics differently.
+          </p>
+        </div>
+      </section>
+
+      <!-- Content Section 3: Property Types in Sebring (Exact H2) -->
+      <section class="mb-16" aria-labelledby="property-types-heading">
+        <div class="max-w-4xl mb-8">
+          <h2 id="property-types-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mb-4">
+            Property Types in Sebring
+          </h2>
+          <p class="text-base sm:text-lg text-stone-700 leading-relaxed font-sans">
+            Sebring's residential housing stock caters to diverse financial plans and lifestyle preferences. We have categorized the four most popular specialized housing types with dedicated guidance for prospective buyers:
+          </p>
+        </div>
+
+        <!-- 4 Specialty Property Cards Linking to Stub Pages -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mb-10">
+          <!-- Specialty 1: Mobile & Manufactured Homes -->
+          <div class="bg-white rounded-xl p-6 sm:p-7 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-amber-400 transition-colors">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl" aria-hidden="true">🏡</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-900 bg-amber-100 px-2 py-0.5 rounded">Active Adult Living</span>
+              </div>
+              <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">
+                <a href="/mobile-homes-for-sale-sebring-fl/" class="hover:underline">
+                  Mobile & Manufactured Homes
+                </a>
+              </h3>
+              <p class="text-sm text-stone-600 leading-relaxed mb-4">
+                Manufactured housing in Sebring offers some of Florida's highest-value retirement living. Enclaves like Tanglewood, Whisper Lake, and Sebring Village deliver resort clubhouses, tennis and pickleball complexes, heated pools, and full social calendars at a fraction of traditional site-built prices.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-stone-100 flex items-center justify-between">
+              <a href="/mobile-homes-for-sale-sebring-fl/" class="text-sm font-bold text-[#1b3a5c] hover:text-[#b87a2e]">
+                View Mobile Homes Guide →
+              </a>
+              <span class="text-xs text-stone-500">$120k – $220k</span>
+            </div>
+          </div>
+
+          <!-- Specialty 2: Golf Course Homes -->
+          <div class="bg-white rounded-xl p-6 sm:p-7 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-amber-400 transition-colors">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl" aria-hidden="true">⛳</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-900 bg-amber-100 px-2 py-0.5 rounded">Championship Fairways</span>
+              </div>
+              <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">
+                <a href="/golf-course-homes-sebring-fl/" class="hover:underline">
+                  Golf Course Homes
+                </a>
+              </h3>
+              <p class="text-sm text-stone-600 leading-relaxed mb-4">
+                Golf enthusiasts can choose from established fairway homes in Golf Hammock or custom executive residences in Sun 'N Lake, featuring two 18-hole championship courses (Deer Run and Turtle Run), driving ranges, and on-site club dining.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-stone-100 flex items-center justify-between">
+              <a href="/golf-course-homes-sebring-fl/" class="text-sm font-bold text-[#1b3a5c] hover:text-[#b87a2e]">
+                View Golf Homes Guide →
+              </a>
+              <span class="text-xs text-stone-500">$240k – $450k+</span>
+            </div>
+          </div>
+
+          <!-- Specialty 3: New Construction Homes -->
+          <div class="bg-white rounded-xl p-6 sm:p-7 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-amber-400 transition-colors">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl" aria-hidden="true">🔨</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-900 bg-amber-100 px-2 py-0.5 rounded">Modern Standards</span>
+              </div>
+              <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">
+                <a href="/new-homes-sebring-fl/" class="hover:underline">
+                  New Construction Homes
+                </a>
+              </h3>
+              <p class="text-sm text-stone-600 leading-relaxed mb-4">
+                Seeking move-in ready peace of mind? New residential builds in Sebring feature current Florida hurricane building codes, impact glass, modern open-concept floor plans, energy-saving heat pumps, and builder warranty coverage.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-stone-100 flex items-center justify-between">
+              <a href="/new-homes-sebring-fl/" class="text-sm font-bold text-[#1b3a5c] hover:text-[#b87a2e]">
+                View New Construction Guide →
+              </a>
+              <span class="text-xs text-stone-500">$270k – $420k</span>
+            </div>
+          </div>
+
+          <!-- Specialty 4: Condos & Attached Villas -->
+          <div class="bg-white rounded-xl p-6 sm:p-7 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-amber-400 transition-colors">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl" aria-hidden="true">🏢</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-900 bg-amber-100 px-2 py-0.5 rounded">Low-Maintenance</span>
+              </div>
+              <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-2">
+                <a href="/condos-villas-sebring-fl/" class="hover:underline">
+                  Condos & Villas
+                </a>
+              </h3>
+              <p class="text-sm text-stone-600 leading-relaxed mb-4">
+                Condominiums and attached paired villas present an effortless "lock-and-leave" lifestyle. With exterior maintenance, roof reserves, and groundskeeping handled by the association, owners are free to travel or enjoy Florida winters stress-free.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-stone-100 flex items-center justify-between">
+              <a href="/condos-villas-sebring-fl/" class="text-sm font-bold text-[#1b3a5c] hover:text-[#b87a2e]">
+                View Condos & Villas Guide →
+              </a>
+              <span class="text-xs text-stone-500">$160k – $280k</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Content Section 4: Sebring Real Estate Market Overview (Exact H2) -->
+      <section class="mb-16 max-w-4xl" aria-labelledby="market-overview-heading">
+        <h2 id="market-overview-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mb-6">
+          Sebring Real Estate Market Overview
+        </h2>
+        <div class="space-y-5 text-stone-700 text-base sm:text-lg leading-relaxed">
+          <p>
+            Understanding the macro and micro market indicators in Sebring and Highlands County is essential whether you are acquiring a retirement retreat or evaluating your current home's equity. Unlike metropolitan housing markets driven by hyper-dense employment hubs, Sebring's market dynamics are shaped by lifestyle demand, retirement demographics, and seasonal buying cycles.
+          </p>
+
+          <!-- Market Metric Callout Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 my-8">
+            <div class="p-5 bg-white rounded-xl border border-stone-200 shadow-sm text-center">
+              <span class="text-xs font-bold uppercase tracking-wider text-stone-500 block mb-1">Median Sale Price</span>
+              <span class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">$245,000</span>
+              <span class="text-xs text-stone-500 block mt-1">Single-family & modular composite</span>
+            </div>
+            <div class="p-5 bg-white rounded-xl border border-stone-200 shadow-sm text-center">
+              <span class="text-xs font-bold uppercase tracking-wider text-stone-500 block mb-1">Average Days on Market</span>
+              <span class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">45–55 Days</span>
+              <span class="text-xs text-stone-500 block mt-1">For accurately priced inventory</span>
+            </div>
+            <div class="p-5 bg-white rounded-xl border border-stone-200 shadow-sm text-center">
+              <span class="text-xs font-bold uppercase tracking-wider text-stone-500 block mb-1">Sale-to-List Ratio</span>
+              <span class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">96.8%</span>
+              <span class="text-xs text-stone-500 block mt-1">Reflecting disciplined negotiations</span>
+            </div>
+          </div>
+
+          <h3 class="font-serif text-xl font-bold text-[#1b3a5c] pt-4">Seasonal Buyer Migration Patterns</h3>
+          <p>
+            Sebring exhibits a distinct seasonal rhythm. Between October and April, thousands of seasonal winter residents ("snowbirds") arrive from the Midwest, Northeast, and Canada. This surge typically coincides with increased showings, faster contract timelines, and peak market liquidity. However, year-round relocation from high-density Florida metros—including Orlando, Tampa, and Miami—has created steady underlying baseline demand throughout late spring and summer.
+          </p>
+
+          <h3 class="font-serif text-xl font-bold text-[#1b3a5c] pt-2">Inventory Trends & Price Stabilization</h3>
+          <p>
+            Following several years of rapid post-pandemic appreciation, the Highlands County housing market has shifted toward a more balanced, sustainable environment. Buyers enjoy broader selection and greater room for contractual contingencies (such as home inspections and financing safeguards), while sellers who partner with local pricing specialists continue to realize strong historical equity gains upon closing.
+          </p>
+
+          <h3 class="font-serif text-xl font-bold text-[#1b3a5c] pt-2">Financing & Insurance Considerations</h3>
+          <p>
+            Purchasing property in Central Florida requires attention to insurance age limitations (especially regarding roof certifications and 4-point inspections for homes over 20 years old). Working with a licensed agent who understands Highlands County insurance requirements ensures that offers are written with realistic closing timelines and inspection contingencies.
+          </p>
+        </div>
+      </section>
+
+      <!-- Content Section 5: Thinking of Selling Your Sebring Home? (Exact H2) -->
+      <section class="mb-16 bg-[#1b3a5c] rounded-2xl p-8 sm:p-12 text-white shadow-xl" aria-labelledby="selling-cta-heading">
+        <div class="max-w-3xl">
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/30 mb-4">
+            Seller Advisory & Valuation
+          </span>
+          <h2 id="selling-cta-heading" class="font-serif text-2xl sm:text-4xl font-bold text-white mb-4">
+            Thinking of Selling Your Sebring Home?
+          </h2>
+          <p class="text-stone-200 text-base sm:text-lg leading-relaxed font-sans mb-8">
+            The same qualities that make Sebring attractive to incoming buyers—resort amenities, freshwater recreation, and peaceful living—are your strongest selling advantages. However, maximizing your net proceeds requires precise comparative pricing tailored to your subdivision's specific micro-market.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 text-stone-200 text-sm">
+            <div class="flex items-start gap-3">
+              <span class="text-amber-400 font-bold text-lg leading-none" aria-hidden="true">✓</span>
+              <span><strong>Custom Neighborhood CMA:</strong> Real-time comp analysis that accounts for lot premiums, updates, and HOA fee structures.</span>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="text-amber-400 font-bold text-lg leading-none" aria-hidden="true">✓</span>
+              <span><strong>Targeted Multi-Channel Reach:</strong> Professional HDR media and digital distribution targeting relocations and active local buyers.</span>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <Button href="/free-home-valuation/" variant="primary" size="lg">
+              Get Your Free Home Valuation →
+            </Button>
+            <a
+              href="/sell-my-home-sebring-fl/"
+              class="inline-flex items-center justify-center px-6 py-4 rounded-md font-bold text-white border-2 border-white/80 hover:border-white hover:bg-white/10 transition-all text-base min-h-[56px] text-center"
+            >
+              Learn About Alyson's Selling Strategy
+            </a>
+            <a
+              href={`tel:${siteConfig.phone}`}
+              class="inline-flex items-center justify-center px-6 py-4 rounded-md font-bold text-amber-300 hover:text-white transition-all text-base text-center"
+              aria-label={`Call Alyson Thomas directly at ${siteConfig.phoneDisplay}`}
+            >
+              📞 Call {siteConfig.phoneDisplay}
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Content Section 6: FAQ (Exact H2) -->
+      <section class="mb-16" aria-labelledby="faq-heading">
+        <div class="max-w-4xl mb-6">
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-3">
+            Buyer & Neighborhood Guidance
+          </span>
+          <h2 id="faq-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+            FAQ
+          </h2>
+          <p class="text-base text-stone-600 mt-2">
+            Common questions regarding property values, 55+ communities, taxes, and purchasing real estate in Sebring, FL.
+          </p>
+        </div>
+
+        <FAQAccordion items={faqAccordionItems} title="" />
+      </section>
+
+      <!-- Final Assistance Bar -->
+      <div class="border-t border-stone-200 pt-8 text-center text-sm text-stone-600">
+        <p>
+          Need personalized help searching for homes or arranging a private showing? Contact <strong class="text-stone-900">{siteConfig.businessName}</strong> at <a href={`tel:${siteConfig.phone}`} class="font-bold text-[#1b3a5c] underline">{siteConfig.phoneDisplay}</a> or <a href="/contact/" class="font-bold text-[#1b3a5c] underline">send an online inquiry</a>.
+        </p>
+      </div>
+    </div>
+  </article>
+</PageLayout>

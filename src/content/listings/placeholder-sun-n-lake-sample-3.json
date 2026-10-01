@@ -1,0 +1,14 @@
+{
+  "address": "789 Deer Run Court",
+  "neighborhood": "Sun 'N Lake",
+  "city": "Sebring",
+  "price": 285000,
+  "beds": 3,
+  "baths": 2,
+  "sqft": 1820,
+  "status": "active",
+  "daysOnMarket": 9,
+  "photo": "/social-preview-image.png",
+  "description": "[PLACEHOLDER LISTING — SAMPLE DATA ONLY] Pristine Sun 'N Lake home located moments from championship golf and community clubhouses. Open split-bedroom floor plan, new roof, and serene mature oak landscaping.",
+  "isPlaceholder": true
+}

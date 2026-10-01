@@ -1,0 +1,246 @@
+---
+import { primaryNav } from '@data/nav';
+import { siteConfig } from '@data/site';
+---
+
+<div
+  id="mobile-navigation-drawer"
+  class="fixed inset-0 z-50 pointer-events-none transition-all duration-300 ease-in-out lg:hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Mobile Navigation Menu"
+  aria-hidden="true"
+>
+  <!-- Backdrop -->
+  <div
+    id="mobile-menu-backdrop"
+    class="fixed inset-0 bg-stone-900/70 backdrop-blur-sm opacity-0 transition-opacity duration-300"
+  ></div>
+
+  <!-- Off-Canvas Drawer Panel -->
+  <div
+    id="mobile-menu-panel"
+    class="fixed inset-y-0 right-0 w-full max-w-sm bg-[#122944] text-white shadow-2xl p-6 overflow-y-auto flex flex-col justify-between z-10 translate-x-full transition-transform duration-300 ease-in-out"
+  >
+    <div>
+      <!-- Drawer Header: Brand + Accessible Close Button -->
+      <div class="flex items-center justify-between pb-4 border-b border-white/20">
+        <div class="flex flex-col">
+          <span class="font-serif font-bold text-lg text-white">Alyson Thomas</span>
+          <span class="text-xs text-amber-300 uppercase tracking-wider">{siteConfig.brokerage}</span>
+        </div>
+
+        <button
+          id="close-mobile-menu"
+          type="button"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-stone-200 hover:text-white bg-white/10 hover:bg-white/20 border border-white/20 text-sm font-bold focus-visible:outline-2 focus-visible:outline-amber-300"
+          aria-label="Close navigation menu"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <span>Close</span>
+        </button>
+      </div>
+
+      <!-- Quick Phone Call Link (CRO section 2.2 / mobile conversion 4.5) -->
+      <div class="my-4">
+        <a
+          href={`tel:${siteConfig.phone}`}
+          class="flex items-center justify-center gap-2 w-full py-3.5 px-4 rounded-md font-bold text-white bg-[#1b3a5c] border border-white/30 hover:bg-[#122944] text-base shadow-sm focus-visible:outline-2 focus-visible:outline-white"
+          aria-label={`Call Alyson directly at ${siteConfig.phoneDisplay}`}
+        >
+          <span aria-hidden="true">📞</span>
+          <span>Call {siteConfig.phoneDisplay}</span>
+        </a>
+      </div>
+
+      <!-- Free Home Valuation CTA Button -->
+      <div class="mb-5">
+        <a
+          href="/free-home-valuation/"
+          class="flex items-center justify-center gap-2 w-full py-3.5 px-4 rounded-md font-bold text-[#122944] hover:text-[#0b1726] bg-[#d4923a] hover:bg-[#b87a2e] text-base shadow-md transition-all focus-visible:outline-2 focus-visible:outline-white"
+        >
+          <span>Free Home Valuation →</span>
+        </a>
+      </div>
+
+      <!-- Navigation Links with Collapsible Submenus -->
+      <nav aria-label="Mobile Menu Links">
+        <ul class="flex flex-col divide-y divide-white/10 list-none p-0 my-2 text-base">
+          {
+            primaryNav.filter(item => !item.isCTA).map((item, index) => {
+              const hasDropdown = item.children && item.children.length > 0;
+              const submenuId = `mobile-submenu-${index}`;
+
+              if (hasDropdown) {
+                return (
+                  <li class="py-2.5">
+                    <button
+                      type="button"
+                      class="flex items-center justify-between w-full py-1 text-left text-white font-bold hover:text-amber-300 focus-visible:outline-amber-300 cursor-pointer"
+                      aria-expanded="false"
+                      aria-controls={submenuId}
+                      data-submenu-toggle
+                    >
+                      <span>{item.label}</span>
+                      <svg
+                        class="w-5 h-5 transition-transform duration-200 transform text-stone-300"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    <ul id={submenuId} class="hidden pl-3 mt-2 space-y-2 list-none border-l-2 border-amber-400/40 text-sm">
+                      {item.children?.map((child) => (
+                        <li>
+                          <a
+                            href={child.href}
+                            class="block py-1.5 text-stone-200 hover:text-amber-200 transition-colors"
+                          >
+                            {child.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                );
+              }
+
+              return (
+                <li class="py-2.5">
+                  <a
+                    href={item.href}
+                    class="block py-1 text-white font-bold hover:text-amber-300 transition-colors"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Mobile Drawer Footer Info -->
+    <div class="pt-6 border-t border-white/20 text-xs text-stone-300 space-y-1">
+      <p class="font-bold text-white">{siteConfig.businessName}</p>
+      <p>{siteConfig.address.locality}, {siteConfig.address.region} {siteConfig.address.postalCode}</p>
+      <p class="text-amber-300 font-semibold pt-1">Direct: {siteConfig.phoneDisplay}</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setupMobileMenu() {
+    const drawer = document.getElementById('mobile-navigation-drawer');
+    const panel = document.getElementById('mobile-menu-panel');
+    const backdrop = document.getElementById('mobile-menu-backdrop');
+    const openBtn = document.getElementById('open-mobile-menu');
+    const closeBtn = document.getElementById('close-mobile-menu');
+
+    if (!drawer || !panel || !backdrop || !openBtn || !closeBtn) return;
+
+    const drawerEl = drawer as HTMLElement;
+    const panelEl = panel as HTMLElement;
+    const backdropEl = backdrop as HTMLElement;
+    const openBtnEl = openBtn as HTMLElement;
+    const closeBtnEl = closeBtn as HTMLElement;
+
+    // Accessible focus trapping
+    const getFocusableElements = () => {
+      return panelEl.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+    };
+
+    function openMenu() {
+      drawerEl.classList.remove('pointer-events-none');
+      drawerEl.setAttribute('aria-hidden', 'false');
+      panelEl.classList.remove('translate-x-full');
+      backdropEl.classList.remove('opacity-0');
+      backdropEl.classList.add('opacity-100');
+      document.body.style.overflow = 'hidden';
+      openBtnEl.setAttribute('aria-expanded', 'true');
+
+      // Transfer focus to close button
+      setTimeout(() => {
+        closeBtnEl.focus();
+      }, 50);
+    }
+
+    function closeMenu() {
+      panelEl.classList.add('translate-x-full');
+      backdropEl.classList.remove('opacity-100');
+      backdropEl.classList.add('opacity-0');
+      document.body.style.overflow = '';
+      openBtnEl.setAttribute('aria-expanded', 'false');
+
+      setTimeout(() => {
+        drawerEl.classList.add('pointer-events-none');
+        drawerEl.setAttribute('aria-hidden', 'true');
+        openBtnEl.focus();
+      }, 300);
+    }
+
+    openBtnEl.addEventListener('click', openMenu);
+    closeBtnEl.addEventListener('click', closeMenu);
+    backdropEl.addEventListener('click', closeMenu);
+
+    // Keyboard support: Escape to close + Focus Trap
+    document.addEventListener('keydown', (e) => {
+      if (drawerEl.getAttribute('aria-hidden') === 'false') {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          closeMenu();
+        } else if (e.key === 'Tab') {
+          const focusables = getFocusableElements();
+          if (focusables.length === 0) return;
+          const firstFocusable = focusables[0];
+          const lastFocusable = focusables[focusables.length - 1];
+
+          if (e.shiftKey) {
+            if (document.activeElement === firstFocusable) {
+              e.preventDefault();
+              lastFocusable.focus();
+            }
+          } else {
+            if (document.activeElement === lastFocusable) {
+              e.preventDefault();
+              firstFocusable.focus();
+            }
+          }
+        }
+      }
+    });
+
+    // Submenu accordion toggles
+    const submenuToggles = panel.querySelectorAll<HTMLButtonElement>('[data-submenu-toggle]');
+    submenuToggles.forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+        const targetId = toggle.getAttribute('aria-controls');
+        const target = targetId ? document.getElementById(targetId) : null;
+        const icon = toggle.querySelector('svg');
+
+        if (isExpanded) {
+          toggle.setAttribute('aria-expanded', 'false');
+          target?.classList.add('hidden');
+          icon?.classList.remove('rotate-180');
+        } else {
+          toggle.setAttribute('aria-expanded', 'true');
+          target?.classList.remove('hidden');
+          icon?.classList.add('rotate-180');
+        }
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', setupMobileMenu);
+  document.addEventListener('astro:page-load', setupMobileMenu);
+</script>

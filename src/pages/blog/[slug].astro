@@ -1,0 +1,47 @@
+---
+import { getCollection, render } from 'astro:content';
+import BlogPostLayout from '@layouts/BlogPostLayout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  
+  return posts.map((post) => {
+    const slug = post.data.slug || post.id.replace(/\.[^/.]+$/, '');
+    
+    // Find 1-2 related posts with same contentType
+    const related = posts
+      .filter((p) => p.id !== post.id && p.data.contentType === post.data.contentType)
+      .slice(0, 2)
+      .map((p) => ({
+        title: p.data.title,
+        slug: p.data.slug || p.id.replace(/\.[^/.]+$/, ''),
+        description: p.data.metaDescription,
+        publishDate: p.data.publishDate,
+      }));
+
+    return {
+      params: { slug },
+      props: { post, related },
+    };
+  });
+}
+
+const { post, related } = Astro.props;
+const { Content } = post ? await render(post) : { Content: null };
+---
+
+{post && (
+  <BlogPostLayout
+    title={post.data.title}
+    metaDescription={post.data.metaDescription}
+    publishDate={post.data.publishDate}
+    modifiedDate={post.data.modifiedDate}
+    featuredImage={post.data.featuredImage}
+    contentType={post.data.contentType}
+    pillarLink={post.data.pillarLink}
+    slug={post.data.slug || post.id.replace(/\.[^/.]+$/, '')}
+    relatedPosts={related}
+  >
+    {Content && <Content />}
+  </BlogPostLayout>
+)}

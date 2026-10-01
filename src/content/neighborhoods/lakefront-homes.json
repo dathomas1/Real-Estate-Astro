@@ -1,0 +1,24 @@
+{
+  "name": "Lakefront Homes",
+  "slug": "lakefront-homes",
+  "city": "Sebring",
+  "primaryKeyword": "lake homes for sale in sebring florida",
+  "secondaryKeywords": [
+    "homes for sale on lake jackson sebring fl",
+    "lakefront homes for sale sebring fl"
+  ],
+  "medianPrice": "$350,000 - $850,000+",
+  "daysOnMarket": "65 days",
+  "description": "Sebring's freshwater lakes—including Lake Jackson, Lake Josephine, and world-renowned Lake Istokpoga—provide exceptional waterfront properties with private docks, boating, and scenic sunset views.",
+  "amenities": [
+    "Private Docks & Boathouses",
+    "Direct Lake Access for Boating & Jet Skis",
+    "World-Class Freshwater Fishing",
+    "Panoramic Lakefront Sunsets"
+  ],
+  "crossLinkSlugs": [
+    "buttonwood-bay",
+    "spring-lake",
+    "sun-n-lake"
+  ]
+}

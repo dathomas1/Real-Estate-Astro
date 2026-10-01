@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fdfbf7"/>
+      <stop offset="100%" stop-color="#ebe7de"/>
+    </linearGradient>
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#d5cebe" stroke-width="0.5" stroke-opacity="0.5"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="400" fill="url(#bgGrad)" />
+  <rect width="600" height="400" fill="url(#grid)" />
+
+  <!-- Outer & Inner Frame -->
+  <rect x="12" y="12" width="576" height="376" rx="12" fill="none" stroke="#cbd5e1" stroke-width="2" />
+  <rect x="20" y="20" width="560" height="360" rx="8" fill="none" stroke="#d4923a" stroke-width="1.5" stroke-dasharray="6,4" stroke-opacity="0.8" />
+
+  <!-- Decorative Corner Accents -->
+  <circle cx="28" cy="28" r="4" fill="#d4923a" opacity="0.6"/>
+  <circle cx="572" cy="28" r="4" fill="#d4923a" opacity="0.6"/>
+  <circle cx="28" cy="372" r="4" fill="#d4923a" opacity="0.6"/>
+  <circle cx="572" cy="372" r="4" fill="#d4923a" opacity="0.6"/>
+
+  <!-- Icon Slot -->
+  
+    <rect x="272" y="130" width="56" height="40" rx="8" fill="#1b3a5c" opacity="0.12" />
+    <circle cx="300" cy="150" r="12" fill="#1b3a5c" opacity="0.4" />
+    <circle cx="300" cy="150" r="6" fill="#ffffff" />
+    <path d="M288 124 L294 118 L306 118 L312 124 Z" fill="#1b3a5c" opacity="0.3" />
+  
+
+  <!-- Tag Badge -->
+  <g transform="translate(300, 80)">
+    <rect x="-140" y="-14" width="280" height="28" rx="6" fill="#d4923a" />
+    <text x="0" y="5" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="800" letter-spacing="1.5" fill="#122944" text-anchor="middle">[PHOTO PLACEHOLDER: SUN &apos;N LAKE]</text>
+  </g>
+
+  <!-- Main Title Text Lines -->
+  <text x="300" y="210" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#1b3a5c" text-anchor="middle">789 Deer Run Court, Sebring, FL</text>
+
+  <!-- Subtitle -->
+  <text x="300" y="255" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#64748b" text-anchor="middle">
+    Championship Golf Community Home · 3 Bed · 2 Bath
+  </text>
+
+  <!-- Footer Authenticity / Slot Banner -->
+  <g transform="translate(300, 360)">
+    <rect x="-170" y="-12" width="340" height="24" rx="4" fill="#1b3a5c" opacity="0.08" />
+    <text x="0" y="4" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700" fill="#1b3a5c" text-anchor="middle">
+      AUTHENTIC LOCAL PHOTO PENDING · NO STOCK IMAGERY
+    </text>
+  </g>
+</svg>

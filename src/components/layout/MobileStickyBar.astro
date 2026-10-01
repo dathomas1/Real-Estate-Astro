@@ -1,0 +1,62 @@
+---
+import { siteConfig } from '@data/site';
+---
+
+<!-- Fixed-bottom conversion bar: mobile-only (hidden >= 1024px), appears after ~300px scroll -->
+<aside
+  id="mobile-sticky-bar"
+  class="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-[#122944] border-t border-amber-400/30 shadow-2xl p-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] translate-y-full opacity-0 pointer-events-none transition-all duration-300 ease-in-out"
+  aria-label="Quick contact actions"
+>
+  <div class="grid grid-cols-2 gap-2 max-w-lg mx-auto">
+    <!-- Left Half: Tap-To-Call Button -->
+    <a
+      href={`tel:${siteConfig.phone}`}
+      class="inline-flex items-center justify-center gap-1.5 py-3 px-2 rounded-md font-bold text-[#122944] bg-[#d4923a] hover:bg-[#b87a2e] text-sm shadow-sm transition-all min-h-[48px] text-center focus-visible:outline-2 focus-visible:outline-white"
+      aria-label={`Call Alyson Thomas directly at ${siteConfig.phoneDisplay}`}
+    >
+      <span aria-hidden="true">📞</span>
+      <span>Call Alyson</span>
+    </a>
+
+    <!-- Right Half: Free Home Valuation Button -->
+    <a
+      href="/free-home-valuation/"
+      class="inline-flex items-center justify-center gap-1 py-3 px-2 rounded-md font-bold text-[#122944] bg-[#d4923a] hover:bg-[#b87a2e] text-sm shadow-sm transition-all min-h-[48px] text-center focus-visible:outline-2 focus-visible:outline-white"
+    >
+      <span>Free Valuation →</span>
+    </a>
+  </div>
+</aside>
+
+<script>
+  function setupMobileStickyBar() {
+    const bar = document.getElementById('mobile-sticky-bar');
+    if (!bar) return;
+
+    let isVisible = false;
+
+    const checkScroll = () => {
+      // Show bar only after ~300px scroll down
+      const shouldShow = window.scrollY > 300;
+
+      if (shouldShow !== isVisible) {
+        isVisible = shouldShow;
+        if (isVisible) {
+          bar.classList.remove('translate-y-full', 'opacity-0', 'pointer-events-none');
+          bar.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+        } else {
+          bar.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+          bar.classList.add('translate-y-full', 'opacity-0', 'pointer-events-none');
+        }
+      }
+    };
+
+    window.addEventListener('scroll', checkScroll, { passive: true });
+    // Check initial scroll state
+    checkScroll();
+  }
+
+  document.addEventListener('DOMContentLoaded', setupMobileStickyBar);
+  document.addEventListener('astro:page-load', setupMobileStickyBar);
+</script>

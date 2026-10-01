@@ -1,0 +1,175 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { siteConfig } from '@data/site';
+
+// BreadcrumbList schema only per spec
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: `${siteConfig.domain}/`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Privacy Policy',
+      item: `${siteConfig.domain}/privacy-policy/`,
+    },
+  ],
+};
+---
+
+<PageLayout
+  title="Privacy Policy | Alyson Thomas Real Estate"
+  description="Privacy Policy and consumer data practices for the real estate website of Alyson Thomas at Premier Plus Realty in Sebring, FL."
+  canonicalUrl={`${siteConfig.domain}/privacy-policy/`}
+  schema={pageSchema}
+>
+  <!-- Breadcrumb Navigation -->
+  <nav class="bg-stone-100 border-b border-stone-200 py-3 px-4 sm:px-6" aria-label="Breadcrumb">
+    <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs sm:text-sm text-stone-600">
+      <a href="/" class="hover:text-[#1b3a5c] hover:underline">Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <span class="text-stone-900 font-semibold" aria-current="page">Privacy Policy</span>
+    </div>
+  </nav>
+
+  <main class="py-12 sm:py-16 px-4 sm:px-6 font-sans">
+    <div class="max-w-3xl mx-auto">
+      <!-- Legal Review Notice Banner -->
+      <div class="mb-8 p-5 bg-amber-50 border-2 border-amber-400 rounded-xl shadow-xs" role="alert">
+        <div class="flex items-start gap-3">
+          <span class="text-2xl flex-shrink-0" aria-hidden="true">⚠️</span>
+          <div>
+            <h2 class="text-sm font-bold uppercase tracking-wider text-amber-900 mb-1">
+              Template Notice — Pre-Launch Legal Review Required
+            </h2>
+            <p class="text-xs sm:text-sm text-amber-950 leading-relaxed">
+              <strong>Administrative Flag:</strong> This document is a standard real estate website privacy policy template drafted for developmental purposes. Prior to commercial deployment, this policy must be formally reviewed and tailored by qualified Florida legal counsel to ensure strict compliance with Florida consumer protection statutes, federal telemarketing rules (TCPA/CAN-SPAM), and applicable brokerage policies.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <header class="mb-10 pb-6 border-b border-stone-200">
+        <h1 class="font-serif text-3xl sm:text-4xl font-bold text-[#1b3a5c] tracking-tight mb-3">
+          Privacy Policy
+        </h1>
+        <p class="text-xs sm:text-sm text-stone-500">
+          Last Updated: September 2026 • Effective Date: September 2026
+        </p>
+      </header>
+
+      <div class="space-y-8 text-stone-700 text-sm sm:text-base leading-relaxed">
+        <section>
+          <h2 class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c] mb-3">
+            1. Introduction & Scope
+          </h2>
+          <p>
+            {siteConfig.businessName} ("we," "our," or "us"), affiliated with {siteConfig.brokerage}, respects your privacy and is committed to protecting the personal information you share with us. This Privacy Policy governs your use of our website located at <a href={siteConfig.domain} class="text-[#1b3a5c] underline">{siteConfig.domain}</a> (the "Site") and explains our practices regarding the collection, use, storage, disclosure, and protection of your personal data.
+          </p>
+          <p class="mt-3">
+            By accessing or using our Site, submitting inquiries, or requesting real estate valuation or property showing services, you agree to the collection and use of information in accordance with this Privacy Policy.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c] mb-3">
+            2. Information We Collect
+          </h2>
+          <p>We collect information you voluntarily provide to us as well as data generated automatically during your visit:</p>
+          <ul class="list-disc pl-5 mt-2 space-y-2 text-stone-600 text-sm">
+            <li><strong>Personally Identifiable Information:</strong> When you submit a contact form, request a free home valuation, schedule a showing, or sign up for property alerts, we may collect your name, email address, telephone number, mailing address, and property details (such as address, square footage, condition, and estimated timeline).</li>
+            <li><strong>Communications Data:</strong> Records of communications between you and Alyson Thomas, including emails, SMS text messages, and phone inquiries related to real estate transactions.</li>
+            <li><strong>Automatically Collected Log & Technical Data:</strong> As you navigate the Site, our servers automatically record standard internet log data, including your Internet Protocol (IP) address, browser type and version, referring URL, pages viewed, time and date of visits, and device telemetry.</li>
+            <li><strong>Cookies & Tracking Technologies:</strong> We may use cookies and similar session technologies to optimize website navigation, enhance site speed, and analyze aggregate visitor trends. You may configure your browser to reject cookies, though certain site features may function with reduced performance.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c] mb-3">
+            3. How We Use Your Information
+          </h2>
+          <p>We use the information we collect for legitimate real estate business purposes, including:</p>
+          <ul class="list-disc pl-5 mt-2 space-y-2 text-stone-600 text-sm">
+            <li>Delivering requested Comparative Market Analyses (CMAs) and property valuations.</li>
+            <li>Facilitating scheduled property showings, open house access, and buyer representation services.</li>
+            <li>Responding to seller and buyer inquiries regarding Highlands County real estate.</li>
+            <li>Providing relevant local real estate market updates and new listing notifications upon request.</li>
+            <li>Complying with Florida real estate licensing rules, statutory recordkeeping duties, and legal obligations.</li>
+            <li>Maintaining website security and preventing fraudulent or unauthorized activity.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c] mb-3">
+            4. Information Sharing & Third Parties
+          </h2>
+          <p>
+            <strong>We do not sell, rent, trade, or monetize your personal information to third-party data brokers or marketing agencies.</strong>
+          </p>
+          <p class="mt-2">We share your information solely under the following limited circumstances:</p>
+          <ul class="list-disc pl-5 mt-2 space-y-2 text-stone-600 text-sm">
+            <li><strong>Authorized Real Estate Transaction Vendors:</strong> With your prior consent, we coordinate with licensed third-party service providers essential to executing your transaction, including closing title companies, real estate settlement attorneys, escrow agents, certified home inspectors, and mortgage lenders.</li>
+            <li><strong>Brokerage Operations:</strong> Personal information and transactional documents are maintained in compliance with {siteConfig.brokerage} supervision and Florida Department of Business and Professional Regulation (DBPR) guidelines.</li>
+            <li><strong>Legal & Statutory Compliance:</strong> We may disclose information if required by law, subpoena, court order, or regulatory inquiry by the Florida Real Estate Commission (FREC).</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c] mb-3">
+            5. TCPA Compliance & Communications Consent
+          </h2>
+          <p>
+            By submitting your telephone number on any contact or valuation form on this Site, you grant express written consent for Alyson Thomas and authorized representatives of {siteConfig.brokerage} to contact you via telephone call, text message (SMS), or email regarding real estate inquiries, even if your phone number is listed on a state or national Do Not Call registry. Consent is not a condition of purchasing real property. You may opt out of SMS communications at any time by replying "STOP."
+          </p>
+        </section>
+
+        <section>
+          <h2 class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c] mb-3">
+            6. Data Security & Retention
+          </h2>
+          <p>
+            We implement industry-standard administrative, physical, and technical safeguards to protect your personal data against unauthorized access, loss, or disclosure. However, no internet transmission or electronic storage system is 100% secure. Florida real estate regulations require real estate brokerages to maintain transaction files and client correspondence for a mandatory minimum statutory retention period (typically 5 years).
+          </p>
+        </section>
+
+        <section>
+          <h2 class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c] mb-3">
+            7. Children’s Privacy
+          </h2>
+          <p>
+            Our Site and real estate services are strictly directed toward individuals who are at least 18 years of age. We do not knowingly collect or solicit personal information from minors under the age of 18. If we discover that personal data from a minor has been collected, we will delete it promptly.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c] mb-3">
+            8. Contact Us Regarding Your Privacy
+          </h2>
+          <p>
+            If you have questions, comments, or requests regarding this Privacy Policy or wish to update or delete your contact information from our active communication lists, please contact:
+          </p>
+          <div class="mt-4 p-5 bg-stone-50 rounded-xl border border-stone-200 text-xs sm:text-sm space-y-1.5">
+            <p class="font-bold text-[#1b3a5c]">{siteConfig.businessName}</p>
+            <p class="text-stone-600">Brokerage: {siteConfig.brokerage}</p>
+            <p class="text-stone-600">Location: {siteConfig.address.locality}, {siteConfig.address.region} {siteConfig.address.postalCode}</p>
+            <p class="text-stone-600">Direct Telephone: <a href={`tel:${siteConfig.phone}`} class="text-[#1b3a5c] font-semibold underline">{siteConfig.phoneDisplay}</a></p>
+            <p class="text-stone-600">Website: <a href={siteConfig.domain} class="text-[#1b3a5c] underline">{siteConfig.domain}</a></p>
+          </div>
+        </section>
+      </div>
+
+      <!-- Return Link -->
+      <div class="mt-12 pt-6 border-t border-stone-200 text-center">
+        <a href="/" class="text-xs sm:text-sm font-bold text-[#1b3a5c] hover:underline">
+          ← Return to Home Page
+        </a>
+      </div>
+    </div>
+  </main>
+</PageLayout>

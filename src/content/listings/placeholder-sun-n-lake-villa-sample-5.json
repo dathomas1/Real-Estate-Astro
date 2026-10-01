@@ -1,0 +1,14 @@
+{
+  "address": "412 Fairway Breeze Court",
+  "neighborhood": "Sun 'N Lake",
+  "city": "Sebring",
+  "price": 215000,
+  "beds": 2,
+  "baths": 2,
+  "sqft": 1380,
+  "status": "active",
+  "daysOnMarket": 11,
+  "photo": "/social-preview-image.png",
+  "description": "[PLACEHOLDER LISTING — SAMPLE DATA ONLY] Elegant maintenance-free attached villa in Sun 'N Lake overlooking the fairway. Screened lanai, open great room, attached garage, and full access to golf club amenities.",
+  "isPlaceholder": true
+}

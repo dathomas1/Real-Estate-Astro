@@ -1,0 +1,107 @@
+---
+import Button from '@components/ui/Button.astro';
+
+const steps = [
+  {
+    step: '01',
+    title: 'Free In-Depth Valuation',
+    description:
+      'We begin with a comprehensive Comparative Market Analysis (CMA), assessing recent closed sales and current competition in your specific Sebring neighborhood to pinpoint your optimal listing price.',
+    highlight: 'Data-driven pricing with zero obligation',
+  },
+  {
+    step: '02',
+    title: 'Pre-Listing Media & Prep',
+    description:
+      'Alyson guides you on targeted preparations that deliver maximum return on investment. Your property is then captured with professional high-definition photography and compelling copywriting.',
+    highlight: 'Showcase ready for active buyers',
+  },
+  {
+    step: '03',
+    title: 'Multi-Channel Marketing',
+    description:
+      'Your listing is launched across the MLS, national real estate portals, targeted digital advertising, and direct agent networks to reach qualified Florida buyers and northern relocations.',
+    highlight: 'Maximum digital & local exposure',
+  },
+  {
+    step: '04',
+    title: 'Negotiation & Closing',
+    description:
+      'Alyson evaluates every offer, rigorously negotiates price and contingency terms to protect your equity, coordinates inspections and title work, and keeps you informed through a seamless closing.',
+    highlight: 'Full representation to closing day',
+  },
+];
+---
+
+<section class="py-16 sm:py-20 bg-stone-100 border-b border-stone-200" id="seller-process">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="text-center max-w-3xl mx-auto mb-14">
+      <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-3">
+        Clear & Proven Selling Roadmap
+      </span>
+      <h2 class="font-serif text-3xl sm:text-4xl font-bold text-[#1b3a5c] mb-4">
+        The Sebring Home Selling Process
+      </h2>
+      <p class="text-base sm:text-lg text-stone-700 leading-relaxed font-sans">
+        Selling your home doesn't have to be overwhelming. Alyson manages every detail from the initial pricing strategy to contract execution, ensuring a smooth, transparent experience.
+      </p>
+    </div>
+
+    <!-- 4-Step Process Visual Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      {steps.map((item) => (
+        <div class="bg-white rounded-xl p-6 sm:p-7 border border-stone-200 shadow-sm flex flex-col justify-between relative hover:border-amber-400 transition-colors">
+          <div>
+            <!-- Step Number Badge -->
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-serif text-2xl font-black text-[#d4923a]">
+                {item.step}
+              </span>
+              <span class="w-8 h-8 rounded-full bg-stone-100 text-[#1b3a5c] text-xs font-bold flex items-center justify-center border border-stone-200">
+                Step
+              </span>
+            </div>
+
+            <!-- Step Title -->
+            <h3 class="font-serif text-lg sm:text-xl font-bold text-[#1b3a5c] mb-3">
+              {item.title}
+            </h3>
+
+            <!-- Step Description -->
+            <p class="text-stone-700 text-xs sm:text-sm leading-relaxed mb-4">
+              {item.description}
+            </p>
+          </div>
+
+          <!-- Highlight Footer -->
+          <div class="pt-3 border-t border-stone-100">
+            <span class="text-[11px] font-bold text-[#8A4700] uppercase tracking-wider block">
+              ✓ {item.highlight}
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Call to Action Banner -->
+    <div class="bg-[#1b3a5c] rounded-2xl p-8 sm:p-10 text-white text-center max-w-4xl mx-auto shadow-xl">
+      <h3 class="font-serif text-2xl sm:text-3xl font-bold mb-3">
+        Ready to take Step 1?
+      </h3>
+      <p class="text-stone-200 text-sm sm:text-base max-w-2xl mx-auto mb-6 leading-relaxed">
+        Discover what your Sebring or Highlands County home is worth in today's active real estate market with a personalized, no-obligation valuation report.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <Button href="/free-home-valuation/" variant="primary" size="lg">
+          Get Your Free Home Valuation →
+        </Button>
+        <a
+          href="/home-selling-guide-highlands-county/"
+          class="text-sm font-bold text-amber-200 hover:text-white underline underline-offset-4"
+        >
+          Read the Full Home Selling Guide
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

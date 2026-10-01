@@ -1,0 +1,678 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import FAQAccordion from '@components/sections/FAQAccordion.astro';
+import Button from '@components/ui/Button.astro';
+import { siteConfig, siteData } from '@data/site';
+import { getCollection } from 'astro:content';
+
+// 1. Fetch relevant FAQs from content collection
+const allFaqs = await getCollection('faq');
+const sellerGuideQuestions = [
+  'What are the closing costs for a home seller in Highlands County, Florida?',
+  'What should you not do before selling your house in Sebring, FL?',
+  'When is the best time of year to sell a home in Sebring, FL?',
+  'How can I sell my house quickly in Sebring, FL?',
+  'Is selling my house for cash a good idea in Sebring, FL?',
+  'What legal disclosures are required when selling a home in Florida?',
+];
+
+const selectedFaqs = allFaqs.filter((f) =>
+  sellerGuideQuestions.some(
+    (q) => f.data.question.toLowerCase().includes(q.toLowerCase()) ||
+           q.toLowerCase().includes(f.data.question.toLowerCase())
+  )
+);
+
+const finalFaqItems = selectedFaqs.map((item) => ({
+  question: item.data.question,
+  answer: item.data.answer,
+}));
+
+// Fallback if collection items are fewer than expected
+if (finalFaqItems.length < 5) {
+  finalFaqItems.push(
+    {
+      question: 'How long does it take from listing to closing on a Highlands County home?',
+      answer:
+        'On average, a competitively priced home in Highlands County goes under contract within 45 to 60 days. Once an offer is executed, conventional financed transactions typically close in 30 to 45 days, while cash transactions close in 14 to 21 days. Total timeline from Day 1 preparation to proceeds disbursement generally ranges between 60 and 90 days.',
+    },
+    {
+      question: 'Who customarily pays for owner title insurance in Highlands County?',
+      answer:
+        'In Highlands County (as throughout most of Central Florida), it is standard local custom for the seller to pay for the owner’s title insurance policy and select the closing title company or settlement attorney. This differs from South Florida (Miami-Dade/Broward) where buyers typically pay, making local contract guidance essential.',
+    }
+  );
+}
+
+// 2. Structured Data: BreadcrumbList + FAQPage + RealEstateAgent
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${siteConfig.domain}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Sell Your Home',
+          item: `${siteConfig.domain}/sell-my-home-sebring-fl/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: 'Highlands County Home Selling Guide',
+          item: `${siteConfig.domain}/home-selling-guide-highlands-county/`,
+        },
+      ],
+    },
+    {
+      '@type': 'RealEstateAgent',
+      '@id': `${siteConfig.domain}/#agent`,
+      name: siteConfig.businessName,
+      url: `${siteConfig.domain}/home-selling-guide-highlands-county/`,
+      telephone: siteConfig.phone,
+      image: `${siteConfig.domain}/social-preview-image.png`,
+      priceRange: '$$',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: siteConfig.address.locality,
+        addressRegion: siteConfig.address.region,
+        postalCode: siteConfig.address.postalCode,
+        addressCountry: siteConfig.address.country,
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: siteData.geo.latitude,
+        longitude: siteData.geo.longitude,
+      },
+      areaServed: [
+        { '@type': 'AdministrativeArea', name: 'Highlands County' },
+        { '@type': 'City', name: 'Sebring' },
+        { '@type': 'City', name: 'Avon Park' },
+        { '@type': 'City', name: 'Lake Placid' },
+      ],
+      parentOrganization: {
+        '@type': 'Organization',
+        name: siteConfig.brokerage,
+        url: siteConfig.domain,
+      },
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: finalFaqItems.map((f) => ({
+        '@type': 'Question',
+        name: f.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: f.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<PageLayout
+  title="The Ultimate Highlands County Home Selling Guide | 10-Step Blueprint"
+  description="Master every phase of selling your Highlands County home: preparation, 4-point inspection hurdles, strategic pricing, marketing, contract negotiation, and net proceeds."
+  canonicalUrl={`${siteConfig.domain}/home-selling-guide-highlands-county/`}
+  schema={pageSchema}
+>
+  <!-- Breadcrumb Navigation -->
+  <nav class="bg-stone-100 border-b border-stone-200 py-3 px-4 sm:px-6" aria-label="Breadcrumb">
+    <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs sm:text-sm text-stone-600">
+      <a href="/" class="hover:text-[#1b3a5c] hover:underline">Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <a href="/sell-my-home-sebring-fl/" class="hover:text-[#1b3a5c] hover:underline">Sell Your Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <span class="text-stone-900 font-semibold" aria-current="page">Highlands County Selling Guide</span>
+    </div>
+  </nav>
+
+  <article class="py-12 sm:py-16 px-4 sm:px-6 font-sans">
+    <div class="max-w-4xl mx-auto">
+      <!-- Pillar Header -->
+      <header class="mb-12">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-3">
+          Master Seller Blueprint • Highlands County, FL
+        </span>
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1b3a5c] tracking-tight mb-5 leading-tight">
+          The Definitive Highlands County Home Selling Guide
+        </h1>
+        <p class="text-lg sm:text-xl text-stone-700 leading-relaxed font-serif">
+          A step-by-step master roadmap for maximizing equity, overcoming Florida insurance and inspection obstacles, and closing with confidence across Sebring, Avon Park, and Lake Placid.
+        </p>
+        <p class="text-base text-stone-600 leading-relaxed mt-4">
+          Selling a home in Highlands County involves far more than placing a sign on the lawn and uploading photos to the MLS. Between Florida’s rigorous property disclosure laws (the <em>Johnson v. Davis</em> doctrine), strict homeowners insurance underwriting requirements for roofs over 15 years old, and micro-market nuances ranging from Sun 'N Lake CDD assessments to Lake June-in-Winter boathouse permits, sellers need a precise, calculated strategy.
+        </p>
+        <p class="text-base text-stone-600 leading-relaxed mt-3">
+          This comprehensive 10-step guide provides homeowners with the exact blueprint used by top-producing local agents to navigate preparation, valuation, media production, contract negotiation, title clearance, and closing day execution.
+        </p>
+      </header>
+
+      <!-- Table of Contents Quick Nav -->
+      <div class="p-6 bg-stone-50 rounded-2xl border border-stone-200 mb-12 shadow-xs">
+        <h2 class="font-serif text-lg font-bold text-[#1b3a5c] mb-3">Guide Navigation: The 10 Essential Steps</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs sm:text-sm">
+          <a href="#step-1" class="text-stone-700 hover:text-[#1b3a5c] hover:underline flex items-center gap-2">
+            <span class="font-bold text-[#8A4700]">Step 1:</span> Pre-Listing Prep & Florida 4-Point Priorities
+          </a>
+          <a href="#step-2" class="text-stone-700 hover:text-[#1b3a5c] hover:underline flex items-center gap-2">
+            <span class="font-bold text-[#8A4700]">Step 2:</span> Strategic Pricing & Micro-Market CMA
+          </a>
+          <a href="#step-3" class="text-stone-700 hover:text-[#1b3a5c] hover:underline flex items-center gap-2">
+            <span class="font-bold text-[#8A4700]">Step 3:</span> High-Impact Staging & Media Production
+          </a>
+          <a href="#step-4" class="text-stone-700 hover:text-[#1b3a5c] hover:underline flex items-center gap-2">
+            <span class="font-bold text-[#8A4700]">Step 4:</span> Multi-MLS Syndication & Inbound Campaigns
+          </a>
+          <a href="#step-5" class="text-stone-700 hover:text-[#1b3a5c] hover:underline flex items-center gap-2">
+            <span class="font-bold text-[#8A4700]">Step 5:</span> Managing Showings & Buyer Security Vetting
+          </a>
+          <a href="#step-6" class="text-stone-700 hover:text-[#1b3a5c] hover:underline flex items-center gap-2">
+            <span class="font-bold text-[#8A4700]">Step 6:</span> Offer Analysis & FAR/BAR Negotiations
+          </a>
+          <a href="#step-7" class="text-stone-700 hover:text-[#1b3a5c] hover:underline flex items-center gap-2">
+            <span class="font-bold text-[#8A4700]">Step 7:</span> Inspections, Appraisals & Repair Credits
+          </a>
+          <a href="#step-8" class="text-stone-700 hover:text-[#1b3a5c] hover:underline flex items-center gap-2">
+            <span class="font-bold text-[#8A4700]">Step 8:</span> Title Search, HOA Estoppels & Municipal Liens
+          </a>
+          <a href="#step-9" class="text-stone-700 hover:text-[#1b3a5c] hover:underline flex items-center gap-2">
+            <span class="font-bold text-[#8A4700]">Step 9:</span> Closing Day Logistics & Wire Fraud Defense
+          </a>
+          <a href="#step-10" class="text-stone-700 hover:text-[#1b3a5c] hover:underline flex items-center gap-2">
+            <span class="font-bold text-[#8A4700]">Step 10:</span> Seller Costs, Doc Stamps & Net Proceeds Math
+          </a>
+        </div>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- STEP 1 -->
+      <!-- ===================================================================== -->
+      <section id="step-1" class="mb-14 scroll-mt-6" aria-labelledby="step-1-heading">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-8 rounded-full bg-[#1b3a5c] text-white font-bold flex items-center justify-center text-sm flex-shrink-0">1</span>
+          <h2 id="step-1-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+            Pre-Listing Preparation & The Florida 4-Point Priority
+          </h2>
+        </div>
+        <div class="space-y-4 text-stone-700 text-sm sm:text-base leading-relaxed">
+          <p>
+            The most common mistake sellers make in Central Florida is spending thousands of dollars remodeling cosmetic spaces (such as high-end designer tile or custom bathroom vanities) while ignoring the four mechanical systems that determine whether a prospective buyer can actually obtain homeowners insurance.
+          </p>
+          <p>
+            In Florida, any single-family home or manufactured residence older than 15 to 20 years requires a mandatory <strong>4-Point Inspection</strong> before an insurance carrier will bind coverage. If your buyer is financing through conventional, FHA, or VA lending, their loan cannot fund without active insurance. A failed 4-Point inspection is the number one cause of canceled escrows in Highlands County.
+          </p>
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200 space-y-3 my-4">
+            <h3 class="font-serif text-base font-bold text-[#1b3a5c]">The 4 Critical Systems Insurers Scrutinize:</h3>
+            <ul class="space-y-2 text-xs sm:text-sm text-stone-600">
+              <li><strong>Roof System:</strong> Shingle roofs older than 15 years or tile/metal roofs older than 20–25 years face intense underwriting scrutiny. Even with zero active leaks, carriers frequently refuse policies unless a licensed roofing contractor certifies at least 3 to 5 years of remaining useful life.</li>
+              <li><strong>Electrical Panel:</strong> Homes constructed prior to 1990 may contain obsolete electrical service panels (such as Federal Pacific Stab-Lok, Zinsco, or Challenger brands) or ungrounded wiring. Replacing an obsolete panel prior to listing costs $1,500 to $2,500 but prevents buyers from walking away during the inspection period.</li>
+              <li><strong>Plumbing System:</strong> Polybutylene piping (common in 1980s and early 1990s Florida homes) and galvanized pipes past their lifespan are automatic red flags for insurance companies. Water heaters older than 10 to 12 years should also be evaluated.</li>
+              <li><strong>HVAC System:</strong> In Central Florida’s humid sub-tropical climate, air conditioning is essential. Units past 15 years should be professionally serviced, air handler drain lines flushed, and coils cleaned to prove proper operational condition.</li>
+            </ul>
+          </div>
+          <p>
+            Outside of mechanicals, focus on high-ROI cosmetic preparation: pressure washing driveways, sidewalks, and pool lanais; touching up interior walls with modern warm-neutral paint; servicing irrigation sprinkler heads; and professionally cleaning carpet or tile grout. First impressions begin at the curb.
+          </p>
+        </div>
+
+        <!-- Contextual CTA 1 -->
+        <div class="my-6 p-4 sm:p-5 bg-amber-50 rounded-xl border border-amber-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold text-amber-900 uppercase tracking-wider block">Unsure What Repairs Matter Most?</span>
+            <p class="text-xs sm:text-sm text-stone-700">Schedule a zero-obligation pre-listing walkthrough to identify high-ROI prep vs. wasted expenses.</p>
+          </div>
+          <Button href="/free-home-valuation/" variant="primary" size="sm">
+            Book Seller Walkthrough →
+          </Button>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- STEP 2 -->
+      <!-- ===================================================================== -->
+      <section id="step-2" class="mb-14 scroll-mt-6" aria-labelledby="step-2-heading">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-8 rounded-full bg-[#1b3a5c] text-white font-bold flex items-center justify-center text-sm flex-shrink-0">2</span>
+          <h2 id="step-2-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+            Strategic Pricing & Forensic Micro-Market CMA
+          </h2>
+        </div>
+        <div class="space-y-4 text-stone-700 text-sm sm:text-base leading-relaxed">
+          <p>
+            Automated online algorithms (like Zillow’s Zestimate or generic tax assessment multipliers) are notoriously inaccurate in Highlands County because they cannot evaluate hyper-local valuation nuances. A home on the open water of Lake Jackson is worth substantially more than an identical square-footage home sitting two blocks inland. Similarly, homes in Sun 'N Lake carry annual Community Development District (CDD) assessments that must be factored into buyer debt-to-income ratios, while manufactured homes in Tanglewood operate on monthly leased land rather than fee-simple deeds.
+          </p>
+          <p>
+            An accurate Comparative Market Analysis (CMA) requires a forensic appraisal methodology examining closed comps from the past 90 to 180 days within your specific subdivision:
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-4">
+            <div class="p-4 bg-white rounded-xl border border-stone-200 shadow-xs">
+              <span class="font-bold text-[#1b3a5c] text-sm block mb-1">Recent Closed Sales (80%)</span>
+              <p class="text-xs text-stone-600">The primary baseline used by licensed appraisers to establish market value for lender financing.</p>
+            </div>
+            <div class="p-4 bg-white rounded-xl border border-stone-200 shadow-xs">
+              <span class="font-bold text-[#1b3a5c] text-sm block mb-1">Pending Contracts (15%)</span>
+              <p class="text-xs text-stone-600">Reveals real-time buyer willingness to pay over the past 14 to 30 days under current mortgage rate conditions.</p>
+            </div>
+            <div class="p-4 bg-white rounded-xl border border-stone-200 shadow-xs">
+              <span class="font-bold text-[#1b3a5c] text-sm block mb-1">Active Competitors (5%)</span>
+              <p class="text-xs text-stone-600">Your current competition. Pricing slightly sharper than neighboring inventory channels buyer traffic directly to your door.</p>
+            </div>
+          </div>
+          <p>
+            <strong>The Cost of Overpricing:</strong> Overpricing by just 5% to 8% in hopes of "testing the market" is the single fastest way to damage your sale. In Highlands County, homes receive maximum buyer visibility during their first 14 days on the MLS. Overpriced listings linger, accumulate Days on Market (DOM), develop an unfair stigma of being "problem properties," and ultimately sell for less than if they had been priced correctly from Day 1.
+          </p>
+        </div>
+
+        <!-- Contextual CTA 2 -->
+        <div class="my-6 p-4 sm:p-5 bg-stone-100 rounded-xl border border-stone-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold text-[#1b3a5c] uppercase tracking-wider block">Find Your True Market Baseline</span>
+            <p class="text-xs sm:text-sm text-stone-700">Request a comprehensive, handcrafted CMA prepared specifically for your Highlands County neighborhood.</p>
+          </div>
+          <Button href="/free-home-valuation/" variant="primary" size="sm">
+            Get My Free CMA Report →
+          </Button>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- STEP 3 -->
+      <!-- ===================================================================== -->
+      <section id="step-3" class="mb-14 scroll-mt-6" aria-labelledby="step-3-heading">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-8 rounded-full bg-[#1b3a5c] text-white font-bold flex items-center justify-center text-sm flex-shrink-0">3</span>
+          <h2 id="step-3-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+            Staging & Professional Media Production
+          </h2>
+        </div>
+        <div class="space-y-4 text-stone-700 text-sm sm:text-base leading-relaxed">
+          <p>
+            In today’s digital-first market, your home’s true first showing happens on a smartphone screen. With over 88% of inbound Highlands County buyers initiating their search from out-of-state or coastal metropolitan regions, professional media production is not an optional luxury—it is the core catalyst of buyer interest.
+          </p>
+          <p>
+            Cell phone snapshots and dark, distorted wide-angle shots broadcast neglect and attract lowball bargain hunters. Our listing protocol deploys comprehensive media production:
+          </p>
+          <ul class="list-disc pl-5 space-y-2 text-xs sm:text-sm text-stone-600">
+            <li><strong>High Dynamic Range (HDR) Architectural Photography:</strong> Balances bright exterior Florida sunshine through windows with rich interior ambient lighting, capturing warm textures and true paint hues.</li>
+            <li><strong>FAA-Licensed Aerial Drone Cinematography:</strong> Essential for showcasing property lot boundaries, proximity to Lake Jackson or Lake June-in-Winter, golf fairway orientations, and private boathouse setups.</li>
+            <li><strong>Interactive 3D Virtual Walkthroughs (Matterport):</strong> Allows remote winter snowbirds in Ohio, Michigan, and New York to walk room-by-room through your home, driving confident sight-unseen or expedited cash offers.</li>
+            <li><strong>Dusk Twilight Photography:</strong> Highlights screened pool lanais, landscape uplighting, and outdoor entertainment spaces during Florida’s golden hour.</li>
+          </ul>
+        </div>
+
+        <!-- Contextual CTA 3 -->
+        <div class="my-6 p-4 sm:p-5 bg-sky-50 rounded-xl border border-sky-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold text-[#1b3a5c] uppercase tracking-wider block">Showcase Your Home’s Full Potential</span>
+            <p class="text-xs sm:text-sm text-stone-700">Explore how our HDR media, drone video, and staging protocols elevate your property above competitors.</p>
+          </div>
+          <Button href="/sell-my-home-sebring-fl/" variant="primary" size="sm">
+            View Marketing Services →
+          </Button>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- STEP 4 -->
+      <!-- ===================================================================== -->
+      <section id="step-4" class="mb-14 scroll-mt-6" aria-labelledby="step-4-heading">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-8 rounded-full bg-[#1b3a5c] text-white font-bold flex items-center justify-center text-sm flex-shrink-0">4</span>
+          <h2 id="step-4-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+            Multi-MLS Syndication & Targeted Relocator Campaigns
+          </h2>
+        </div>
+        <div class="space-y-4 text-stone-700 text-sm sm:text-base leading-relaxed">
+          <p>
+            Many discount or out-of-town brokers input a listing into only one local board and wait. In Highlands County, maximum market exposure requires bridging both local and regional Multiple Listing Services:
+          </p>
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200 space-y-3 my-4">
+            <h3 class="font-serif text-base font-bold text-[#1b3a5c]">Dual MLS Advantage: Heartland + Stellar MLS</h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              We syndicate listings across both the local <strong>Heartland Association of MLS</strong> (reaching all active Highlands County real estate professionals) and <strong>Stellar MLS</strong>—one of the largest regional MLS networks in the United States, spanning Orlando, Tampa, Sarasota, and 80,000+ participating agents throughout Central and Southwest Florida.
+            </p>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              This syndication feeds seamlessly into consumer search portals (Zillow, Realtor.com, Trulia, Redfin, Homes.com) and is amplified through targeted social advertising campaigns reaching prospective retirees and relocators in primary feeder states: Ohio, Michigan, Pennsylvania, New York, Indiana, and Illinois.
+            </p>
+          </div>
+        </div>
+
+        <!-- Contextual CTA 4 -->
+        <div class="my-6 p-4 sm:p-5 bg-amber-50 rounded-xl border border-amber-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold text-amber-900 uppercase tracking-wider block">Reaching Cash Buyers Nationwide</span>
+            <p class="text-xs sm:text-sm text-stone-700">Learn how our multi-MLS syndication taps into out-of-state snowbirds and coastal relocators.</p>
+          </div>
+          <Button href="/sell-house-fast-sebring-fl/" variant="primary" size="sm">
+            Explore Buyer Reach Blueprint →
+          </Button>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- STEP 5 -->
+      <!-- ===================================================================== -->
+      <section id="step-5" class="mb-14 scroll-mt-6" aria-labelledby="step-5-heading">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-8 rounded-full bg-[#1b3a5c] text-white font-bold flex items-center justify-center text-sm flex-shrink-0">5</span>
+          <h2 id="step-5-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+            Managing Showings, Security & Buyer Screening
+          </h2>
+        </div>
+        <div class="space-y-4 text-stone-700 text-sm sm:text-base leading-relaxed">
+          <p>
+            Once your home goes live on the market, managing physical access securely while accommodating motivated buyers is vital. Sellers should adhere to three non-negotiable showing rules:
+          </p>
+          <ol class="list-decimal pl-5 space-y-2 text-xs sm:text-sm text-stone-600">
+            <li><strong>Always Require Electronic Lockbox Access:</strong> Use secure Supra or SentriLock electronic lockboxes that log the exact identity, brokerage, and timestamp of every licensed agent entering the property. Never use an unsecured four-digit contractor combination box.</li>
+            <li><strong>Pre-Qualify Before Private Showings:</strong> We require visiting buyer agents to confirm pre-approval letters from vetted mortgage lenders or bank verification for proof-of-cash funds before scheduling showings, screening out casual looky-loos.</li>
+            <li><strong>Leave the Property During Showings:</strong> When sellers remain in the home, buyers feel rushed, awkward, and hesitant to inspect closets, talk openly with their agent, or envision their own family living in the space. Take pets for a walk or run an errand during the appointment window.</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- STEP 6 -->
+      <!-- ===================================================================== -->
+      <section id="step-6" class="mb-14 scroll-mt-6" aria-labelledby="step-6-heading">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-8 rounded-full bg-[#1b3a5c] text-white font-bold flex items-center justify-center text-sm flex-shrink-0">6</span>
+          <h2 id="step-6-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+            Offer Evaluation & Strategic FAR/BAR Negotiations
+          </h2>
+        </div>
+        <div class="space-y-4 text-stone-700 text-sm sm:text-base leading-relaxed">
+          <p>
+            In Florida, residential purchase offers are customarily submitted using contracts jointly approved by the Florida Bar and Florida Realtors (the FAR/BAR Contract). The highest offer price on paper is not necessarily the best offer for your bottom line. An experienced listing agent dissects seven critical contract clauses:
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4">
+            <div class="p-4 bg-white rounded-xl border border-stone-200 shadow-xs">
+              <span class="font-bold text-[#1b3a5c] text-sm block mb-1">Contract Type ("As-Is" vs Standard)</span>
+              <p class="text-xs text-stone-600">The <em>FAR/BAR "As-Is" Contract</em> gives sellers freedom from mandatory repair obligations, while allowing buyers an agreed inspection window (typically 10–15 days) to cancel. The <em>Standard FAR/BAR</em> imposes mandatory repair limits (typically 1.5% for general repairs, 1.5% for WDO/termites, and 1.5% for permits).</p>
+            </div>
+            <div class="p-4 bg-white rounded-xl border border-stone-200 shadow-xs">
+              <span class="font-bold text-[#1b3a5c] text-sm block mb-1">Earnest Money Deposit (Escrow)</span>
+              <p class="text-xs text-stone-600">A serious buyer should deposit 1% to 3% of the purchase price into an authorized title company escrow within 3 business days of execution, demonstrating genuine financial commitment.</p>
+            </div>
+            <div class="p-4 bg-white rounded-xl border border-stone-200 shadow-xs">
+              <span class="font-bold text-[#1b3a5c] text-sm block mb-1">Financing Contingencies</span>
+              <p class="text-xs text-stone-600">Is the loan conventional, FHA, VA, or cash? Conventional and cash offers feature lower underwriting friction. FHA and VA loans require strict property condition standards (no peeling paint, handrail requirements).</p>
+            </div>
+            <div class="p-4 bg-white rounded-xl border border-stone-200 shadow-xs">
+              <span class="font-bold text-[#1b3a5c] text-sm block mb-1">Appraisal Gap Guarantees</span>
+              <p class="text-xs text-stone-600">If a buyer offers above recent comparable sales, will they bridge a potential appraisal shortfall with cash out-of-pocket, or do they retain the right to terminate?</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contextual CTA 6 -->
+        <div class="my-6 p-4 sm:p-5 bg-stone-100 rounded-xl border border-stone-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold text-[#1b3a5c] uppercase tracking-wider block">Evaluating an Inbound Offer?</span>
+            <p class="text-xs sm:text-sm text-stone-700">Get an expert review of contract terms, contingency risks, and true net proceeds.</p>
+          </div>
+          <Button href="/sell-my-home-sebring-fl/" variant="primary" size="sm">
+            Consult with Alyson Thomas →
+          </Button>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- STEP 7 -->
+      <!-- ===================================================================== -->
+      <section id="step-7" class="mb-14 scroll-mt-6" aria-labelledby="step-7-heading">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-8 rounded-full bg-[#1b3a5c] text-white font-bold flex items-center justify-center text-sm flex-shrink-0">7</span>
+          <h2 id="step-7-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+            Navigating Inspections, Appraisals & Repair Credits
+          </h2>
+        </div>
+        <div class="space-y-4 text-stone-700 text-sm sm:text-base leading-relaxed">
+          <p>
+            Once under contract, the buyer typically has a 10- to 15-day inspection period. During this window, licensed inspectors evaluate structural integrity, roofing, electrical panels, plumbing fixtures, HVAC efficiency, and Wood-Destroying Organisms (WDO/termites).
+          </p>
+          <p>
+            Almost every home inspection report in Florida uncovers items needing attention. How you respond separates a successful closing from a deal that collapses:
+          </p>
+          <ul class="space-y-3 text-xs sm:text-sm text-stone-600">
+            <li><strong>Negotiate Closing Cost Credits Over Contractor Repairs:</strong> Rather than hiring contractors under tight deadlines (risking subpar workmanship or re-inspection disputes), offering a negotiated credit at closing toward the buyer’s settlement fees keeps the transaction moving smoothly and eliminates seller liability.</li>
+            <li><strong>Focus Strictly on 4-Point Insurance Deficiencies:</strong> If an inspection reveals an electrical hazard or an active plumbing leak that would prevent the buyer’s insurance from binding, addressing those items directly protects the sale. Minor cosmetic wear-and-tear should be politely declined.</li>
+            <li><strong>Lender Appraisal Management:</strong> For financed purchases, the lender’s independent appraiser inspects the home. We meet the appraiser on-site with a prepared packet containing recent verified comparable sales, capital improvement receipts, and neighborhood appreciation data to defend the contract price.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- STEP 8 -->
+      <!-- ===================================================================== -->
+      <section id="step-8" class="mb-14 scroll-mt-6" aria-labelledby="step-8-heading">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-8 rounded-full bg-[#1b3a5c] text-white font-bold flex items-center justify-center text-sm flex-shrink-0">8</span>
+          <h2 id="step-8-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+            Title Search, HOA Estoppels & Municipal Liens
+          </h2>
+        </div>
+        <div class="space-y-4 text-stone-700 text-sm sm:text-base leading-relaxed">
+          <p>
+            While inspections and appraisals occur, the closing title company or settlement attorney conducts a thorough examination of the Highlands County public records:
+          </p>
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200 space-y-3 my-4">
+            <h3 class="font-serif text-base font-bold text-[#1b3a5c]">Key Title Requirements in Highlands County:</h3>
+            <ul class="space-y-2 text-xs sm:text-sm text-stone-600">
+              <li><strong>HOA & CDD Estoppel Certificates:</strong> If your home is in an association (e.g., Sun 'N Lake, Golf Hammock, Tanglewood, River Greens), Florida law requires an official estoppel letter verifying dues balances, upcoming capital assessments, and violation compliance. Estoppels must be ordered promptly to avoid closing delays.</li>
+              <li><strong>Municipal Lien & Permit Search:</strong> Title agents verify that water, sewer, and solid waste utility balances (City of Sebring, City of Avon Park, or Highlands County Utilities) are current, and ensure all past building permits (roofs, A/C replacements, pool fences) were properly closed out and finalized.</li>
+              <li><strong>Clear Title Commitment:</strong> Confirms the property is free of undisclosed mechanic’s liens, probate clouds, or tax encumbrances, allowing the issuance of clean title insurance.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- STEP 9 -->
+      <!-- ===================================================================== -->
+      <section id="step-9" class="mb-14 scroll-mt-6" aria-labelledby="step-9-heading">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-8 rounded-full bg-[#1b3a5c] text-white font-bold flex items-center justify-center text-sm flex-shrink-0">9</span>
+          <h2 id="step-9-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+            Closing Day Logistics & Wire Fraud Defense
+          </h2>
+        </div>
+        <div class="space-y-4 text-stone-700 text-sm sm:text-base leading-relaxed">
+          <p>
+            Closing day marks the culmination of your transaction. In Highlands County, sellers do not even need to be physically present at the title office on closing day. Documents can be signed ahead of time via mobile notary or overnight courier:
+          </p>
+          <div class="p-5 bg-rose-50 border border-rose-300 rounded-xl space-y-2 text-xs sm:text-sm text-rose-950 my-4">
+            <span class="font-bold uppercase tracking-wider block">⚠️ Urgent Wire Fraud Warning for Florida Sellers</span>
+            <p>
+              Real estate wire fraud is an active threat nationwide. Hackers compromise email accounts to send fake wire instructions appearing to come from title companies. <strong>Never</strong> wire funds or transmit banking information based solely on an email. Always verify wiring instructions verbally over the phone using a trusted, independently verified phone number for your title agent before sending or receiving funds.
+            </p>
+          </div>
+          <p>
+            <strong>The Final Walkthrough:</strong> Within 24 hours of closing, the buyer conducts a final walkthrough to confirm the property is in the same condition as when the contract was executed, all agreed repairs are complete, and all trash and personal belongings have been removed. Once the deed is recorded with the Highlands County Clerk of Courts, proceeds are wired directly to your bank account.
+          </p>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- STEP 10 -->
+      <!-- ===================================================================== -->
+      <section id="step-10" class="mb-14 scroll-mt-6" aria-labelledby="step-10-heading">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-8 h-8 rounded-full bg-[#1b3a5c] text-white font-bold flex items-center justify-center text-sm flex-shrink-0">10</span>
+          <h2 id="step-10-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+            Highlands County Seller Closing Costs & Net Proceeds
+          </h2>
+        </div>
+        <div class="space-y-4 text-stone-700 text-sm sm:text-base leading-relaxed">
+          <p>
+            Understanding your exact net proceeds before going on the market prevents financial surprises at the closing table. Here is the complete breakdown of customary seller closing costs in Highlands County:
+          </p>
+          <div class="overflow-x-auto my-6">
+            <table class="w-full text-xs sm:text-sm bg-white rounded-xl border border-stone-200 overflow-hidden text-left">
+              <thead class="bg-[#1b3a5c] text-white">
+                <tr>
+                  <th class="p-3.5 sm:p-4 font-serif font-bold">Expense Item</th>
+                  <th class="p-3.5 sm:p-4 font-serif font-bold">Standard Highlands County Rate</th>
+                  <th class="p-3.5 sm:p-4 font-serif font-bold">Example on $275,000 Sale</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-stone-200">
+                <tr>
+                  <td class="p-3.5 sm:p-4 font-bold text-stone-800">Florida Documentary Stamp Tax on Deed</td>
+                  <td class="p-3.5 sm:p-4 text-stone-700">$0.70 per $100 of purchase price (state mandated)</td>
+                  <td class="p-3.5 sm:p-4 font-mono text-stone-800">$1,925.00</td>
+                </tr>
+                <tr>
+                  <td class="p-3.5 sm:p-4 font-bold text-stone-800">Owner’s Title Insurance Policy</td>
+                  <td class="p-3.5 sm:p-4 text-stone-700">Customarily paid by seller in Highlands County (promulgated rate)</td>
+                  <td class="p-3.5 sm:p-4 font-mono text-stone-800">~$1,500.00</td>
+                </tr>
+                <tr>
+                  <td class="p-3.5 sm:p-4 font-bold text-stone-800">Title Search & Settlement / Closing Fee</td>
+                  <td class="p-3.5 sm:p-4 text-stone-700">Title company search, examination, and closing coordination</td>
+                  <td class="p-3.5 sm:p-4 font-mono text-stone-800">~$450.00 – $600.00</td>
+                </tr>
+                <tr>
+                  <td class="p-3.5 sm:p-4 font-bold text-stone-800">Real Estate Brokerage Fee</td>
+                  <td class="p-3.5 sm:p-4 text-stone-700">Negotiated representation fee (covers marketing, staging, photography, multi-MLS)</td>
+                  <td class="p-3.5 sm:p-4 font-mono text-stone-800">Per Agreement</td>
+                </tr>
+                <tr>
+                  <td class="p-3.5 sm:p-4 font-bold text-stone-800">Property Tax Proration</td>
+                  <td class="p-3.5 sm:p-4 text-stone-700">Prorated to the exact day of closing for current calendar year</td>
+                  <td class="p-3.5 sm:p-4 font-mono text-stone-800">Varies by closing date</td>
+                </tr>
+                <tr>
+                  <td class="p-3.5 sm:p-4 font-bold text-stone-800">HOA/CDD Estoppel Fee (if applicable)</td>
+                  <td class="p-3.5 sm:p-4 text-stone-700">Association management preparation fee (standard Florida cap: $299)</td>
+                  <td class="p-3.5 sm:p-4 font-mono text-stone-800">~$299.00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs text-stone-500 italic">
+            * Estimates provided for illustrative guidance. Actual title insurance rates are set by the Florida Office of Insurance Regulation. A personalized Net Sheet is provided to every client prior to listing.
+          </p>
+        </div>
+
+        <!-- Contextual CTA 10 -->
+        <div class="my-6 p-4 sm:p-5 bg-emerald-50 rounded-xl border border-emerald-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold text-emerald-900 uppercase tracking-wider block">Calculate Your Exact Take-Home Cash</span>
+            <p class="text-xs sm:text-sm text-stone-700">Request an itemized Seller Net Sheet showing your estimated proceeds down to the penny.</p>
+          </div>
+          <Button href="/free-home-valuation/" variant="primary" size="sm">
+            Request Net Proceeds Sheet →
+          </Button>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- TIMELINE SUMMARY -->
+      <!-- ===================================================================== -->
+      <section class="mb-14 p-6 sm:p-8 bg-stone-50 rounded-2xl border border-stone-200" aria-labelledby="timeline-heading">
+        <h2 id="timeline-heading" class="font-serif text-2xl font-bold text-[#1b3a5c] mb-4">
+          The Realistic Highlands County Home Selling Timeline
+        </h2>
+        <div class="space-y-4 text-xs sm:text-sm text-stone-700">
+          <div class="flex items-start gap-3">
+            <span class="font-mono font-bold text-[#1b3a5c] w-24 flex-shrink-0">Days 1–10</span>
+            <div><strong>Home Preparation & Media:</strong> Deep clean, pressure wash, complete high-ROI touch-ups, HDR photography, drone filming, and 3D Matterport tour creation.</div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="font-mono font-bold text-[#1b3a5c] w-24 flex-shrink-0">Days 11–14</span>
+            <div><strong>Market Launch:</strong> Syndication across Heartland MLS, Stellar MLS, nationwide real estate portals, and targeted digital buyer advertising.</div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="font-mono font-bold text-[#1b3a5c] w-24 flex-shrink-0">Days 15–45</span>
+            <div><strong>Showings & Offer Negotiation:</strong> Vetted buyer walkthroughs, offer review, counter-offers, and execution of a binding FAR/BAR agreement.</div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="font-mono font-bold text-[#1b3a5c] w-24 flex-shrink-0">Days 46–60</span>
+            <div><strong>Inspections & Appraisal:</strong> 10–15 day inspection period, 4-Point underwriting resolution, title search, HOA estoppel ordering, and lender appraisal.</div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="font-mono font-bold text-[#1b3a5c] w-24 flex-shrink-0">Days 61–75</span>
+            <div><strong>Closing & Proceeds:</strong> Final loan clear-to-close, buyer final walkthrough, mobile notary or in-person signing, deed recording, and funds wired to your account.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- FAQ SECTION -->
+      <!-- ===================================================================== -->
+      <section class="mb-14" aria-labelledby="seller-guide-faq-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Frequently Asked Questions</span>
+          <h2 id="seller-guide-faq-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+            Highlands County Home Selling FAQs
+          </h2>
+          <p class="text-xs sm:text-sm text-stone-600 mt-1">
+            Common legal, financial, and strategic questions from local home sellers:
+          </p>
+        </div>
+
+        <FAQAccordion items={finalFaqItems} title="" />
+      </section>
+
+      <!-- Master CTA Card -->
+      <section class="mb-14 p-6 sm:p-8 bg-white rounded-2xl border border-stone-200 shadow-lg text-center" aria-label="Begin Your Sale">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-3">
+          Dedicated Local Representation
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mb-3">
+          Ready to Sell Your Highlands County Home?
+        </h2>
+        <p class="text-xs sm:text-sm text-stone-600 max-w-xl mx-auto mb-6 leading-relaxed">
+          From strategic pre-listing prep to closing day disbursement, partner with Alyson Thomas for transparent, results-driven real estate guidance.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button href="/free-home-valuation/" variant="primary" size="lg">
+            Request Free Home Valuation →
+          </Button>
+          <a
+            href={`tel:${siteConfig.phone}`}
+            class="px-6 py-3 rounded-lg border border-stone-300 text-[#1b3a5c] font-bold text-sm hover:bg-stone-50 transition-colors"
+          >
+            Call {siteConfig.phoneDisplay}
+          </a>
+        </div>
+      </section>
+
+      <!-- Internal Navigation Links -->
+      <section class="p-6 bg-stone-50 rounded-xl border border-stone-200 mb-10">
+        <h2 class="font-serif text-lg font-bold text-[#1b3a5c] mb-3">Related Guides & Resources</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm">
+          <a href="/sell-house-fast-sebring-fl/" class="p-3.5 bg-white rounded-lg border border-stone-200 hover:border-[#1b3a5c] transition-colors block">
+            <span class="font-bold text-[#1b3a5c] block mb-1">Sell House Fast Guide</span>
+            <span class="text-stone-600 text-xs">Strategies for 14- to 30-day closings without giving up 30% wholesale discounts.</span>
+          </a>
+          <a href="/fsbo-vs-listing-agent-sebring/" class="p-3.5 bg-white rounded-lg border border-stone-200 hover:border-[#1b3a5c] transition-colors block">
+            <span class="font-bold text-[#1b3a5c] block mb-1">FSBO vs. Listing Agent</span>
+            <span class="text-stone-600 text-xs">An honest pros, cons, and net proceeds mathematical comparison.</span>
+          </a>
+          <a href="/highlands-county-real-estate-market/" class="p-3.5 bg-white rounded-lg border border-stone-200 hover:border-[#1b3a5c] transition-colors block">
+            <span class="font-bold text-[#1b3a5c] block mb-1">Market Trends Report</span>
+            <span class="text-stone-600 text-xs">Quarterly price benchmarks, inventory levels, and DOM metrics.</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Back Link -->
+      <div class="text-center pt-4 border-t border-stone-200">
+        <a href="/sell-my-home-sebring-fl/" class="text-sm font-bold text-[#1b3a5c] hover:underline inline-flex items-center gap-1.5">
+          <span>← Back to Sell Your Home Overview</span>
+        </a>
+      </div>
+    </div>
+  </article>
+</PageLayout>

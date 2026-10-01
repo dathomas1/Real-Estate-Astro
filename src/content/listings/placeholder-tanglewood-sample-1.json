@@ -1,0 +1,14 @@
+{
+  "address": "123 Whispering Palms Way",
+  "neighborhood": "Tanglewood",
+  "city": "Sebring",
+  "price": 189000,
+  "beds": 2,
+  "baths": 2,
+  "sqft": 1450,
+  "status": "active",
+  "daysOnMarket": 14,
+  "photo": "/social-preview-image.png",
+  "description": "[PLACEHOLDER LISTING — SAMPLE DATA ONLY] Charming 2-bedroom, 2-bathroom manufactured home in premier 55+ Tanglewood community featuring modern updates, spacious Florida room, and private screened lanai overlooking lush greenery.",
+  "isPlaceholder": true
+}

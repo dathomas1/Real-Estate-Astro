@@ -1,0 +1,24 @@
+{
+  "name": "Sun 'N Lake",
+  "slug": "sun-n-lake",
+  "city": "Sebring",
+  "primaryKeyword": "sun 'n lake sebring fl",
+  "secondaryKeywords": [
+    "homes for sale in sun n lake sebring fl",
+    "sun n lake real estate sebring fl"
+  ],
+  "medianPrice": "$220,000 - $495,000",
+  "daysOnMarket": "55 days",
+  "description": "Sun 'N Lake is Highlands County's flagship master-planned community, encompassing two 18-hole championship golf courses (Deer Run & Turtle Run), a waterfront clubhouse, recreation center, and varied housing options.",
+  "amenities": [
+    "Two 18-Hole Championship Golf Courses",
+    "Island View Waterfront Restaurant",
+    "Community Center & Heated Pool",
+    "Pickleball & Tennis Complex"
+  ],
+  "crossLinkSlugs": [
+    "golf-hammock",
+    "spring-lake",
+    "tanglewood"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "address": "524 Citrus Blossom Boulevard",
+  "neighborhood": "Spring Lake",
+  "city": "Sebring",
+  "price": 329000,
+  "beds": 3,
+  "baths": 2,
+  "sqft": 1940,
+  "status": "active",
+  "daysOnMarket": 6,
+  "photo": "/social-preview-image.png",
+  "description": "[PLACEHOLDER LISTING — SAMPLE DATA ONLY] Brand-new 2026 custom construction home in Spring Lake. Features energy-efficient CBS build, impact-resistant windows, high ceilings, quartz countertops, and full 1-2-10 builder warranty.",
+  "isPlaceholder": true
+}

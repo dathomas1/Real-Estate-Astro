@@ -1,0 +1,25 @@
+{
+  "name": "Sebring Village",
+  "slug": "sebring-village",
+  "city": "Sebring",
+  "primaryKeyword": "sebring village fl",
+  "secondaryKeywords": [
+    "sebring village fl homes for sale",
+    "sebring village mobile home park"
+  ],
+  "medianPrice": "$70,000 - $140,000",
+  "daysOnMarket": "42 days",
+  "description": "Sebring Village provides affordable, low-maintenance manufactured home living in central Sebring with an active community clubhouse, heated swimming pool, and friendly neighborly lifestyle.",
+  "amenities": [
+    "Heated Swimming Pool",
+    "Community Clubhouse & Kitchen",
+    "Shuffleboard Courts",
+    "Billiards Room",
+    "Social Club Activities"
+  ],
+  "crossLinkSlugs": [
+    "tanglewood",
+    "whisper-lake",
+    "buttonwood-bay"
+  ]
+}

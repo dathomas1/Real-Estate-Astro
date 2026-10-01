@@ -1,0 +1,133 @@
+---
+import Nav from './Nav.astro';
+import MobileMenu from './MobileMenu.astro';
+import { siteConfig } from '@data/site';
+---
+
+<header id="site-header" class="w-full bg-[#1b3a5c] text-white sticky top-0 z-40 shadow-md transition-all duration-200">
+  <!-- Top Priority Phone Bar (Ensures phone is prominent & visible on all screen sizes per CRO section 2.2) -->
+  <div class="border-b border-white/15 bg-[#122944] text-xs py-1.5 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 text-stone-300">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400" aria-hidden="true"></span>
+        <span class="font-medium text-xs sm:text-sm">Highlands County Local Listing Specialist</span>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- Direct phone link always visible on all viewports -->
+        <a
+          href={`tel:${siteConfig.phone}`}
+          class="inline-flex items-center gap-1.5 text-amber-300 hover:text-amber-200 font-bold text-xs sm:text-sm px-2 py-0.5 rounded transition-colors focus-visible:outline-2 focus-visible:outline-white"
+          aria-label={`Call Alyson Thomas directly at ${siteConfig.phoneDisplay}`}
+        >
+          <span aria-hidden="true">📞</span>
+          <span class="hidden sm:inline">Call Alyson:</span>
+          <span>{siteConfig.phoneDisplay}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navigation Bar -->
+  <div
+    id="header-nav-container"
+    class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-3.5 flex items-center justify-between gap-4 transition-all duration-200"
+  >
+    <!-- Logo / Business Name Placeholder Slot -->
+    <a
+      href="/"
+      class="flex items-center gap-3 group focus-visible:outline-2 focus-visible:outline-amber-300 rounded p-1"
+      aria-label={`${siteConfig.businessName} Home`}
+    >
+      <!-- Clearly labeled placeholder logo badge slot -->
+      <div
+        class="w-10 h-10 rounded-lg bg-[#122944] border border-amber-400/40 flex items-center justify-center text-amber-300 font-serif font-bold text-lg shadow-sm group-hover:border-amber-300 transition-colors shrink-0"
+        aria-hidden="true"
+      >
+        AT
+      </div>
+
+      <div class="flex flex-col">
+        <span class="font-serif text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-white group-hover:text-amber-300 transition-colors leading-tight">
+          Alyson Thomas
+        </span>
+        <span class="text-[11px] sm:text-xs tracking-wider uppercase text-amber-300 font-semibold leading-tight">
+          Premier Plus Realty
+        </span>
+      </div>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <Nav />
+
+    <!-- Right Header Actions (Phone, CTA Button, Mobile Menu) -->
+    <div class="flex items-center gap-3">
+      <!-- Desktop Primary CTA Button -->
+      <a
+        href="/free-home-valuation/"
+        class="hidden lg:inline-flex items-center justify-center px-4 py-2.5 rounded-md font-bold text-[#122944] hover:text-[#0b1726] bg-[#d4923a] hover:bg-[#b87a2e] text-sm shadow-sm transition-all focus-visible:outline-2 focus-visible:outline-white min-h-[44px]"
+      >
+        Free Home Valuation
+      </a>
+
+      <!-- Mobile Tap-To-Call Link (always visible in header on mobile screens) -->
+      <a
+        href={`tel:${siteConfig.phone}`}
+        class="inline-flex lg:hidden items-center justify-center px-3 py-2 rounded-md font-bold text-amber-300 bg-white/10 hover:bg-white/20 border border-amber-300/30 text-xs sm:text-sm min-h-[44px] focus-visible:outline-2 focus-visible:outline-white"
+        aria-label={`Call Alyson at ${siteConfig.phoneDisplay}`}
+      >
+        <span class="mr-1" aria-hidden="true">📞</span>
+        <span>Call</span>
+      </a>
+
+      <!-- Mobile "Menu" Toggle Button (with visible word 'Menu' per UI doc Principle 4) -->
+      <button
+        id="open-mobile-menu"
+        type="button"
+        class="lg:hidden inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-white bg-white/10 hover:bg-white/20 border border-white/20 text-xs sm:text-sm font-bold focus-visible:outline-2 focus-visible:outline-amber-300 min-h-[44px] cursor-pointer"
+        aria-controls="mobile-navigation-drawer"
+        aria-expanded="false"
+        aria-label="Open navigation menu"
+      >
+        <svg class="w-5 h-5 text-stone-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <span>Menu</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Off-Canvas Menu -->
+  <MobileMenu />
+</header>
+
+<script>
+  function setupHeaderScroll() {
+    const navContainer = document.getElementById('header-nav-container');
+    const header = document.getElementById('site-header');
+    if (!navContainer || !header) return;
+
+    let isScrolled = false;
+
+    const onScroll = () => {
+      const scrolled = window.scrollY > 24;
+      if (scrolled !== isScrolled) {
+        isScrolled = scrolled;
+        if (isScrolled) {
+          navContainer.classList.remove('py-3', 'sm:py-3.5');
+          navContainer.classList.add('py-2', 'sm:py-2.5');
+          header.classList.add('shadow-lg');
+        } else {
+          navContainer.classList.remove('py-2', 'sm:py-2.5');
+          navContainer.classList.add('py-3', 'sm:py-3.5');
+          header.classList.remove('shadow-lg');
+        }
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  document.addEventListener('DOMContentLoaded', setupHeaderScroll);
+  document.addEventListener('astro:page-load', setupHeaderScroll);
+</script>

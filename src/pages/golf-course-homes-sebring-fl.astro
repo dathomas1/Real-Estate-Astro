@@ -1,0 +1,345 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import ListingCard from '@components/sections/ListingCard.astro';
+import Button from '@components/ui/Button.astro';
+import { siteConfig, siteData } from '@data/site';
+import { getCollection } from 'astro:content';
+
+// 1. Fetch relevant listings from Content Collection (golf communities)
+const allListings = await getCollection('listings');
+const golfListings = allListings.filter(
+  (listing) =>
+    listing.data.city === 'Sebring' &&
+    listing.data.status === 'active' &&
+    (listing.data.neighborhood === 'Golf Hammock' || listing.data.neighborhood === "Sun 'N Lake")
+);
+
+// 2. Schema markup: BreadcrumbList + RealEstateAgent (nested)
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${siteConfig.domain}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Homes for Sale in Sebring, FL',
+          item: `${siteConfig.domain}/homes-for-sale-sebring-fl/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: 'Golf Course Homes for Sale in Sebring, FL',
+          item: `${siteConfig.domain}/golf-course-homes-sebring-fl/`,
+        },
+      ],
+    },
+    {
+      '@type': 'RealEstateAgent',
+      '@id': `${siteConfig.domain}/#agent`,
+      name: siteConfig.businessName,
+      url: `${siteConfig.domain}/golf-course-homes-sebring-fl/`,
+      telephone: siteConfig.phone,
+      image: `${siteConfig.domain}/social-preview-image.png`,
+      priceRange: '$$',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: siteConfig.address.locality,
+        addressRegion: siteConfig.address.region,
+        postalCode: siteConfig.address.postalCode,
+        addressCountry: siteConfig.address.country,
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: siteData.geo.latitude,
+        longitude: siteData.geo.longitude,
+      },
+      areaServed: [
+        { '@type': 'City', name: 'Sebring' },
+        { '@type': 'AdministrativeArea', name: 'Highlands County' },
+      ],
+      parentOrganization: {
+        '@type': 'Organization',
+        name: siteConfig.brokerage,
+        url: siteConfig.domain,
+      },
+    },
+  ],
+};
+---
+
+<PageLayout
+  title="Golf Course Homes for Sale in Sebring, FL | Fairway Real Estate"
+  description="Browse golf course homes for sale in Sebring, FL. Discover fairway living in Sun 'N Lake, Golf Hammock, and Spring Lake with Alyson Thomas of Premier Plus Realty."
+  canonicalUrl={`${siteConfig.domain}/golf-course-homes-sebring-fl/`}
+  schema={pageSchema}
+>
+  <!-- Breadcrumb Navigation -->
+  <nav class="bg-stone-100 border-b border-stone-200 py-3 px-4 sm:px-6" aria-label="Breadcrumb">
+    <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs sm:text-sm text-stone-600">
+      <a href="/" class="hover:text-[#1b3a5c] hover:underline">Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <a href="/homes-for-sale-sebring-fl/" class="hover:text-[#1b3a5c] hover:underline">Homes for Sale</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <span class="text-stone-900 font-semibold" aria-current="page">Golf Course Homes</span>
+    </div>
+  </nav>
+
+  <article class="py-12 sm:py-16 px-4 sm:px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Page Hero Header -->
+      <header class="mb-12">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-4">
+          <span>Highlands County Golf Properties</span>
+        </div>
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1b3a5c] tracking-tight mb-4 leading-tight">
+          Golf Course Homes for Sale in Sebring, FL
+        </h1>
+        <p class="text-xl text-[#8A4700] font-serif italic mb-6">
+          Championship Fairways, Panoramic Green Views, and Year-Round Florida Golf Living
+        </p>
+        <p class="text-base sm:text-lg text-stone-700 leading-relaxed font-sans mb-8">
+          With mild sub-tropical winters, abundant sunshine, and undulating sand ridge topography, Sebring, Florida has long been revered by golfers as an affordable paradise. From championship Ron Garl designs carved through century-old live oak hammocks to 36-hole resort complexes with waterfront clubhouse dining, golf course homes in Sebring combine tranquil fairway vistas with active, neighborly community living.
+        </p>
+
+        <!-- Quick Facts Pill Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 bg-stone-50 rounded-xl border border-stone-200">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Price Range</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">$180k – $650k+</span>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Total Holes</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">90+ Area Holes</span>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Course Designers</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">Ron Garl & More</span>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Membership</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">Optional / No Buy-In</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Curated Sample Listings with MLS Disclosure -->
+      <section class="mb-14 bg-stone-50 rounded-2xl p-6 sm:p-8 border border-stone-200" aria-labelledby="sample-listings-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Fairway Real Estate</span>
+            <h2 id="sample-listings-heading" class="font-serif text-2xl font-bold text-[#1b3a5c] mt-1">
+              Sample Sebring Golf Course Listings
+            </h2>
+          </div>
+          <div class="p-3 bg-amber-50 border border-amber-300 rounded-lg text-xs text-amber-900 max-w-lg">
+            <strong>Inventory Notice:</strong> The property cards displayed below represent sample curated listings illustrating local Sebring golf communities pending direct live MLS/IDX feed integration. Contact Alyson at <a href={`tel:${siteConfig.phone}`} class="font-bold underline">{siteConfig.phoneDisplay}</a> for instantaneous MLS availability.
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {golfListings.map((listing) => (
+            <ListingCard
+              title={`${listing.data.beds} Bed, ${listing.data.baths} Bath Home in ${listing.data.neighborhood}`}
+              price={listing.data.price}
+              address={listing.data.address}
+              bedrooms={listing.data.beds}
+              bathrooms={listing.data.baths}
+              squareFeet={listing.data.sqft}
+              neighborhood={listing.data.neighborhood}
+              status="Active"
+              slug="/contact/"
+            />
+          ))}
+        </div>
+      </section>
+
+      <!-- Section 1: The Sebring Golf Lifestyle Advantage -->
+      <section class="mb-14 space-y-5 text-stone-700 text-base sm:text-lg leading-relaxed font-sans" aria-labelledby="golf-lifestyle-heading">
+        <h2 id="golf-lifestyle-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          The Sebring Golf Lifestyle Advantage: Quality Without the Country Club Price Tag
+        </h2>
+        <p>
+          Across much of coastal South Florida—from Naples and Palm Beach to Sarasota—golf course real estate has become prohibitively expensive, frequently burdened by mandatory six-figure equity initiation fees, hefty annual food and beverage minimums, and strict club assessments. Sebring offers a breath of fresh air. Here, golf living remains authentic, welcoming, and financially approachable.
+        </p>
+        <p>
+          Most residential golf communities in Sebring operate on an <em>optional membership</em> or public-daily-fee model. Homeowners are not forced to purchase expensive equity memberships simply because their backyard overlooks the fairway. You can choose to play 150 rounds a year with an economical seasonal or annual pass, or simply sip morning coffee on your screened lanai while watching morning tee shots soar down manicured fairways.
+        </p>
+        <p>
+          Additionally, golf cart mobility is a defining characteristic of daily life in Sebring golf communities. Paved neighborhood cart paths allow residents to drive directly from their garage to the pro shop, the driving range, tennis and pickleball courts, and clubhouse restaurants without ever starting their automobile.
+        </p>
+      </section>
+
+      <!-- Section 2: Sebring's Premier Golf Communities (Sun 'N Lake, Golf Hammock, Spring Lake) -->
+      <section class="mb-14" aria-labelledby="communities-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Fairway Neighborhoods</span>
+          <h2 id="communities-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+            Top Golf Course Communities in Sebring
+          </h2>
+          <p class="text-sm text-stone-600 mt-1">
+            Discover Sebring's top three golf enclaves, each offering distinct course architectures and residential styles:
+          </p>
+        </div>
+
+        <div class="space-y-6">
+          <!-- Community 1: Sun 'N Lake -->
+          <div class="bg-white rounded-xl p-6 sm:p-7 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-amber-400 transition-colors">
+            <div>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                <h3 class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c]">
+                  <a href="/sebring-neighborhoods/sun-n-lake/" class="hover:underline">
+                    Sun 'N Lake Golf Club (36 Championship Holes)
+                  </a>
+                </h3>
+                <span class="text-xs font-bold px-2.5 py-1 bg-amber-100 text-amber-900 rounded self-start sm:self-auto">
+                  Highlands County's Flagship
+                </span>
+              </div>
+              <p class="text-sm text-stone-600 leading-relaxed mb-4">
+                As Sebring's largest master-planned golf community, Sun 'N Lake features 36 championship holes across two celebrated championship layouts: <strong>Deer Run</strong> and <strong>Turtle Run</strong>. Deer Run is a classic parkland challenge with oak-lined fairways and deep bunkering, while Turtle Run offers a strategic target-golf layout carved through natural pine flatwoods. The community also features the lakefront Island View Restaurant, a recreation center with heated pool, tennis, pickleball, and immediate access to AdventHealth Sebring.
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-stone-600 bg-stone-50 p-3 rounded-lg mb-4">
+                <div><strong>Home Types:</strong> Fairway villas, CBS single-family, custom pool estates</div>
+                <div><strong>Price Range:</strong> $180,000 – $650,000+</div>
+                <div><strong>Golf Setup:</strong> Two 18-hole courses, driving range, pro shop</div>
+              </div>
+            </div>
+            <div class="pt-3 border-t border-stone-100 flex items-center justify-between">
+              <a href="/sebring-neighborhoods/sun-n-lake/" class="text-xs font-bold text-[#1b3a5c] hover:underline">
+                Explore Sun 'N Lake Golf Homes →
+              </a>
+              <span class="text-xs text-stone-500">North Sebring</span>
+            </div>
+          </div>
+
+          <!-- Community 2: Golf Hammock -->
+          <div class="bg-white rounded-xl p-6 sm:p-7 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-amber-400 transition-colors">
+            <div>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                <h3 class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c]">
+                  <a href="/sebring-neighborhoods/golf-hammock/" class="hover:underline">
+                    Golf Hammock (Ron Garl Championship Course)
+                  </a>
+                </h3>
+                <span class="text-xs font-bold px-2.5 py-1 bg-amber-100 text-amber-900 rounded self-start sm:self-auto">
+                  Canopy Oaks & Generous Lots
+                </span>
+              </div>
+              <p class="text-sm text-stone-600 leading-relaxed mb-4">
+                Nestled along Hammock Road adjacent to Highlands Hammock State Park, Golf Hammock offers a timeless Florida setting. Its 18-hole course was designed by renowned Florida golf architect Ron Garl, weaving through stately oak hammocks and strategic water features. Homes are fee-simple concrete block construction on generous quarter- to half-acre lots with deep setbacks, low annual HOA dues, and no mandatory golf membership.
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-stone-600 bg-stone-50 p-3 rounded-lg mb-4">
+                <div><strong>Home Types:</strong> Custom CBS ranch homes, pool estates, patio homes</div>
+                <div><strong>Price Range:</strong> $220,000 – $475,000</div>
+                <div><strong>Golf Setup:</strong> 18 holes, pro shop, full-service clubhouse restaurant</div>
+              </div>
+            </div>
+            <div class="pt-3 border-t border-stone-100 flex items-center justify-between">
+              <a href="/sebring-neighborhoods/golf-hammock/" class="text-xs font-bold text-[#1b3a5c] hover:underline">
+                Explore Golf Hammock Homes →
+              </a>
+              <span class="text-xs text-stone-500">Northwest Sebring</span>
+            </div>
+          </div>
+
+          <!-- Community 3: Spring Lake -->
+          <div class="bg-white rounded-xl p-6 sm:p-7 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-amber-400 transition-colors">
+            <div>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                <h3 class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c]">
+                  <a href="/sebring-neighborhoods/spring-lake/" class="hover:underline">
+                    Spring Lake Golf Resort & Country Living
+                  </a>
+                </h3>
+                <span class="text-xs font-bold px-2.5 py-1 bg-amber-100 text-amber-900 rounded self-start sm:self-auto">
+                  Tranquil Acreage & Lake Istokpoga
+                </span>
+              </div>
+              <p class="text-sm text-stone-600 leading-relaxed mb-4">
+                Located in southeast Sebring near the trophy bass waters of Lake Istokpoga, Spring Lake is a scenic golf retreat characterized by rolling fairways, spacious acreage parcels, and a relaxed countryside ambiance. Residents enjoy the community eco-park, walking trails, pickleball courts, and attached golf villas alongside custom single-family residences.
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-stone-600 bg-stone-50 p-3 rounded-lg mb-4">
+                <div><strong>Home Types:</strong> Fairway villas, CBS single-family, acreage estates</div>
+                <div><strong>Price Range:</strong> $175,000 – $475,000</div>
+                <div><strong>Golf Setup:</strong> Historic resort layout, driving range, pro shop</div>
+              </div>
+            </div>
+            <div class="pt-3 border-t border-stone-100 flex items-center justify-between">
+              <a href="/sebring-neighborhoods/spring-lake/" class="text-xs font-bold text-[#1b3a5c] hover:underline">
+                Explore Spring Lake Golf Homes →
+              </a>
+              <span class="text-xs text-stone-500">Southeast Sebring</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Fairway Architecture & Construction Nuances -->
+      <section class="mb-14 space-y-5 text-stone-700 text-base sm:text-lg leading-relaxed font-sans" aria-labelledby="architecture-heading">
+        <h2 id="architecture-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Fairway Architecture, Orientation & Building Considerations
+        </h2>
+        <p>
+          Purchasing or selling a golf course property involves specific considerations that standard residential buyers never encounter. One of the most important factors is <strong>hole orientation and fairway trajectory</strong>. Homes positioned directly along landing zones or doglegs require thoughtful architectural placement, protective landscaping buffers, or impact-resistant window glass to protect against stray golf balls.
+        </p>
+        <p>
+          Sebring golf homes frequently feature specialized floor plans that celebrate fairway vistas:
+        </p>
+        <ul class="space-y-2 pl-4 text-sm sm:text-base">
+          <li>• <strong>Expansive Lanai Enclosures:</strong> Panoramic screened pool cages with "picture frame" beam engineering maximize uninterrupted golf course views without vertical cage obstruction.</li>
+          <li>• <strong>Dedicated Golf Cart Bays:</strong> Many residences include a third garage door specifically dimensioned for golf carts, complete with 110V/220V charging outlets.</li>
+          <li>• <strong>Outdoor Summer Kitchens:</strong> Built-in stainless grills, prep sinks, and outdoor dining bars make evening fairway entertaining a centerpiece of the home.</li>
+        </ul>
+        <p>
+          Alyson Thomas helps buyers navigate orientation trade-offs, assessment districts (such as Sun 'N Lake's CDD), and HOA covenants to identify the perfect fairway match.
+        </p>
+      </section>
+
+      <!-- Section 4: Dual CTA (Valuation + Buyer Showing) -->
+      <section class="mb-14 bg-[#1b3a5c] rounded-2xl p-8 sm:p-12 text-white shadow-xl" aria-labelledby="cta-heading">
+        <div class="max-w-3xl">
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/30 mb-4">
+            Sebring Golf Real Estate Advisory
+          </span>
+          <h2 id="cta-heading" class="font-serif text-2xl sm:text-4xl font-bold mb-4">
+            Own a Golf Course Home in Sebring? Find Out What It's Worth
+          </h2>
+          <p class="text-stone-200 text-base sm:text-lg leading-relaxed mb-6 font-sans">
+            Fairway premiums in Sebring vary significantly based on course positioning, green views, and pool orientation. Alyson Thomas provides verified, micro-market Comparative Market Analyses that capture the true value of your golf property.
+          </p>
+
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <Button href="/free-home-valuation/" variant="primary" size="lg">
+              Get Your Free Fairway Valuation →
+            </Button>
+            <Button href="/contact/" variant="outline" size="lg">
+              Schedule a Golf Home Tour
+            </Button>
+            <a
+              href={`tel:${siteConfig.phone}`}
+              class="inline-flex items-center justify-center px-4 py-3 rounded-md font-bold text-amber-300 hover:text-white transition-all text-sm text-center"
+              aria-label={`Call Alyson Thomas directly at ${siteConfig.phoneDisplay}`}
+            >
+              📞 Call {siteConfig.phoneDisplay}
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Back Link -->
+      <div class="text-center pt-6 border-t border-stone-200">
+        <a href="/homes-for-sale-sebring-fl/" class="text-sm font-bold text-[#1b3a5c] hover:underline inline-flex items-center gap-1.5">
+          <span>← Back to All Sebring Homes & Communities</span>
+        </a>
+      </div>
+    </div>
+  </article>
+</PageLayout>

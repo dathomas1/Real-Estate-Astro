@@ -1,0 +1,43 @@
+---
+import Button from './Button.astro';
+import { siteConfig } from '@data/site';
+
+interface Props {
+  headline?: string;
+  subheadline?: string;
+  buttonText?: string;
+  buttonHref?: string;
+}
+
+const {
+  headline = 'Thinking of Selling Your Sebring Home?',
+  subheadline = 'Get an accurate, personalized comparative market analysis from Alyson Thomas with zero obligation.',
+  buttonText = 'Get Your Free Home Valuation',
+  buttonHref = '/free-home-valuation/',
+} = Astro.props;
+---
+
+<section class="w-full py-16 px-4 bg-[#1b3a5c] text-white text-center">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-2xl sm:text-4xl font-bold mb-4 text-white">
+      {headline}
+    </h2>
+    <p class="text-lg text-stone-200 mb-8 max-w-2xl mx-auto leading-relaxed">
+      {subheadline}
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <Button href={buttonHref} variant="primary" size="lg">
+        {buttonText} →
+      </Button>
+      <a
+        href={`tel:${siteConfig.phone}`}
+        class="inline-flex items-center justify-center px-6 py-4 rounded-md font-bold text-white border-2 border-white/80 hover:border-white hover:bg-white/10 transition-colors min-h-[56px]"
+      >
+        📞 Call {siteConfig.phoneDisplay}
+      </a>
+    </div>
+    <p class="mt-4 text-xs text-stone-300">
+      🔒 100% Confidential · No Obligation · Delivered within 24 Hours
+    </p>
+  </div>
+</section>

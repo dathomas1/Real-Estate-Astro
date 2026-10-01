@@ -1,0 +1,78 @@
+---
+import { Image } from 'astro:assets';
+import Card from '@components/ui/Card.astro';
+import { neighborhoodShowcasePlaceholders } from '@data/placeholderImages';
+
+interface Props {
+  name: string;
+  slug: string;
+  tagline: string;
+  overview: string;
+  medianPrice: string;
+  amenities: string[];
+}
+
+const { name, slug, tagline, overview, medianPrice, amenities } = Astro.props;
+const placeholder = neighborhoodShowcasePlaceholders[slug];
+---
+
+<Card class="flex flex-col justify-between hover:shadow-md transition-shadow p-0 overflow-hidden group">
+  <div>
+    {placeholder && (
+      <div class="relative w-full aspect-[16/10] bg-stone-200 overflow-hidden border-b border-stone-200">
+        <Image
+          src={placeholder.image}
+          alt={placeholder.alt}
+          width={placeholder.width}
+          height={placeholder.height}
+          loading="lazy"
+          decoding="async"
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+      </div>
+    )}
+
+    <div class="p-6">
+      <div class="flex justify-between items-start mb-2">
+        <h3 class="font-serif text-xl font-bold text-[#1b3a5c] group-hover:text-amber-700 transition-colors">
+          {name}
+        </h3>
+        <span class="text-xs font-bold px-2 py-1 bg-amber-100 text-amber-900 rounded">
+          {medianPrice}
+        </span>
+      </div>
+      <p class="text-xs font-semibold text-amber-700 uppercase tracking-wider mb-3">
+        {tagline}
+      </p>
+      <p class="text-sm text-gray-600 mb-4 line-clamp-3">
+        {overview}
+      </p>
+
+      <div class="mb-4">
+        <span class="text-xs font-bold text-gray-700 block mb-1">Highlights:</span>
+        <div class="flex flex-wrap gap-1">
+          {amenities.slice(0, 3).map((a) => (
+            <span class="text-xs bg-stone-100 text-stone-700 px-2 py-0.5 rounded">
+              {a}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-6 pt-4 border-t border-stone-100 flex items-center justify-between">
+    <a
+      href={`/sebring-neighborhoods/${slug}/`}
+      class="text-sm font-bold text-[#1b3a5c] hover:text-[#d4923a] transition-colors"
+    >
+      Explore {name} →
+    </a>
+    <a
+      href="/free-home-valuation/"
+      class="text-xs text-gray-500 hover:text-gray-900 underline"
+    >
+      Home Value
+    </a>
+  </div>
+</Card>

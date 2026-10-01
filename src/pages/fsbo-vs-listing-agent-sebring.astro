@@ -1,0 +1,449 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import FAQAccordion from '@components/sections/FAQAccordion.astro';
+import Button from '@components/ui/Button.astro';
+import { siteConfig, siteData } from '@data/site';
+import { getCollection } from 'astro:content';
+
+// 1. Fetch relevant FAQs for FSBO vs. Agent comparison
+const allFaqs = await getCollection('faq');
+const fsboQuestions = [
+  'Should I sell my Sebring home For Sale By Owner (FSBO) or with an agent?',
+  'Do FSBO sellers still have to pay a buyer\'s agent commission in Sebring?',
+  'What legal disclosures are required when selling FSBO in Florida?',
+  'What should you not do before selling your house in Sebring, FL?',
+];
+
+const selectedFaqs = allFaqs.filter((f) =>
+  fsboQuestions.some(
+    (q) => f.data.question.toLowerCase().includes(q.toLowerCase()) ||
+           q.toLowerCase().includes(f.data.question.toLowerCase())
+  )
+);
+
+const finalFaqs = selectedFaqs.length >= 3 ? selectedFaqs : allFaqs.slice(0, 4);
+
+const faqAccordionItems = finalFaqs.map((item) => ({
+  question: item.data.question,
+  answer: item.data.answer,
+}));
+
+// 2. Structured Data: BreadcrumbList + FAQPage + RealEstateAgent (nested)
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${siteConfig.domain}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Sell Your Home',
+          item: `${siteConfig.domain}/sell-my-home-sebring-fl/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: 'FSBO vs. Listing Agent',
+          item: `${siteConfig.domain}/fsbo-vs-listing-agent-sebring/`,
+        },
+      ],
+    },
+    {
+      '@type': 'RealEstateAgent',
+      '@id': `${siteConfig.domain}/#agent`,
+      name: siteConfig.businessName,
+      url: `${siteConfig.domain}/fsbo-vs-listing-agent-sebring/`,
+      telephone: siteConfig.phone,
+      image: `${siteConfig.domain}/social-preview-image.png`,
+      priceRange: '$$',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: siteConfig.address.locality,
+        addressRegion: siteConfig.address.region,
+        postalCode: siteConfig.address.postalCode,
+        addressCountry: siteConfig.address.country,
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: siteData.geo.latitude,
+        longitude: siteData.geo.longitude,
+      },
+      areaServed: [
+        { '@type': 'City', name: 'Sebring' },
+        { '@type': 'AdministrativeArea', name: 'Highlands County' },
+      ],
+      parentOrganization: {
+        '@type': 'Organization',
+        name: siteConfig.brokerage,
+        url: siteConfig.domain,
+      },
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: finalFaqs.map((f) => ({
+        '@type': 'Question',
+        name: f.data.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: f.data.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<PageLayout
+  title="FSBO vs. Listing Agent in Sebring, FL | Net Proceeds & Legal Analysis"
+  description="Compare selling For Sale By Owner (FSBO) versus hiring an experienced local listing agent in Sebring, FL. Analyze net proceeds, legal liabilities, and buyer reach."
+  canonicalUrl={`${siteConfig.domain}/fsbo-vs-listing-agent-sebring/`}
+  schema={pageSchema}
+>
+  <!-- Breadcrumb Navigation -->
+  <nav class="bg-stone-100 border-b border-stone-200 py-3 px-4 sm:px-6" aria-label="Breadcrumb">
+    <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs sm:text-sm text-stone-600">
+      <a href="/" class="hover:text-[#1b3a5c] hover:underline">Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <a href="/sell-my-home-sebring-fl/" class="hover:text-[#1b3a5c] hover:underline">Sell Your Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <span class="text-stone-900 font-semibold" aria-current="page">FSBO vs. Agent</span>
+    </div>
+  </nav>
+
+  <article class="py-12 sm:py-16 px-4 sm:px-6 font-sans">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header -->
+      <header class="mb-10">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-3">
+          Sellers' Financial Guide
+        </span>
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1b3a5c] tracking-tight mb-5 leading-tight">
+          FSBO vs. Listing Agent in Sebring, FL: Which Route Nets You More Money?
+        </h1>
+        <p class="text-lg sm:text-xl text-stone-700 leading-relaxed">
+          When considering selling a home in Highlands County, listing "For Sale By Owner" (FSBO) holds obvious initial appeal: on a $300,000 home, bypassing a listing commission appears to preserve thousands in home equity.
+        </p>
+        <p class="text-base text-stone-600 leading-relaxed mt-3">
+          Yet gross commissions saved on paper do not always equal net cash in your bank account. In Sebring's market—where most qualified buyers relocate from out of state—self-representation brings hidden marketing expenses, steep buyer discount expectations, complex Florida disclosure mandates, and financing hurdles that often leave FSBO sellers netting less than represented sales.
+        </p>
+      </header>
+
+      {/*
+        NOTE ON INDUSTRY BENCHMARK DATA:
+        The following section cites published industry statistical research from the National
+        Association of Realtors (NAR) "Profile of Home Buyers and Sellers" report for national
+        statistical context on FSBO versus agent-assisted transaction sale prices.
+        This citation is provided solely as general macroeconomic market research data and does
+        NOT constitute an endorsement, affiliation, or claim of NAR membership/REALTOR® designation
+        for Alyson Thomas or Premier Plus Realty.
+      */}
+
+      <!-- Section 1: The Hard Numbers — Industry Research vs. Net Proceeds Math -->
+      <section class="mb-14 space-y-5 text-stone-700 leading-relaxed" aria-labelledby="hard-numbers-heading">
+        <h2 id="hard-numbers-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          The Hard Numbers: What Industry Data Reveals About FSBO Sale Prices
+        </h2>
+        <p>
+          According to long-standing industry benchmark data published in the National Association of Realtors' <em>Profile of Home Buyers and Sellers</em>, the typical FSBO property sold for a median price of approximately <strong>$310,000</strong>, compared to <strong>$405,000</strong> for homes represented by licensed real estate agents.
+        </p>
+        <p>
+          Even when adjusting for direct sales to family members, arm's-length FSBO sales to public buyers consistently trailed agent-listed homes by 10% to 15% in final price. Two structural market dynamics explain this gap:
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 my-6">
+          <div class="p-5 bg-white rounded-xl border border-stone-200 shadow-sm">
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c] mb-2">The "Bargain Hunter" Mindset</h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Buyers and investors seeking FSBO signs know the seller isn't paying a listing fee. They promptly deduct that entire percentage—and often more—from their opening offer, pocketing the savings themselves.
+            </p>
+          </div>
+          <div class="p-5 bg-white rounded-xl border border-stone-200 shadow-sm">
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c] mb-2">Constrained Market Exposure</h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Price is dictated by competitive bidding. Broadcasting across regional MLS networks exposes a home to thousands of vetted buyers simultaneously, while a FSBO yard sign reaches only drive-by local traffic.
+            </p>
+          </div>
+        </div>
+
+        <!-- Realistic Net Proceeds Comparison Calculation -->
+        <div class="p-6 bg-stone-50 rounded-2xl border border-stone-200 my-8">
+          <h3 class="font-serif text-xl font-bold text-[#1b3a5c] mb-3">
+            Hypothetical Net Proceeds Comparison: $300,000 Sebring Residence
+          </h3>
+          <p class="text-xs sm:text-sm text-stone-600 mb-5">
+            A side-by-side ledger of a typical Sebring home with a fair market value of $300,000:
+          </p>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs sm:text-sm bg-white rounded-xl border border-stone-200 overflow-hidden text-left">
+              <thead class="bg-[#1b3a5c] text-white">
+                <tr>
+                  <th class="p-3 sm:p-4 font-serif font-bold">Transaction Element</th>
+                  <th class="p-3 sm:p-4 font-serif font-bold">FSBO Direct Sale</th>
+                  <th class="p-3 sm:p-4 font-serif font-bold">Full Listing (Alyson Thomas)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-stone-200">
+                <tr>
+                  <td class="p-3 sm:p-4 font-medium text-stone-800">Final Gross Contract Price</td>
+                  <td class="p-3 sm:p-4 text-stone-700">$278,000 <span class="text-xs text-stone-400 block font-normal">(Buyer discounts ~7.3% without bidding competition)</span></td>
+                  <td class="p-3 sm:p-4 text-emerald-800 font-bold">$302,000 <span class="text-xs text-emerald-700 block font-normal">(Multiple bids driven by multi-MLS launch)</span></td>
+                </tr>
+                <tr>
+                  <td class="p-3 sm:p-4 font-medium text-stone-800">Buyer Broker Commission (Typical 2.5%–3%)</td>
+                  <td class="p-3 sm:p-4 text-stone-700">-$8,340 <span class="text-xs text-stone-400 block font-normal">(88%+ of Sebring buyers arrive with an agent)</span></td>
+                  <td class="p-3 sm:p-4 text-stone-700">-$9,060</td>
+                </tr>
+                <tr>
+                  <td class="p-3 sm:p-4 font-medium text-stone-800">Listing Brokerage Representation Fee</td>
+                  <td class="p-3 sm:p-4 text-stone-700">$0</td>
+                  <td class="p-3 sm:p-4 text-stone-700">-$9,060</td>
+                </tr>
+                <tr>
+                  <td class="p-3 sm:p-4 font-medium text-stone-800">Out-of-Pocket Media (HDR, Drones, Ads)</td>
+                  <td class="p-3 sm:p-4 text-stone-700">-$750 <span class="text-xs text-stone-400 block font-normal">(Paid directly by seller)</span></td>
+                  <td class="p-3 sm:p-4 text-stone-700">$0 <span class="text-xs text-emerald-700 block font-normal">(Included in Alyson's marketing suite)</span></td>
+                </tr>
+                <tr>
+                  <td class="p-3 sm:p-4 font-medium text-stone-800">Real Estate Attorney Contract Review</td>
+                  <td class="p-3 sm:p-4 text-stone-700">-$1,200</td>
+                  <td class="p-3 sm:p-4 text-stone-700">$0 <span class="text-xs text-emerald-700 block font-normal">(Coordinated via Florida standard FAR/BAR forms)</span></td>
+                </tr>
+                <tr>
+                  <td class="p-3 sm:p-4 font-medium text-stone-800">Inspection & Appraisal Concessions</td>
+                  <td class="p-3 sm:p-4 text-stone-700">-$4,500 <span class="text-xs text-stone-400 block font-normal">(Seller negotiates without micro-comp proof)</span></td>
+                  <td class="p-3 sm:p-4 text-stone-700">-$1,500 <span class="text-xs text-emerald-700 block font-normal">(Vetted strictly against contract terms)</span></td>
+                </tr>
+                <tr class="bg-stone-50 font-bold">
+                  <td class="p-3 sm:p-4 text-stone-900">Estimated Net Proceeds to Seller</td>
+                  <td class="p-3 sm:p-4 text-stone-900">$263,210</td>
+                  <td class="p-3 sm:p-4 text-emerald-900 font-bold">$282,380</td>
+                </tr>
+                <tr class="bg-emerald-50 text-emerald-900">
+                  <td class="p-3 sm:p-4 font-bold">Net Difference in Seller's Pocket</td>
+                  <td class="p-3 sm:p-4 italic" colspan="2">
+                    <strong>+$19,170 higher net proceeds</strong> secured through professional representation, even after paying commission.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Honest Pros and Cons Comparison Table -->
+      <section class="mb-14 space-y-6 text-stone-700 leading-relaxed" aria-labelledby="comparison-table-heading">
+        <h2 id="comparison-table-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Comprehensive Comparison: FSBO vs. Professional Listing Agent
+        </h2>
+        <p>
+          Selling your Sebring home involves trade-offs across market reach, legal liability, time investment, and financial returns:
+        </p>
+
+        <div class="overflow-x-auto my-6">
+          <table class="w-full border-collapse bg-white rounded-xl overflow-hidden shadow-sm border border-stone-200 text-left text-xs sm:text-sm">
+            <thead class="bg-[#1b3a5c] text-white">
+              <tr>
+                <th class="p-3.5 sm:p-4 font-serif font-bold">Category</th>
+                <th class="p-3.5 sm:p-4 font-serif font-bold">For Sale By Owner (FSBO)</th>
+                <th class="p-3.5 sm:p-4 font-serif font-bold">Alyson Thomas (Premier Plus Realty)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-200">
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">Buyer Reach</td>
+                <td class="p-3.5 sm:p-4 text-stone-600">
+                  Limited to yard signs, Craigslist, social posts, and FSBO sites. Misses the 90%+ of out-of-state buyers represented by licensed agents.
+                </td>
+                <td class="p-3.5 sm:p-4 text-emerald-800 font-medium">
+                  Full syndication across Heartland MLS, Stellar MLS, Zillow, Realtor.com, plus campaigns reaching Midwest and Northeast relocators.
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">Pricing Calibration</td>
+                <td class="p-3.5 sm:p-4 text-stone-600">
+                  Guided by automated online algorithms or neighborhood gossip, often causing underpricing or stagnation from overpricing.
+                </td>
+                <td class="p-3.5 sm:p-4 text-emerald-800 font-medium">
+                  Forensic CMA adjusting for sub-HOA lines, roof age, HVAC efficiency, fairway views, and Highlands County CDD fees.
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">Buyer Vetting & Safety</td>
+                <td class="p-3.5 sm:p-4 text-stone-600">
+                  Seller admits unvetted strangers into their home without verified mortgage approvals or identity screening.
+                </td>
+                <td class="p-3.5 sm:p-4 text-emerald-800 font-medium">
+                  All buyers must present verified lender pre-approval letters or liquid proof of funds prior to scheduling private showings.
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">Contract Advocacy</td>
+                <td class="p-3.5 sm:p-4 text-stone-600">
+                  Direct negotiations can become emotional; unseasoned sellers frequently concede to costly repair credits and loose escrow terms.
+                </td>
+                <td class="p-3.5 sm:p-4 text-emerald-800 font-medium">
+                  Objective fiduciary advocacy protecting purchase price, appraisal gaps, repair caps, and earnest money forfeiture clauses.
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">Disclosures & Legal Risk</td>
+                <td class="p-3.5 sm:p-4 text-stone-600">
+                  100% personal liability under Florida <em>Johnson v. Davis</em> doctrine. Inadvertent omissions invite civil misrepresentation claims.
+                </td>
+                <td class="p-3.5 sm:p-4 text-emerald-800 font-medium">
+                  Standard Florida disclosure compliance, backed by professional brokerage risk management and E&O protection.
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">Time & Stress</td>
+                <td class="p-3.5 sm:p-4 text-stone-600">
+                  Requires 40–80 hours fielding calls, hosting tours, drafting paperwork, and managing title and lender deadlines.
+                </td>
+                <td class="p-3.5 sm:p-4 text-emerald-800 font-medium">
+                  Turnkey representation. We oversee inquiries, showing schedules, inspection walkthroughs, and closing escrow logistics.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Section 3: Sebring & Florida-Specific FSBO Pitfalls -->
+      <section class="mb-14 space-y-5 text-stone-700 leading-relaxed" aria-labelledby="sebring-pitfalls-heading">
+        <h2 id="sebring-pitfalls-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Unique Sebring & Florida Realities That Catch FSBO Sellers Off Guard
+        </h2>
+        <p>
+          Highlands County real estate operates under legal and insurance dynamics that frequently trip up unrepresented owners:
+        </p>
+
+        <div class="space-y-4 my-6">
+          <div class="p-5 bg-white rounded-xl border border-stone-200 shadow-sm">
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c] mb-1.5">
+              1. The Property Insurance & 4-Point Inspection Barrier
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              In Florida's tight insurance climate, carriers require an approved 4-Point Inspection (Roof, Electrical, Plumbing, HVAC) and Roof Certification on homes over 20 years old. If a shingle roof exceeds 15 years, unrepresented buyers often discover in week three of escrow that they cannot obtain homeowner's coverage, terminating the contract. An experienced Sebring agent identifies insurance hurdles before launch and structures solutions proactively.
+            </p>
+          </div>
+
+          <div class="p-5 bg-white rounded-xl border border-stone-200 shadow-sm">
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c] mb-1.5">
+              2. Landmark Disclosure Mandates: <em>Johnson v. Davis</em>
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              The Florida Supreme Court established in <em>Johnson v. Davis</em> that sellers must disclose all known material facts affecting property value that are not readily observable. Stating "as-is" does not shield a seller from liability. Undisclosed prior plumbing leaks, settling cracks, or past pest treatments can trigger costly post-closing litigation without documented disclosures.
+            </p>
+          </div>
+
+          <div class="p-5 bg-white rounded-xl border border-stone-200 shadow-sm">
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c] mb-1.5">
+              3. Micro-Market Nuances: Golf Enclaves, 55+ Parks & Shorelines
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Sebring features distinct micro-enclaves. Pricing in <a href="/sebring-neighborhoods/sun-n-lake/" class="text-[#1b3a5c] font-bold underline">Sun 'N Lake</a> requires factoring CDD bond assessments. Selling in <a href="/sebring-neighborhoods/tanglewood/" class="text-[#1b3a5c] font-bold underline">Tanglewood</a> hinges on land-lease structures and 55+ covenants. Waterfront homes on <a href="/sebring-neighborhoods/lakefront-homes/" class="text-[#1b3a5c] font-bold underline">Lake Jackson</a> require valuing seawalls and linear footage. FSBO sellers lacking closed MLS data frequently misprice by tens of thousands.
+            </p>
+          </div>
+
+          <div class="p-5 bg-white rounded-xl border border-stone-200 shadow-sm">
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c] mb-1.5">
+              4. Inbound Northern Buyers Work Exclusively with Agents
+            </h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Over 80% of Highlands County buyers move from outside the region (Midwest, Northeast, and coastal Florida). Because they cannot drive Sebring streets on weekends, they rely entirely on retained buyer agents to find MLS listings, conduct virtual tours, and review paperwork. Without an MLS listing or cooperating agent commission, a FSBO home is invisible to this qualified buyer pool.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: When Does FSBO Actually Make Sense? (Honest Evaluation) -->
+      <section class="mb-14 p-6 sm:p-8 bg-amber-50/70 border border-amber-300 rounded-2xl space-y-4" aria-labelledby="when-fsbo-works">
+        <h2 id="when-fsbo-works" class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c]">
+          An Honest Perspective: When Selling FSBO Actually Makes Sense
+        </h2>
+        <p class="text-xs sm:text-sm text-stone-700 leading-relaxed">
+          At Premier Plus Realty, we respect every homeowner's choices. There are specific scenarios where selling For Sale By Owner makes practical sense:
+        </p>
+        <ul class="text-xs sm:text-sm text-stone-700 space-y-2 list-disc pl-5 leading-relaxed">
+          <li><strong>Selling to an Immediate Family Member or Neighbor:</strong> When buyer and seller have already agreed on price and terms, public marketing is unnecessary. You simply need a local Highlands County real estate attorney or title company to prepare settlement documents.</li>
+          <li><strong>Direct Investor Sales with Legal Review:</strong> If you accept an "as-is" discount from an institutional cash buyer and have independent legal counsel reviewing terms, a public listing may not be required.</li>
+        </ul>
+        <p class="text-xs sm:text-sm text-stone-700 leading-relaxed pt-1">
+          However, when your goal is to <strong>maximize your net take-home equity</strong> on the open market, professional listing representation consistently delivers higher financial returns.
+        </p>
+      </section>
+
+      <!-- Section 5: Valuation Call-to-Action Card -->
+      <section class="mb-14 p-6 sm:p-8 bg-white rounded-2xl border border-stone-200 shadow-lg text-center" aria-label="Complimentary Consultation">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-3">
+          Zero-Obligation Equity Assessment
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mb-3">
+          Discover What Your Sebring Property Would Net on the Open MLS
+        </h2>
+        <p class="text-xs sm:text-sm text-stone-600 max-w-xl mx-auto mb-6 leading-relaxed">
+          Before putting up a yard sign or signing away your equity, let Alyson Thomas prepare a custom Comparative Market Analysis and estimated Net Sheet showing exactly what you would walk away with after all costs.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button href="/free-home-valuation/" variant="primary" size="lg">
+            Request Free Home Valuation →
+          </Button>
+          <a
+            href={`tel:${siteConfig.phone}`}
+            class="px-6 py-3 rounded-lg border border-stone-300 text-[#1b3a5c] font-bold text-sm hover:bg-stone-50 transition-colors"
+          >
+            Call {siteConfig.phoneDisplay}
+          </a>
+        </div>
+      </section>
+
+      <!-- Section 6: Frequently Asked Questions -->
+      <section class="mb-14" aria-labelledby="fsbo-faq-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Frequently Asked Questions</span>
+          <h2 id="fsbo-faq-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+            Common Questions: Selling FSBO in Sebring, FL
+          </h2>
+          <p class="text-xs sm:text-sm text-stone-600 mt-1">
+            Practical insights on commissions, contracts, and legal requirements:
+          </p>
+        </div>
+
+        <FAQAccordion items={faqAccordionItems} title="" />
+      </section>
+
+      <!-- Section 7: Related Seller Guides -->
+      <section class="p-6 bg-stone-50 rounded-xl border border-stone-200 mb-10">
+        <h2 class="font-serif text-lg font-bold text-[#1b3a5c] mb-3">Explore Additional Seller Resources</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm">
+          <a href="/sell-my-home-sebring-fl/" class="p-3.5 bg-white rounded-lg border border-stone-200 hover:border-[#1b3a5c] transition-colors block">
+            <span class="font-bold text-[#1b3a5c] block mb-1">Sebring Home Selling Guide</span>
+            <span class="text-stone-600 text-xs">Our complete 5-step selling roadmap from pricing to closing.</span>
+          </a>
+          <a href="/free-home-valuation/" class="p-3.5 bg-white rounded-lg border border-stone-200 hover:border-[#1b3a5c] transition-colors block">
+            <span class="font-bold text-[#1b3a5c] block mb-1">Free Home Valuation</span>
+            <span class="text-stone-600 text-xs">Handcrafted CMA report calibrated for your specific neighborhood.</span>
+          </a>
+          <a href="/sell-house-fast-sebring-fl/" class="p-3.5 bg-white rounded-lg border border-stone-200 hover:border-[#1b3a5c] transition-colors block">
+            <span class="font-bold text-[#1b3a5c] block mb-1">Sell House Fast Strategies</span>
+            <span class="text-stone-600 text-xs">Urgent selling guidance for relocation, probate, and financial transitions.</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Back Link -->
+      <div class="text-center pt-4 border-t border-stone-200">
+        <a href="/sell-my-home-sebring-fl/" class="text-sm font-bold text-[#1b3a5c] hover:underline inline-flex items-center gap-1.5">
+          <span>← Back to Primary Home Selling Guide</span>
+        </a>
+      </div>
+    </div>
+  </article>
+</PageLayout>

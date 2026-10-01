@@ -1,0 +1,14 @@
+{
+  "address": "456 Fairway Vista Dr",
+  "neighborhood": "Golf Hammock",
+  "city": "Sebring",
+  "price": 349000,
+  "beds": 3,
+  "baths": 2,
+  "sqft": 2180,
+  "status": "active",
+  "daysOnMarket": 28,
+  "photo": "/social-preview-image.png",
+  "description": "[PLACEHOLDER LISTING — SAMPLE DATA ONLY] Beautiful single-family golf course residence in Golf Hammock offering panoramic fairway views, vaulted ceilings, updated granite kitchen, and a screened swimming pool patio.",
+  "isPlaceholder": true
+}

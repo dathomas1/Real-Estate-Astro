@@ -1,0 +1,326 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { siteConfig, siteData } from '@data/site';
+import { getCollection } from 'astro:content';
+
+// Fetch client testimonial for trust signal
+const allTestimonials = await getCollection('testimonials');
+const featuredTestimonial = allTestimonials[1] || allTestimonials[0];
+
+// Service + BreadcrumbList + RealEstateAgent Schema
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${siteConfig.domain}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Sell Your Home',
+          item: `${siteConfig.domain}/sell-my-home-sebring-fl/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: 'Free Home Valuation',
+          item: `${siteConfig.domain}/free-home-valuation/`,
+        },
+      ],
+    },
+    {
+      '@type': 'RealEstateAgent',
+      '@id': `${siteConfig.domain}/#agent`,
+      name: siteConfig.businessName,
+      url: `${siteConfig.domain}/free-home-valuation/`,
+      telephone: siteConfig.phone,
+      image: `${siteConfig.domain}/social-preview-image.png`,
+      priceRange: '$$',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: siteConfig.address.locality,
+        addressRegion: siteConfig.address.region,
+        postalCode: siteConfig.address.postalCode,
+        addressCountry: siteConfig.address.country,
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: siteData.geo.latitude,
+        longitude: siteData.geo.longitude,
+      },
+      areaServed: [
+        { '@type': 'City', name: 'Sebring' },
+        { '@type': 'AdministrativeArea', name: 'Highlands County' },
+      ],
+      parentOrganization: {
+        '@type': 'Organization',
+        name: siteConfig.brokerage,
+        url: siteConfig.domain,
+      },
+    },
+    {
+      '@type': 'Service',
+      '@id': `${siteConfig.domain}/free-home-valuation/#service`,
+      name: 'Free Sebring Home Valuation & Comparative Market Analysis',
+      serviceType: 'Comparative Market Analysis (CMA)',
+      description: 'Handcrafted property valuation report comparing recently sold, pending, and active homes in Sebring and Highlands County, accounting for lot premiums, structural updates, and local micro-markets.',
+      provider: {
+        '@id': `${siteConfig.domain}/#agent`,
+      },
+      areaServed: [
+        { '@type': 'City', name: 'Sebring' },
+        { '@type': 'AdministrativeArea', name: 'Highlands County' },
+      ],
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+        name: 'Complimentary Precision Home Valuation Report',
+      },
+    },
+  ],
+};
+---
+
+<PageLayout
+  title="Free Home Valuation Sebring, FL | What's My House Worth?"
+  description="Request a free, accurate comparative market analysis for your Sebring home. Discover your property's true value with Alyson Thomas, Premier Plus Realty."
+  canonicalUrl={`${siteConfig.domain}/free-home-valuation/`}
+  schema={pageSchema}
+>
+  <!-- Streamlined Breadcrumb Navigation (Conversion Note: Minimal Distraction) -->
+  <nav class="bg-stone-100 border-b border-stone-200 py-2.5 px-4 sm:px-6" aria-label="Breadcrumb">
+    <div class="max-w-4xl mx-auto flex items-center space-x-2 text-xs text-stone-600">
+      <a href="/" class="hover:text-[#1b3a5c] hover:underline">Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <a href="/sell-my-home-sebring-fl/" class="hover:text-[#1b3a5c] hover:underline">Sell Your Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <span class="text-stone-900 font-semibold" aria-current="page">Free Home Valuation</span>
+    </div>
+  </nav>
+
+  <article class="py-10 sm:py-14 px-4 sm:px-6 bg-stone-50/50">
+    <div class="max-w-3xl mx-auto">
+      <!-- Conversion-Focused Header -->
+      <header class="text-center mb-8">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-3">
+          Complimentary Seller Service
+        </span>
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1b3a5c] tracking-tight mb-4">
+          What Is Your Sebring Home Really Worth?
+        </h1>
+        <p class="text-base sm:text-lg text-stone-700 leading-relaxed font-sans max-w-2xl mx-auto mb-4">
+          Skip generic automated internet estimates. Request a handcrafted, verified Comparative Market Analysis (CMA) prepared specifically for your Sebring neighborhood.
+        </p>
+        <p class="text-sm text-stone-600 leading-relaxed max-w-2xl mx-auto">
+          Automated valuation algorithms calculate figures based on broad zip code averages without seeing your home. They cannot account for your new architectural shingle or metal roof, your upgraded granite counters, your screened fairway lanai in Sun 'N Lake, or whether your property borders a navigable freshwater canal. In Highlands County's nuanced real estate market, true value requires local human analysis.
+        </p>
+      </header>
+
+      <!-- Primary Single-Focus Lead Form Container (CRO Guide Section 2.3) -->
+      <div class="bg-white rounded-2xl p-6 sm:p-10 border border-stone-200 shadow-xl mb-10">
+        <div class="border-b border-stone-200 pb-4 mb-6">
+          <h2 class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c]">
+            Get Your Free Custom Valuation Report
+          </h2>
+          <p class="text-xs sm:text-sm text-stone-600 mt-1">
+            Complete the short form below. Alyson Thomas will evaluate recent verified sales and deliver a thorough, personalized analysis within 24 hours.
+          </p>
+        </div>
+
+        {/*
+          NOTE FOR BACKEND WIRING:
+          Connect this static form shell to your backend lead capture handler
+          (e.g., POST /api/leads/valuation, CRM webhook, or serverless email function)
+          when production backend integration is enabled.
+        */}
+        <form
+          id="valuation-lead-form"
+          class="space-y-5"
+          onsubmit="event.preventDefault(); document.getElementById('valuation-confirmation').classList.remove('hidden'); this.reset();"
+        >
+          <!-- Field 1: Name (Required) -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5" for="seller-name">
+              Full Name <span class="text-red-600" aria-label="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="seller-name"
+              name="name"
+              required
+              class="w-full px-4 py-3 border border-stone-300 rounded-lg text-sm bg-stone-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1b3a5c] transition-colors"
+              placeholder="First and Last Name"
+              autocomplete="name"
+            />
+          </div>
+
+          <!-- Field 2: Property Address (Required) -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5" for="property-address">
+              Property Address <span class="text-red-600" aria-label="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="property-address"
+              name="address"
+              required
+              class="w-full px-4 py-3 border border-stone-300 rounded-lg text-sm bg-stone-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1b3a5c] transition-colors"
+              placeholder="e.g. 104 Fairway Vista Dr, Sebring, FL 33872"
+              autocomplete="street-address"
+            />
+          </div>
+
+          <!-- Field 3: Email (Required) -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1.5" for="seller-email">
+              Email Address <span class="text-red-600" aria-label="required">*</span>
+            </label>
+            <input
+              type="email"
+              id="seller-email"
+              name="email"
+              required
+              class="w-full px-4 py-3 border border-stone-300 rounded-lg text-sm bg-stone-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1b3a5c] transition-colors"
+              placeholder="Where should we send your report?"
+              autocomplete="email"
+            />
+          </div>
+
+          <!-- Field 4: Phone (Optional) -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-xs font-bold uppercase tracking-wider text-stone-700" for="seller-phone">
+                Phone Number
+              </label>
+              <span class="text-xs text-stone-400 font-sans italic">Optional</span>
+            </div>
+            <input
+              type="tel"
+              id="seller-phone"
+              name="phone"
+              class="w-full px-4 py-3 border border-stone-300 rounded-lg text-sm bg-stone-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1b3a5c] transition-colors"
+              placeholder="(863) 555-0123"
+              autocomplete="tel"
+            />
+          </div>
+
+          <!-- Submit Button -->
+          <div class="pt-2">
+            <button
+              type="submit"
+              class="w-full py-4 px-6 bg-[#1b3a5c] text-white font-bold rounded-lg hover:bg-[#122840] active:scale-[0.99] transition-all text-base shadow-md cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>Get My Free Valuation</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <!-- Privacy Reassurance Micro-Copy (CRO Guide Section 2.3) -->
+          <p class="text-center text-xs text-stone-500 font-sans leading-relaxed pt-1">
+            🔒 <strong>100% Confidential.</strong> Zero spam. Your information is never sold or shared, and is solely used to prepare your personalized market report.
+          </p>
+        </form>
+
+        <!-- Dynamic Success Confirmation -->
+        <div
+          id="valuation-confirmation"
+          class="hidden mt-6 p-4 bg-emerald-50 border border-emerald-300 rounded-xl text-xs sm:text-sm text-emerald-950 font-medium leading-relaxed"
+          role="status"
+          aria-live="polite"
+        >
+          ✓ Thank you! Your request has been received. Alyson Thomas will analyze recent sales in your immediate neighborhood and send your custom Comparative Market Analysis report shortly.
+        </div>
+      </div>
+
+      <!-- Trust Signals & Credibility Grid -->
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10" aria-label="Trust Signals and Professional Credentials">
+        <!-- Trust Signal 1: Human Analysis vs Algorithm -->
+        <div class="bg-white p-5 rounded-xl border border-stone-200 shadow-sm flex items-start gap-3.5">
+          <div class="text-2xl flex-shrink-0" aria-hidden="true">📊</div>
+          <div>
+            <h3 class="font-serif text-base font-bold text-[#1b3a5c] mb-1">
+              Handcrafted Local Analysis
+            </h3>
+            <p class="text-xs text-stone-600 leading-relaxed font-sans">
+              Unlike generic online portals that miss key details, our reports account for recent roof replacements, golf course views, canal access, and current Highlands County buyer demand.
+            </p>
+          </div>
+        </div>
+
+        <!-- Trust Signal 2: Professional License & Brokerage (NO REALTOR® Language) -->
+        <div class="bg-white p-5 rounded-xl border border-stone-200 shadow-sm flex items-start gap-3.5">
+          <div class="text-2xl flex-shrink-0" aria-hidden="true">🛡️</div>
+          <div>
+            <h3 class="font-serif text-base font-bold text-[#1b3a5c] mb-1">
+              Trusted Professional Fiduciary
+            </h3>
+            <p class="text-xs text-stone-600 leading-relaxed font-sans">
+              <strong>Alyson Thomas</strong>, Licensed Real Estate Agent with <strong>Premier Plus Realty</strong>. Delivering verified market analysis and transparent guidance across Highlands County.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Trust Signal 3: Client Testimonial Snippet from Collection -->
+      {featuredTestimonial && (
+        <section class="bg-amber-50/70 border border-amber-200 rounded-xl p-5 sm:p-6 mb-10 shadow-sm" aria-label="Client Feedback">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="text-amber-500 text-xs sm:text-sm" aria-hidden="true">★★★★★</div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-amber-900">Verified Seller Feedback</span>
+          </div>
+          <blockquote class="italic text-stone-700 text-xs sm:text-sm leading-relaxed mb-3">
+            "{featuredTestimonial.data.quote.replace(/^\[.*?\]\s*/, '')}"
+          </blockquote>
+          <div class="text-[11px] text-stone-600 font-sans border-t border-amber-200/70 pt-2 flex items-center justify-between">
+            <span class="font-bold text-[#1b3a5c]">— Homeowner in {featuredTestimonial.data.neighborhood}, Sebring, FL</span>
+            <a href="/testimonials/" class="text-[#1b3a5c] hover:underline font-semibold">More Reviews →</a>
+          </div>
+        </section>
+      )}
+
+      <!-- Brief Overview: What's Inside Your Valuation -->
+      <section class="bg-white rounded-xl p-6 border border-stone-200 mb-8" aria-label="What You Will Receive">
+        <h2 class="font-serif text-lg font-bold text-[#1b3a5c] mb-3">
+          What You Will Receive in Your Custom CMA Report
+        </h2>
+        <ul class="text-xs sm:text-sm text-stone-600 space-y-2.5 leading-relaxed">
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-700 font-bold" aria-hidden="true">✓</span>
+            <span><strong>Recent Comparable Sales:</strong> Closed sales, pending contracts, and active competing listings within your specific subdivision and school zone.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-700 font-bold" aria-hidden="true">✓</span>
+            <span><strong>Detailed Property Adjustments:</strong> Clear valuation credits for roof age, HVAC efficiency, hurricane protection, pool enclosures, and fairway or waterfront frontage.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-700 font-bold" aria-hidden="true">✓</span>
+            <span><strong>Market Absorption Velocity:</strong> Current inventory levels, buyer absorption rates, and average days on market across Highlands County.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-700 font-bold" aria-hidden="true">✓</span>
+            <span><strong>High-ROI Enhancement Advice:</strong> Practical recommendations on pre-listing cosmetic touch-ups that maximize buyer appeal without over-improving.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-700 font-bold" aria-hidden="true">✓</span>
+            <span><strong>Estimated Seller Net Sheet:</strong> A transparent projection of estimated net proceeds after closing fees, doc stamps, and transfer expenses.</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Minimalist Return Navigation (Conversion Focus) -->
+      <div class="text-center text-xs text-stone-500">
+        <p class="mb-2">Prefer to speak directly with an agent?</p>
+        <p>
+          Call <a href={`tel:${siteConfig.phone}`} class="font-bold text-[#1b3a5c] hover:underline">{siteConfig.phoneDisplay}</a> or view our <a href="/sell-my-home-sebring-fl/" class="font-bold text-[#1b3a5c] hover:underline">Sebring Home Selling Guide</a>.
+        </p>
+      </div>
+    </div>
+  </article>
+</PageLayout>

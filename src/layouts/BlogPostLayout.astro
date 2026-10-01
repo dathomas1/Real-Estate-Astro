@@ -1,0 +1,304 @@
+---
+import { Image } from 'astro:assets';
+import PageLayout from './PageLayout.astro';
+import Button from '@components/ui/Button.astro';
+import { siteConfig } from '@data/site';
+import { defaultListingPlaceholder } from '@data/placeholderImages';
+
+interface Props {
+  title: string;
+  metaDescription?: string;
+  description?: string;
+  publishDate: Date | string;
+  modifiedDate?: Date | string;
+  author?: string;
+  featuredImage?: string;
+  contentType?: 'Seller Education' | 'Market Intelligence' | 'Community/Authority' | string;
+  pillarLink?: string;
+  slug?: string;
+  relatedPosts?: Array<{
+    title: string;
+    slug: string;
+    description?: string;
+    publishDate?: Date | string;
+  }>;
+}
+
+const {
+  title,
+  metaDescription,
+  description,
+  publishDate,
+  modifiedDate,
+  author = 'Alyson Thomas',
+  featuredImage,
+  contentType,
+  pillarLink,
+  slug,
+  relatedPosts = [],
+} = Astro.props;
+
+const effectiveDescription = metaDescription || description || `Read ${title} by Alyson Thomas, real estate agent in Sebring, FL.`;
+const pubDateObj = new Date(publishDate);
+const modDateObj = modifiedDate ? new Date(modifiedDate) : pubDateObj;
+
+const formattedPublishDate = !isNaN(pubDateObj.getTime())
+  ? pubDateObj.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  : '';
+
+const formattedModifiedDate =
+  modifiedDate && !isNaN(modDateObj.getTime())
+    ? modDateObj.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : null;
+
+const postUrl = slug ? `${siteConfig.domain}/blog/${slug}/` : Astro.url.href;
+
+// Article + BreadcrumbList Schema per Site Architecture Part 4D
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${siteConfig.domain}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Blog',
+          item: `${siteConfig.domain}/blog/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: title,
+          item: postUrl,
+        },
+      ],
+    },
+    {
+      '@type': 'Article',
+      '@id': `${postUrl}#article`,
+      headline: title,
+      description: effectiveDescription,
+      url: postUrl,
+      image: featuredImage
+        ? featuredImage.startsWith('http')
+          ? featuredImage
+          : `${siteConfig.domain}${featuredImage}`
+        : `${siteConfig.domain}/social-preview-image.png`,
+      datePublished: !isNaN(pubDateObj.getTime()) ? pubDateObj.toISOString() : new Date().toISOString(),
+      dateModified: !isNaN(modDateObj.getTime()) ? modDateObj.toISOString() : new Date().toISOString(),
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': postUrl,
+      },
+      author: {
+        '@type': 'Person',
+        name: author,
+        jobTitle: 'Real Estate Agent',
+        url: `${siteConfig.domain}/about/`,
+        worksFor: {
+          '@type': 'Organization',
+          name: siteConfig.brokerage,
+          url: siteConfig.domain,
+        },
+      },
+      publisher: {
+        '@type': 'RealEstateAgent',
+        name: siteConfig.businessName,
+        url: siteConfig.domain,
+        telephone: siteConfig.phone,
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: siteConfig.address.locality,
+          addressRegion: siteConfig.address.region,
+          postalCode: siteConfig.address.postalCode,
+          addressCountry: siteConfig.address.country,
+        },
+        logo: {
+          '@type': 'ImageObject',
+          url: `${siteConfig.domain}/social-preview-image.png`,
+        },
+      },
+    },
+  ],
+};
+---
+
+<PageLayout
+  title={`${title} | Alyson Thomas Real Estate`}
+  description={effectiveDescription}
+  canonicalUrl={postUrl}
+  schema={articleSchema}
+  type="article"
+>
+  <!-- Breadcrumb Navigation -->
+  <nav class="bg-stone-100 border-b border-stone-200 py-3 px-4 sm:px-6" aria-label="Breadcrumb">
+    <div class="max-w-4xl mx-auto flex items-center space-x-2 text-xs sm:text-sm text-stone-600">
+      <a href="/" class="hover:text-[#1b3a5c] hover:underline">Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <a href="/blog/" class="hover:text-[#1b3a5c] hover:underline">Blog</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <span class="text-stone-900 font-semibold truncate max-w-xs sm:max-w-md" aria-current="page">
+        {title}
+      </span>
+    </div>
+  </nav>
+
+  <article class="py-12 sm:py-16 px-4 sm:px-6 font-sans">
+    <div class="max-w-3xl mx-auto">
+      <!-- Article Header -->
+      <header class="mb-8 pb-8 border-b border-stone-200">
+        {contentType && (
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-4">
+            {contentType}
+          </span>
+        )}
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1b3a5c] tracking-tight mb-5 leading-tight">
+          {title}
+        </h1>
+
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs sm:text-sm text-stone-600">
+          <span>By <strong>{author}</strong></span>
+          <span aria-hidden="true" class="text-stone-300">•</span>
+          {formattedPublishDate && (
+            <time datetime={pubDateObj.toISOString()}>Published: {formattedPublishDate}</time>
+          )}
+          {formattedModifiedDate && formattedModifiedDate !== formattedPublishDate && (
+            <>
+              <span aria-hidden="true" class="text-stone-300">•</span>
+              <span class="text-stone-500 italic">Updated: {formattedModifiedDate}</span>
+            </>
+          )}
+        </div>
+      </header>
+
+      <!-- Featured Image Slot via Astro <Image />: Explicit width & height to prevent CLS, loading="lazy" -->
+      {featuredImage && (
+        <div class="mb-10 rounded-2xl overflow-hidden border border-stone-200 shadow-sm bg-stone-100">
+          <Image
+            src={defaultListingPlaceholder.image}
+            alt={`Featured photography for article: ${title}, Sebring, Florida`}
+            width={1200}
+            height={630}
+            loading="lazy"
+            decoding="async"
+            class="w-full h-auto max-h-[440px] object-cover"
+          />
+        </div>
+      )}
+
+      <!-- Pillar Link Banner (if specified) -->
+      {pillarLink && (
+        <div class="mb-8 p-4 bg-sky-50 border border-sky-200 rounded-xl flex items-center justify-between gap-4 text-xs sm:text-sm">
+          <div>
+            <span class="font-bold text-[#1b3a5c] block mb-0.5">Comprehensive Topic Guide</span>
+            <span class="text-stone-600">This article is part of our in-depth series. Explore our complete pillar guide for step-by-step advisory.</span>
+          </div>
+          <a
+            href={pillarLink}
+            class="flex-shrink-0 px-4 py-2 bg-[#1b3a5c] text-white rounded-lg font-bold text-xs hover:bg-[#122840] transition-colors whitespace-nowrap"
+          >
+            Explore Pillar Guide →
+          </a>
+        </div>
+      )}
+
+      <!-- Main Article Body -->
+      <div class="prose prose-stone max-w-none text-base sm:text-lg leading-relaxed text-stone-800">
+        <slot />
+      </div>
+
+      <!-- Author Bio Block (Alyson Thomas, Person schema, zero REALTOR language) -->
+      <section class="mt-12 p-6 sm:p-8 bg-stone-50 rounded-2xl border border-stone-200 shadow-xs" aria-label="About the Author">
+        <div class="flex flex-col sm:flex-row items-start gap-5">
+          <div class="w-16 h-16 rounded-full bg-[#1b3a5c] text-white flex items-center justify-center font-serif font-bold text-xl flex-shrink-0 shadow-sm">
+            AT
+          </div>
+          <div class="space-y-2 text-xs sm:text-sm text-stone-600">
+            <div class="flex flex-wrap items-center gap-2">
+              <h2 class="font-serif text-lg font-bold text-[#1b3a5c]">About {author}</h2>
+              <span class="text-xs bg-stone-200 text-stone-700 font-semibold px-2.5 py-0.5 rounded-full">
+                Licensed Real Estate Agent
+              </span>
+            </div>
+            <p class="leading-relaxed">
+              Alyson Thomas is a seller-focused real estate agent with {siteConfig.brokerage} in Sebring, Florida. Specializing in Highlands County residential sales, golf course communities, active-adult 55+ enclaves, and lakefront estates across Sebring, Avon Park, and Lake Placid, Alyson provides forensic pricing, high-impact marketing, and hands-on guidance through Florida's 4-Point inspection and closing requirements.
+            </p>
+            <div class="pt-2 flex flex-wrap gap-4 text-xs font-bold text-[#1b3a5c]">
+              <a href="/about/" class="hover:underline">Meet Alyson Thomas →</a>
+              <a href="/contact/" class="hover:underline">Contact the Office →</a>
+              <a href={`tel:${siteConfig.phone}`} class="hover:underline">Call {siteConfig.phoneDisplay}</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- End-of-Post CTA: "Get Your Free Home Valuation" -->
+      <section class="mt-10 p-6 sm:p-8 bg-white rounded-2xl border-2 border-stone-200 shadow-lg text-center" aria-label="Free Home Valuation Call to Action">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-3">
+          Highlands County Seller Advisory
+        </span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mb-3">
+          Thinking of Selling Your Highlands County Home?
+        </h2>
+        <p class="text-xs sm:text-sm text-stone-600 max-w-xl mx-auto mb-6 leading-relaxed">
+          Online automated value estimates miss roof condition, lake frontage, and golf course premiums. Request a handcrafted, neighborhood-calibrated Comparative Market Analysis prepared specifically for your home.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button href="/free-home-valuation/" variant="primary" size="lg">
+            Get Your Free Home Valuation →
+          </Button>
+          <a
+            href={`tel:${siteConfig.phone}`}
+            class="px-6 py-3 rounded-lg border border-stone-300 text-[#1b3a5c] font-bold text-sm hover:bg-stone-50 transition-colors"
+          >
+            Call {siteConfig.phoneDisplay}
+          </a>
+        </div>
+      </section>
+
+      <!-- Related Posts (if provided) -->
+      {relatedPosts.length > 0 && (
+        <section class="mt-12 pt-8 border-t border-stone-200" aria-label="Related Articles">
+          <h2 class="font-serif text-xl font-bold text-[#1b3a5c] mb-4">Related Articles</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {relatedPosts.map((post) => (
+              <a
+                href={`/blog/${post.slug}/`}
+                class="p-4 bg-stone-50 rounded-xl border border-stone-200 hover:border-[#1b3a5c] transition-colors block"
+              >
+                <span class="font-bold text-sm text-[#1b3a5c] block mb-1 hover:underline">
+                  {post.title} →
+                </span>
+                {post.description && (
+                  <p class="text-xs text-stone-600 line-clamp-2">{post.description}</p>
+                )}
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- Back to Blog Link -->
+      <div class="mt-12 pt-6 border-t border-stone-200 text-center">
+        <a href="/blog/" class="text-xs sm:text-sm font-bold text-[#1b3a5c] hover:underline inline-flex items-center gap-1">
+          <span>← Back to All Articles & Market Updates</span>
+        </a>
+      </div>
+    </div>
+  </article>
+</PageLayout>

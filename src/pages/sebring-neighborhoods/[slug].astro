@@ -1,0 +1,521 @@
+---
+/**
+ * DYNAMIC NEIGHBORHOOD PAGE ROUTE: /sebring-neighborhoods/[slug]/
+ * 
+ * CONTENT INTEGRITY & SEO DIRECTIVE:
+ * Each neighborhood page rendered through this template must maintain 70%+ unique content.
+ * Editors must ensure that community histories, amenities, HOA/land-lease dynamics, pricing tiers,
+ * and FAQ items remain unique to each Highlands County enclave.
+ */
+
+import { Image } from 'astro:assets';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import PageLayout from '@layouts/PageLayout.astro';
+import Button from '@components/ui/Button.astro';
+import { siteConfig, siteData } from '@data/site';
+import { neighborhoodDetails } from '@data/neighborhoodDetails';
+import { neighborhoodDetailPlaceholders } from '@data/placeholderImages';
+
+export async function getStaticPaths() {
+  const allNeighborhoods = await getCollection('neighborhoods');
+  return allNeighborhoods.map((entry) => {
+    const siblings = entry.data.crossLinkSlugs
+      .map((slug) => allNeighborhoods.find((n) => n.data.slug === slug))
+      .filter((item): item is CollectionEntry<'neighborhoods'> => Boolean(item));
+
+    return {
+      params: { slug: entry.data.slug },
+      props: {
+        neighborhood: entry,
+        siblings,
+      },
+    };
+  });
+}
+
+interface Props {
+  neighborhood: CollectionEntry<'neighborhoods'>;
+  siblings: CollectionEntry<'neighborhoods'>[];
+}
+
+const { neighborhood, siblings } = Astro.props;
+const { name, slug, primaryKeyword, secondaryKeywords, medianPrice, daysOnMarket, amenities } = neighborhood.data;
+
+// Retrieve detailed editorial content from rich data store
+const detail = neighborhoodDetails[slug] || {
+  slug,
+  name,
+  seoTitle: `${name}, Sebring FL Real Estate & Homes for Sale | Alyson Thomas`,
+  metaDescription: `Explore homes for sale in ${name}, Sebring FL. Community guide, median price ranges, and local insights from Alyson Thomas of Premier Plus Realty.`,
+  primaryKeyword,
+  secondaryKeywords,
+  subheading: `${name} Community Real Estate Guide`,
+  leadParagraph: neighborhood.data.description,
+  overviewSections: [
+    {
+      heading: `About ${name} in Sebring, Florida`,
+      paragraphs: [
+        neighborhood.data.description,
+        `Located in Highlands County, ${name} provides residents with a peaceful Florida setting, proximity to Lake Jackson and Lake Josephine, and straightforward access to US-27 amenities and medical services.`,
+      ],
+    },
+  ],
+  priceBracketSummary: {
+    entryLevel: medianPrice || 'Contact Alyson for Current Market Estimates',
+    midRange: medianPrice || 'Contact Alyson for Current Market Estimates',
+    upperTier: medianPrice || 'Contact Alyson for Current Market Estimates',
+    lotOrHOAStructure: 'Standard Highlands County residential community structure',
+  },
+  propertyStyles: [
+    {
+      styleName: 'Residential Florida Home',
+      description: 'Well-proportioned residences offering modern layouts and comfortable indoor-outdoor living.',
+      typicalSqFt: '1,200 – 2,200 sq ft',
+    },
+  ],
+  photoPlaceholders: [
+    {
+      label: `[PLACEHOLDER PHOTO — ${name} Community Entrance Sign]`,
+      caption: `Welcome entrance signage and landscaping at ${name} in Sebring FL.`,
+    },
+    {
+      label: `[PLACEHOLDER PHOTO — ${name} Neighborhood Streetscape & Amenities]`,
+      caption: `Quiet residential streets and community amenities in ${name}, Sebring FL.`,
+    },
+  ],
+  faqs: [
+    {
+      question: `What are the average home prices in ${name} Sebring FL?`,
+      answer: `Current pricing in ${name} typically ranges around ${medianPrice || 'the mid-$200,000s'}, depending on square footage, recent updates, lot position, and specific property features.`,
+    },
+    {
+      question: `What amenities does ${name} offer its residents?`,
+      answer: `${name} features ${amenities.join(', ')}, creating a welcoming environment for full-time residents and seasonal winter visitors.`,
+    },
+    {
+      question: `Who is the top real estate agent for buying or selling in ${name}?`,
+      answer: `Alyson Thomas of Premier Plus Realty provides dedicated, localized representation for buyers and homeowners across ${name} and Highlands County.`,
+    },
+  ],
+  sellerPitch: {
+    whySellNow: `Demand for quality properties in ${name} remains high as buyers seek Central Florida lifestyle amenities and competitive pricing.`,
+    localAngle: `Alyson Thomas provides detailed comparative market analyses tailored specifically to recent sales in ${name}.`,
+  },
+};
+
+const placeholders = neighborhoodDetailPlaceholders[slug];
+const photo1 = placeholders ? placeholders[0] : null;
+const photo2 = placeholders ? placeholders[1] : null;
+
+// Capitalize helper for primary keyword display
+const capitalizeWords = (str: string) =>
+  str.replace(/\b\w/g, (char) => char.toUpperCase());
+
+// Schema Stack: BreadcrumbList + FAQPage + RealEstateAgent (nested)
+const neighborhoodSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${siteConfig.domain}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Homes for Sale in Sebring, FL',
+          item: `${siteConfig.domain}/homes-for-sale-sebring-fl/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: name.toLowerCase().endsWith('homes') ? `${name} for Sale` : `${name} Homes for Sale`,
+          item: `${siteConfig.domain}/sebring-neighborhoods/${slug}/`,
+        },
+      ],
+    },
+    {
+      '@type': 'RealEstateAgent',
+      '@id': `${siteConfig.domain}/#agent`,
+      name: siteConfig.businessName,
+      url: `${siteConfig.domain}/sebring-neighborhoods/${slug}/`,
+      telephone: siteConfig.phone,
+      image: `${siteConfig.domain}/social-preview-image.png`,
+      priceRange: '$$',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: siteConfig.address.locality,
+        addressRegion: siteConfig.address.region,
+        postalCode: siteConfig.address.postalCode,
+        addressCountry: siteConfig.address.country,
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: siteData.geo.latitude,
+        longitude: siteData.geo.longitude,
+      },
+      areaServed: [
+        { '@type': 'City', name: 'Sebring' },
+        { '@type': 'AdministrativeArea', name: 'Highlands County' },
+      ],
+      parentOrganization: {
+        '@type': 'Organization',
+        name: siteConfig.brokerage,
+        url: siteConfig.domain,
+      },
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: detail.faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: f.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<PageLayout
+  title={detail.seoTitle}
+  description={detail.metaDescription}
+  canonicalUrl={`${siteConfig.domain}/sebring-neighborhoods/${slug}/`}
+  schema={neighborhoodSchema}
+>
+  <!-- REMINDER FOR FUTURE EDITORS: Each neighborhood page generated by this template must maintain 70%+ unique content. Do not copy-paste paragraphs between neighborhoods beyond the shared template structure. -->
+
+  <!-- Breadcrumb Navigation -->
+  <nav class="bg-stone-100 border-b border-stone-200 py-3 px-4 sm:px-6" aria-label="Breadcrumb">
+    <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs sm:text-sm text-stone-600">
+      <a href="/" class="hover:text-[#1b3a5c] hover:underline">Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <a href="/homes-for-sale-sebring-fl/" class="hover:text-[#1b3a5c] hover:underline">Homes for Sale</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <span class="text-stone-900 font-semibold" aria-current="page">{name}</span>
+    </div>
+  </nav>
+
+  <article class="py-12 sm:py-16 px-4 sm:px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Page Hero Header -->
+      <header class="mb-12">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-4">
+          <span>Sebring, Florida Neighborhood Guide</span>
+        </div>
+        <!-- H1 based on primaryKeyword per spec -->
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1b3a5c] tracking-tight mb-4 leading-tight">
+          {capitalizeWords(detail.primaryKeyword)}: Real Estate & Community Guide
+        </h1>
+        <p class="text-xl text-[#8A4700] font-serif italic mb-6">
+          {detail.subheading}
+        </p>
+        <p class="text-base sm:text-lg text-stone-700 leading-relaxed font-sans mb-8">
+          {detail.leadParagraph}
+        </p>
+
+        <!-- Quick Facts Pill Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 bg-stone-50 rounded-xl border border-stone-200">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Est. Price Range</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">{medianPrice || '$150k – $350k'}</span>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Market Pace</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">{daysOnMarket || '45 days avg'}</span>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Community Style</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">{slug === 'lakefront-homes' ? 'Waterfront' : 'Master Planned'}</span>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Location</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">Sebring, FL 33872</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Section 1: Labeled Photo Placeholder 1 via Astro <Image /> (Lazy, explicit 1200x675 to prevent CLS) -->
+      <div class="mb-12 bg-white rounded-2xl p-4 sm:p-5 border-2 border-dashed border-amber-300 shadow-sm text-center">
+        {photo1 ? (
+          <div class="aspect-[16/9] rounded-xl overflow-hidden border border-stone-300 shadow-inner bg-stone-100 relative">
+            <Image
+              src={photo1.image}
+              alt={photo1.alt}
+              width={photo1.width}
+              height={photo1.height}
+              loading="lazy"
+              decoding="async"
+              class="w-full h-full object-cover"
+            />
+            <div class="absolute bottom-3 left-3 right-3 bg-stone-900/85 backdrop-blur-xs text-white text-xs py-2 px-3.5 rounded-lg text-left hidden sm:flex items-center justify-between">
+              <span class="font-bold">{detail.photoPlaceholders[0]?.label}</span>
+              <span class="text-stone-300 text-[11px] italic">{detail.photoPlaceholders[0]?.caption}</span>
+            </div>
+          </div>
+        ) : (
+          <div class="aspect-[16/9] sm:aspect-[21/9] rounded-xl bg-gradient-to-br from-stone-100 to-stone-200 border border-stone-300 flex flex-col items-center justify-center p-6">
+            <span class="text-3xl mb-2" aria-hidden="true">📸</span>
+            <span class="px-2.5 py-1 bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold uppercase tracking-wider rounded mb-2">
+              Verified Photography Placeholder
+            </span>
+            <p class="text-sm sm:text-base font-bold text-stone-800 max-w-xl">
+              {detail.photoPlaceholders[0]?.label}
+            </p>
+            <span class="text-xs text-stone-500 mt-2 italic">
+              {detail.photoPlaceholders[0]?.caption}
+            </span>
+          </div>
+        )}
+      </div>
+
+      <!-- Section 2: In-Depth Community Narrative -->
+      <section class="mb-14 space-y-8" aria-labelledby="community-overview-heading">
+        <h2 id="community-overview-heading" class="sr-only">Community Overview of {name}</h2>
+        {detail.overviewSections.map((sec) => (
+          <div class="space-y-4">
+            <h2 class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+              {sec.heading}
+            </h2>
+            {sec.paragraphs.map((p) => (
+              <p class="text-base sm:text-lg text-stone-700 leading-relaxed font-sans">
+                {p}
+              </p>
+            ))}
+          </div>
+        ))}
+      </section>
+
+      <!-- Section 3: Amenities List (from content collection) -->
+      <section class="mb-14 bg-stone-50 rounded-2xl p-8 border border-stone-200 shadow-sm" aria-labelledby="amenities-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Resident Facilities</span>
+          <h2 id="amenities-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+            {name} Community Amenities & Recreation
+          </h2>
+          <p class="text-sm text-stone-600 mt-1">
+            Residents in {name} enjoy an exceptional lifestyle supported by these core neighborhood amenities:
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {amenities.map((item) => (
+            <div class="flex items-center gap-3 p-3 bg-white rounded-lg border border-stone-200 shadow-2xs">
+              <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold shrink-0">
+                ✓
+              </span>
+              <span class="text-sm font-semibold text-stone-800">{item}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Section 4: Home Types & Price Ranges (Placeholder) -->
+      <section class="mb-14" aria-labelledby="pricing-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Market Breakdown</span>
+          <h2 id="pricing-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+            Home Types & Price Ranges in {name}
+          </h2>
+          <p class="text-sm text-stone-600 mt-1">
+            Estimated price points and property configurations based on recent Highlands County MLS comps and neighborhood sales data:
+          </p>
+        </div>
+
+        <!-- 3 Tier Price Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="p-6 bg-white rounded-xl border border-stone-200 shadow-sm">
+            <span class="text-xs font-bold uppercase tracking-wider text-stone-500 block mb-1">Entry Tier</span>
+            <p class="text-xs text-stone-600 leading-normal mb-3">
+              Compact models and well-preserved classic floor plans.
+            </p>
+            <div class="font-serif text-lg font-bold text-[#1b3a5c]">
+              {detail.priceBracketSummary.entryLevel}
+            </div>
+          </div>
+
+          <div class="p-6 bg-amber-50/60 rounded-xl border border-amber-200 shadow-sm relative">
+            <span class="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider bg-amber-200 text-amber-900 px-2 py-0.5 rounded">
+              Most Popular
+            </span>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-900 block mb-1">Mid-Market</span>
+            <p class="text-xs text-stone-600 leading-normal mb-3">
+              Updated interiors, expanded Florida rooms, and private carports/garages.
+            </p>
+            <div class="font-serif text-lg font-bold text-[#1b3a5c]">
+              {detail.priceBracketSummary.midRange}
+            </div>
+          </div>
+
+          <div class="p-6 bg-white rounded-xl border border-stone-200 shadow-sm">
+            <span class="text-xs font-bold uppercase tracking-wider text-stone-500 block mb-1">Executive / Waterfront</span>
+            <p class="text-xs text-stone-600 leading-normal mb-3">
+              Premium fairway parcels, canal slips, or custom modern designs.
+            </p>
+            <div class="font-serif text-lg font-bold text-[#1b3a5c]">
+              {detail.priceBracketSummary.upperTier}
+            </div>
+          </div>
+        </div>
+
+        <!-- HOA / Land Lease Structure Note -->
+        <div class="p-5 bg-stone-100 rounded-xl text-xs sm:text-sm text-stone-700 leading-relaxed border border-stone-200">
+          <strong class="text-stone-900">Ownership & Fee Structure:</strong> {detail.priceBracketSummary.lotOrHOAStructure}. For specific current fee schedules, deed restrictions, or assessment statements for properties in {name}, contact Alyson Thomas directly.
+        </div>
+      </section>
+
+      <!-- Section 5: Labeled Photo Placeholder 2 via Astro <Image /> (Lazy, explicit 1200x675 to prevent CLS) -->
+      <div class="mb-14 bg-white rounded-2xl p-4 sm:p-5 border-2 border-dashed border-amber-300 shadow-sm text-center">
+        {photo2 ? (
+          <div class="aspect-[16/9] rounded-xl overflow-hidden border border-stone-300 shadow-inner bg-stone-100 relative">
+            <Image
+              src={photo2.image}
+              alt={photo2.alt}
+              width={photo2.width}
+              height={photo2.height}
+              loading="lazy"
+              decoding="async"
+              class="w-full h-full object-cover"
+            />
+            <div class="absolute bottom-3 left-3 right-3 bg-stone-900/85 backdrop-blur-xs text-white text-xs py-2 px-3.5 rounded-lg text-left hidden sm:flex items-center justify-between">
+              <span class="font-bold">{detail.photoPlaceholders[1]?.label}</span>
+              <span class="text-stone-300 text-[11px] italic">{detail.photoPlaceholders[1]?.caption}</span>
+            </div>
+          </div>
+        ) : (
+          <div class="aspect-[16/9] sm:aspect-[21/9] rounded-xl bg-gradient-to-br from-stone-100 to-stone-200 border border-stone-300 flex flex-col items-center justify-center p-6">
+            <span class="text-3xl mb-2" aria-hidden="true">🏡</span>
+            <span class="px-2.5 py-1 bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold uppercase tracking-wider rounded mb-2">
+              Verified Photography Placeholder
+            </span>
+            <p class="text-sm sm:text-base font-bold text-stone-800 max-w-xl">
+              {detail.photoPlaceholders[1]?.label}
+            </p>
+            <span class="text-xs text-stone-500 mt-2 italic">
+              {detail.photoPlaceholders[1]?.caption}
+            </span>
+          </div>
+        )}
+      </div>
+
+      <!-- Section 6: Dual CTAs (Seller CTA + Buyer CTA per CRO Spec) -->
+      <section class="mb-14 bg-[#1b3a5c] rounded-2xl p-8 sm:p-12 text-white shadow-xl" aria-labelledby="cta-heading">
+        <div class="max-w-3xl">
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/30 mb-4">
+            Localized Representation in {name}
+          </span>
+          <!-- Exact Seller CTA wording specified in prompt -->
+          <h2 id="cta-heading" class="font-serif text-2xl sm:text-4xl font-bold mb-4">
+            Own a Home in {name}? Find Out What It's Worth
+          </h2>
+          <p class="text-stone-200 text-base sm:text-lg leading-relaxed mb-6 font-sans">
+            {detail.sellerPitch.whySellNow} {detail.sellerPitch.localAngle}
+          </p>
+
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <!-- Seller CTA button -->
+            <Button href="/free-home-valuation/" variant="primary" size="lg">
+              Get Your Free {name} Valuation →
+            </Button>
+            <!-- Buyer CTA button -->
+            <Button href="/contact/" variant="outline" size="lg">
+              Schedule a Private Tour or Inquire
+            </Button>
+          </div>
+
+          <div class="mt-6 pt-6 border-t border-white/20 text-xs sm:text-sm text-stone-300 flex items-center gap-3">
+            <span>Direct Agent Line:</span>
+            <a href={`tel:${siteConfig.phone}`} class="font-bold text-amber-300 hover:underline">
+              {siteConfig.phoneDisplay}
+            </a>
+            <span class="hidden sm:inline">·</span>
+            <span class="hidden sm:inline">Alyson Thomas, Premier Plus Realty</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 7: Neighborhood FAQs (2-3 items) -->
+      <section class="mb-14" aria-labelledby="faq-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Frequently Asked Questions</span>
+          <h2 id="faq-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+            Frequently Asked Questions About {name}
+          </h2>
+          <p class="text-sm text-stone-600 mt-1">
+            Common questions regarding lifestyle, property rules, and purchasing in {name}, Sebring FL:
+          </p>
+        </div>
+
+        <div class="space-y-4 max-w-4xl">
+          {detail.faqs.map((faq) => (
+            <details class="group bg-white border border-stone-200 rounded-lg p-5 shadow-sm transition-all duration-150 open:border-amber-400 open:shadow-md">
+              <summary class="flex justify-between items-center font-serif text-base sm:text-lg font-bold text-gray-900 cursor-pointer list-none focus:outline-none focus:ring-2 focus:ring-amber-400 rounded">
+                <span>{faq.question}</span>
+                <span class="ml-4 transition-transform duration-200 group-open:rotate-180 text-[#d4923a]">
+                  ▼
+                </span>
+              </summary>
+              <div class="mt-4 pt-3 border-t border-stone-100 text-sm sm:text-base text-gray-700 leading-relaxed font-sans">
+                <p>{faq.answer}</p>
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <!-- Section 8: Sibling Neighborhood Cross-Links (Content Strategy Rule 3B) -->
+      {siblings && siblings.length > 0 && (
+        <section class="mb-12 pt-8 border-t border-stone-200" aria-labelledby="siblings-heading">
+          <div class="mb-6">
+            <span class="text-xs font-bold uppercase tracking-wider text-stone-500">Related Communities</span>
+            <h2 id="siblings-heading" class="font-serif text-2xl font-bold text-[#1b3a5c] mt-1">
+              Explore Sibling Neighborhoods in Sebring
+            </h2>
+            <p class="text-sm text-stone-600 mt-1">
+              Considering alternatives to {name}? Compare these nearby Highlands County communities:
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {siblings.map((sib) => (
+              <div class="bg-stone-50 rounded-xl p-5 border border-stone-200 flex flex-col justify-between hover:border-amber-400 transition-colors">
+                <div>
+                  <h3 class="font-serif text-lg font-bold text-[#1b3a5c] mb-1">
+                    <a href={`/sebring-neighborhoods/${sib.data.slug}/`} class="hover:underline">
+                      {sib.data.name}
+                    </a>
+                  </h3>
+                  <p class="text-xs text-stone-600 line-clamp-3 mb-3">
+                    {sib.data.description}
+                  </p>
+                </div>
+                <div class="pt-3 border-t border-stone-200 flex items-center justify-between">
+                  <a
+                    href={`/sebring-neighborhoods/${sib.data.slug}/`}
+                    class="text-xs font-bold text-[#1b3a5c] hover:text-amber-800"
+                  >
+                    View {sib.data.name} Guide →
+                  </a>
+                  <span class="text-[11px] text-stone-500">{sib.data.medianPrice || 'Sebring, FL'}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- Back to All Neighborhoods -->
+      <div class="text-center pt-6 border-t border-stone-200">
+        <a href="/homes-for-sale-sebring-fl/" class="text-sm font-bold text-[#1b3a5c] hover:underline inline-flex items-center gap-1.5">
+          <span>← Back to All Sebring Homes & Communities</span>
+        </a>
+      </div>
+    </div>
+  </article>
+</PageLayout>

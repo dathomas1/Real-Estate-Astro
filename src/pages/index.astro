@@ -1,0 +1,97 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import Hero from '@components/sections/Hero.astro';
+import SocialProofStrip from '@components/sections/SocialProofStrip.astro';
+import WhyChooseAlyson from '@components/sections/WhyChooseAlyson.astro';
+import NeighborhoodShowcase from '@components/sections/NeighborhoodShowcase.astro';
+import SellerProcess from '@components/sections/SellerProcess.astro';
+import TestimonialSection from '@components/sections/TestimonialSection.astro';
+import FinalContactCTA from '@components/sections/FinalContactCTA.astro';
+import { siteConfig, siteData } from '@data/site';
+
+// Page 1: Homepage Schema Stack (RealEstateAgent + WebSite + Organization)
+const homepageSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${siteConfig.domain}/#website`,
+      url: siteConfig.domain,
+      name: 'Alyson Thomas | Sebring FL Real Estate',
+      description:
+        'Looking for a trusted real estate agent in Sebring, FL? Alyson Thomas with Premier Plus Realty helps you buy or sell homes across Highlands County. Call (772) 342-8085 today.',
+      publisher: {
+        '@id': `${siteConfig.domain}/#agent`,
+      },
+    },
+    {
+      '@type': 'RealEstateAgent',
+      '@id': `${siteConfig.domain}/#agent`,
+      name: siteConfig.businessName,
+      url: siteConfig.domain,
+      telephone: siteConfig.phone,
+      image: `${siteConfig.domain}/social-preview-image.png`,
+      priceRange: '$$',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: siteConfig.address.locality,
+        addressRegion: siteConfig.address.region,
+        postalCode: siteConfig.address.postalCode,
+        addressCountry: siteConfig.address.country,
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: siteData.geo.latitude,
+        longitude: siteData.geo.longitude,
+      },
+      areaServed: [
+        { '@type': 'City', name: 'Sebring' },
+        { '@type': 'City', name: 'Avon Park' },
+        { '@type': 'City', name: 'Lake Placid' },
+        { '@type': 'AdministrativeArea', name: 'Highlands County' },
+      ],
+      parentOrganization: {
+        '@id': `${siteConfig.domain}/#organization`,
+      },
+      sameAs: [
+        siteConfig.directoryLinks.realtorDotCom,
+        siteConfig.directoryLinks.myStateMLS,
+      ],
+    },
+    {
+      '@type': 'Organization',
+      '@id': `${siteConfig.domain}/#organization`,
+      name: siteConfig.brokerage,
+      url: siteConfig.domain,
+      telephone: siteConfig.phone,
+    },
+  ],
+};
+---
+
+<PageLayout
+  title="Real Estate Agent in Sebring, FL | Alyson Thomas"
+  description="Looking for a trusted real estate agent in Sebring, FL? Alyson Thomas with Premier Plus Realty helps you buy or sell homes across Highlands County. Call (772) 342-8085 today."
+  schema={homepageSchema}
+>
+  <!-- 1. Hero Section -->
+  <Hero />
+
+  <!-- 2. Social Proof Credential Strip -->
+  <SocialProofStrip />
+
+  <!-- 3. Why Sellers Choose Alyson -->
+  <WhyChooseAlyson />
+
+  <!-- 4. Neighborhood Showcase Grid -->
+  <NeighborhoodShowcase />
+
+  <!-- 5. Seller Process 4-Step Overview -->
+  <SellerProcess />
+
+  <!-- 6. Testimonials Section -->
+  <TestimonialSection />
+
+  <!-- 7. Final CTA + Contact Section -->
+  <FinalContactCTA />
+</PageLayout>

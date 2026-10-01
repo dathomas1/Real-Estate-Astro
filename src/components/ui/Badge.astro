@@ -1,0 +1,20 @@
+---
+interface Props {
+  variant?: 'primary' | 'accent' | 'success' | 'warning' | 'neutral';
+  class?: string;
+}
+
+const { variant = 'primary', class: className = '' } = Astro.props;
+
+const variantStyles = {
+  primary: 'bg-[#1b3a5c] text-white',
+  accent: 'bg-[#d4923a] text-white',
+  success: 'bg-emerald-100 text-emerald-800 border border-emerald-300',
+  warning: 'bg-amber-100 text-amber-800 border border-amber-300',
+  neutral: 'bg-stone-100 text-stone-700 border border-stone-300',
+};
+---
+
+<span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide ${variantStyles[variant]} ${className}`}>
+  <slot />
+</span>

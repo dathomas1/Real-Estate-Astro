@@ -1,0 +1,436 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import ListingCard from '@components/sections/ListingCard.astro';
+import FAQAccordion from '@components/sections/FAQAccordion.astro';
+import Button from '@components/ui/Button.astro';
+import { siteConfig, siteData } from '@data/site';
+import { getCollection } from 'astro:content';
+
+// 1. Fetch relevant listings from Content Collection (sample curated listings)
+const allListings = await getCollection('listings');
+const mobileListings = allListings.filter(
+  (listing) =>
+    listing.data.city === 'Sebring' &&
+    listing.data.status === 'active' &&
+    (listing.data.neighborhood === 'Tanglewood' || listing.data.price < 250000)
+);
+
+// 2. Fetch FAQ items for mobile homes page
+const allFaqs = await getCollection('faq');
+const pageFaqs = allFaqs.filter((item) => item.data.page === 'mobile-homes-sebring');
+const faqAccordionItems = pageFaqs.map((item) => ({
+  question: item.data.question,
+  answer: item.data.answer,
+}));
+
+// 3. Schema markup: BreadcrumbList + FAQPage + RealEstateAgent (nested)
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${siteConfig.domain}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Homes for Sale in Sebring, FL',
+          item: `${siteConfig.domain}/homes-for-sale-sebring-fl/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: 'Mobile Homes for Sale in Sebring, FL',
+          item: `${siteConfig.domain}/mobile-homes-for-sale-sebring-fl/`,
+        },
+      ],
+    },
+    {
+      '@type': 'RealEstateAgent',
+      '@id': `${siteConfig.domain}/#agent`,
+      name: siteConfig.businessName,
+      url: `${siteConfig.domain}/mobile-homes-for-sale-sebring-fl/`,
+      telephone: siteConfig.phone,
+      image: `${siteConfig.domain}/social-preview-image.png`,
+      priceRange: '$',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: siteConfig.address.locality,
+        addressRegion: siteConfig.address.region,
+        postalCode: siteConfig.address.postalCode,
+        addressCountry: siteConfig.address.country,
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: siteData.geo.latitude,
+        longitude: siteData.geo.longitude,
+      },
+      areaServed: [
+        { '@type': 'City', name: 'Sebring' },
+        { '@type': 'AdministrativeArea', name: 'Highlands County' },
+      ],
+      parentOrganization: {
+        '@type': 'Organization',
+        name: siteConfig.brokerage,
+        url: siteConfig.domain,
+      },
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: pageFaqs.map((f) => ({
+        '@type': 'Question',
+        name: f.data.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: f.data.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<PageLayout
+  title="Mobile Homes for Sale in Sebring, FL | 55+ & Manufactured Housing"
+  description="Explore mobile homes and manufactured homes for sale in Sebring, FL. Discover premier 55+ communities like Tanglewood, Whisper Lake, and Buttonwood Bay with Alyson Thomas."
+  canonicalUrl={`${siteConfig.domain}/mobile-homes-for-sale-sebring-fl/`}
+  schema={pageSchema}
+>
+  <!-- Breadcrumb Navigation -->
+  <nav class="bg-stone-100 border-b border-stone-200 py-3 px-4 sm:px-6" aria-label="Breadcrumb">
+    <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs sm:text-sm text-stone-600">
+      <a href="/" class="hover:text-[#1b3a5c] hover:underline">Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <a href="/homes-for-sale-sebring-fl/" class="hover:text-[#1b3a5c] hover:underline">Homes for Sale</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <span class="text-stone-900 font-semibold" aria-current="page">Mobile Homes for Sale</span>
+    </div>
+  </nav>
+
+  <article class="py-12 sm:py-16 px-4 sm:px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Page Hero Header -->
+      <header class="mb-12">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-4">
+          <span>Highlands County 55+ Living</span>
+        </div>
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1b3a5c] tracking-tight mb-4 leading-tight">
+          Mobile Homes for Sale in Sebring, FL
+        </h1>
+        <p class="text-xl text-[#8A4700] font-serif italic mb-6">
+          Affordable, Active Adult 55+ Living and Resort Communities in Central Florida
+        </p>
+        <p class="text-base sm:text-lg text-stone-700 leading-relaxed font-sans mb-8">
+          Sebring is celebrated as one of Florida's premier destinations for manufactured home living and active 55+ retirement communities. With sunny winter days, gentle lake breezes, and resort-style amenities, mobile homes in Highlands County offer retirees and seasonal residents an exceptionally high quality of life without the burdensome price tags and high property taxes of coastal Florida metros.
+        </p>
+
+        <!-- Quick Facts Pill Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 bg-stone-50 rounded-xl border border-stone-200">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Price Range</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">$75k – $250k</span>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Lifestyle</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">55+ Active Adult</span>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Top Amenities</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">Pools & Pickleball</span>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-500 block mb-0.5">Maintenance</span>
+            <span class="font-serif text-base sm:text-lg font-bold text-[#1b3a5c]">Lawn Care Included</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Curated Sample Listings with MLS Disclosure -->
+      <section class="mb-14 bg-stone-50 rounded-2xl p-6 sm:p-8 border border-stone-200" aria-labelledby="sample-listings-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Featured 55+ Inventory</span>
+            <h2 id="sample-listings-heading" class="font-serif text-2xl font-bold text-[#1b3a5c] mt-1">
+              Sample Manufactured Home Listings
+            </h2>
+          </div>
+          <!-- MLS Disclaimer per CRO & Architecture instructions -->
+          <div class="p-3 bg-amber-50 border border-amber-300 rounded-lg text-xs text-amber-900 max-w-lg">
+            <strong>Inventory Notice:</strong> The property cards displayed below represent sample curated listings illustrating local Sebring price points and architectural styles pending direct live MLS/IDX feed integration. Contact Alyson at <a href={`tel:${siteConfig.phone}`} class="font-bold underline">{siteConfig.phoneDisplay}</a> for instantaneous MLS availability.
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {mobileListings.map((listing) => (
+            <ListingCard
+              title={`${listing.data.beds} Bed, ${listing.data.baths} Bath Home in ${listing.data.neighborhood}`}
+              price={listing.data.price}
+              address={listing.data.address}
+              bedrooms={listing.data.beds}
+              bathrooms={listing.data.baths}
+              squareFeet={listing.data.sqft}
+              neighborhood={listing.data.neighborhood}
+              status="Active"
+              slug="/contact/"
+            />
+          ))}
+        </div>
+      </section>
+
+      <!-- Section 1: Why Choose a Mobile or Manufactured Home in Sebring? -->
+      <section class="mb-14 space-y-5 text-stone-700 text-base sm:text-lg leading-relaxed font-sans" aria-labelledby="why-mobile-heading">
+        <h2 id="why-mobile-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Why Choose a Mobile or Manufactured Home in Sebring, FL?
+        </h2>
+        <p>
+          For generations, retirees from the Midwest, Northeast, Canada, and high-density Florida cities have chosen Sebring as their preferred winter retreat or permanent retirement home. In recent years, that appeal has accelerated. Escalating home values and soaring insurance premiums across coastal Florida have prompted budget-conscious buyers to look inland to Highlands County, where modern manufactured homes deliver an unbeatable combination of affordability, resort luxury, and community connection.
+        </p>
+        <p>
+          Unlike traditional site-built subdivisions where homeowners often live isolated behind closed garage doors, Sebring's manufactured home parks are intentionally engineered for social connection. Wide, palm-fringed roadways accommodate street-legal golf carts, while multi-million-dollar clubhouse complexes serve as vibrant community living rooms. From morning water aerobics in heated pools to afternoon pickleball round-robins and evening barbecue socials, life in a Sebring 55+ community offers purposeful, active retirement.
+        </p>
+        <p>
+          Financially, manufactured housing frees up substantial capital. Buyers transitioning from northern single-family homes frequently sell for $350,000 to $600,000, purchase a beautifully updated Sebring manufactured home for $120,000 to $200,000 cash, and deposit the remaining hundreds of thousands of dollars directly into retirement savings. With no mortgage payment, minimal property taxes, and predictable monthly maintenance costs, residents enjoy true financial peace of mind.
+        </p>
+      </section>
+
+      <!-- Section 2: Premier Sebring 55+ Manufactured Home Communities (Links to 4 Communities) -->
+      <section class="mb-14" aria-labelledby="communities-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Neighborhood Spotlight</span>
+          <h2 id="communities-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+            Top 55+ Manufactured Home Communities in Sebring
+          </h2>
+          <p class="text-sm text-stone-600 mt-1">
+            Explore Sebring's most sought-after active adult enclaves, each offering distinct amenities and recreational programs:
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Community 1: Tanglewood -->
+          <div class="bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-amber-400 transition-colors">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="font-serif text-xl font-bold text-[#1b3a5c]">
+                  <a href="/sebring-neighborhoods/tanglewood/" class="hover:underline">
+                    Tanglewood
+                  </a>
+                </h3>
+                <span class="text-xs font-bold px-2 py-0.5 bg-amber-100 text-amber-900 rounded">Gated Resort</span>
+              </div>
+              <p class="text-xs text-stone-600 leading-relaxed mb-4">
+                Widely regarded as Sebring's crown jewel of active adult living. Tanglewood features 24-hour guarded security, a massive clubhouse ballroom, Olympic-sized heated pool and spa, tennis and pickleball complex, fitness center, and over 60 active resident social clubs.
+              </p>
+              <ul class="text-xs text-stone-600 space-y-1 mb-4">
+                <li>• <strong>Typical Pricing:</strong> $125,000 – $275,000</li>
+                <li>• <strong>Lot Model:</strong> Land-lease with lawn care and full security</li>
+                <li>• <strong>Highlights:</strong> Golf cart friendly, pet friendly, active dances</li>
+              </ul>
+            </div>
+            <div class="pt-3 border-t border-stone-100 flex items-center justify-between">
+              <a href="/sebring-neighborhoods/tanglewood/" class="text-xs font-bold text-[#1b3a5c] hover:underline">
+                Explore Tanglewood Homes →
+              </a>
+              <span class="text-xs text-stone-500">Sebring, FL</span>
+            </div>
+          </div>
+
+          <!-- Community 2: Whisper Lake -->
+          <div class="bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-amber-400 transition-colors">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="font-serif text-xl font-bold text-[#1b3a5c]">
+                  <a href="/sebring-neighborhoods/whisper-lake/" class="hover:underline">
+                    Whisper Lake
+                  </a>
+                </h3>
+                <span class="text-xs font-bold px-2 py-0.5 bg-amber-100 text-amber-900 rounded">Lakeside Living</span>
+              </div>
+              <p class="text-xs text-stone-600 leading-relaxed mb-4">
+                A peaceful, scenic enclave arranged around a private freshwater lake in southern Sebring. Whisper Lake provides a serene setting with a waterfront clubhouse, heated swimming pool, catch-and-release fishing pier, and quiet shaded streets.
+              </p>
+              <ul class="text-xs text-stone-600 space-y-1 mb-4">
+                <li>• <strong>Typical Pricing:</strong> $85,000 – $195,000</li>
+                <li>• <strong>Lot Model:</strong> Affordable monthly fee including utilities</li>
+                <li>• <strong>Highlights:</strong> Private fishing dock, intimate community, nature</li>
+              </ul>
+            </div>
+            <div class="pt-3 border-t border-stone-100 flex items-center justify-between">
+              <a href="/sebring-neighborhoods/whisper-lake/" class="text-xs font-bold text-[#1b3a5c] hover:underline">
+                Explore Whisper Lake Homes →
+              </a>
+              <span class="text-xs text-stone-500">Sebring, FL</span>
+            </div>
+          </div>
+
+          <!-- Community 3: Buttonwood Bay -->
+          <div class="bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-amber-400 transition-colors">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="font-serif text-xl font-bold text-[#1b3a5c]">
+                  <a href="/sebring-neighborhoods/buttonwood-bay/" class="hover:underline">
+                    Buttonwood Bay
+                  </a>
+                </h3>
+                <span class="text-xs font-bold px-2 py-0.5 bg-amber-100 text-amber-900 rounded">Waterfront & Boating</span>
+              </div>
+              <p class="text-xs text-stone-600 leading-relaxed mb-4">
+                Highlands County's top destination for boaters and anglers. Buttonwood Bay offers navigable canal access into 3,400-acre Lake Josephine, private boat ramps, marina docks, two clubhouses, two heated pools, and on-site RV/boat storage.
+              </p>
+              <ul class="text-xs text-stone-600 space-y-1 mb-4">
+                <li>• <strong>Typical Pricing:</strong> $110,000 – $275,000</li>
+                <li>• <strong>Lot Model:</strong> Land-lease with marine facilities and lawn care</li>
+                <li>• <strong>Highlights:</strong> Private boat slips, Lake Josephine access</li>
+              </ul>
+            </div>
+            <div class="pt-3 border-t border-stone-100 flex items-center justify-between">
+              <a href="/sebring-neighborhoods/buttonwood-bay/" class="text-xs font-bold text-[#1b3a5c] hover:underline">
+                Explore Buttonwood Bay Homes →
+              </a>
+              <span class="text-xs text-stone-500">Sebring, FL</span>
+            </div>
+          </div>
+
+          <!-- Community 4: Sebring Village -->
+          <div class="bg-white rounded-xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between hover:border-amber-400 transition-colors">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="font-serif text-xl font-bold text-[#1b3a5c]">
+                  <a href="/sebring-neighborhoods/sebring-village/" class="hover:underline">
+                    Sebring Village
+                  </a>
+                </h3>
+                <span class="text-xs font-bold px-2 py-0.5 bg-amber-100 text-amber-900 rounded">Budget-Friendly</span>
+              </div>
+              <p class="text-xs text-stone-600 leading-relaxed mb-4">
+                An established, friendly manufactured community conveniently located along US-27 North. Sebring Village features a heated pool, social recreation hall, billiards room, shuffleboard, and fast access to retail and medical providers.
+              </p>
+              <ul class="text-xs text-stone-600 space-y-1 mb-4">
+                <li>• <strong>Typical Pricing:</strong> $75,000 – $175,000</li>
+                <li>• <strong>Lot Model:</strong> Economical monthly lot rent including water/sewer</li>
+                <li>• <strong>Highlights:</strong> Close to shopping, low utility overhead</li>
+              </ul>
+            </div>
+            <div class="pt-3 border-t border-stone-100 flex items-center justify-between">
+              <a href="/sebring-neighborhoods/sebring-village/" class="text-xs font-bold text-[#1b3a5c] hover:underline">
+                Explore Sebring Village Homes →
+              </a>
+              <span class="text-xs text-stone-500">Sebring, FL</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Understanding Land-Lease vs. Resident-Owned Communities -->
+      <section class="mb-14 space-y-5 text-stone-700 text-base sm:text-lg leading-relaxed font-sans" aria-labelledby="ownership-models-heading">
+        <h2 id="ownership-models-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Land-Lease vs. Resident-Owned: Understanding the Financial Difference
+        </h2>
+        <p>
+          When shopping for manufactured homes in Sebring, buyers encounter two primary ownership models: <strong>land-lease communities</strong> and <strong>resident-owned (co-op or deeded) parks</strong>. Understanding how these models function is crucial for choosing the right home for your budget and long-term retirement plans.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+          <div class="p-6 bg-stone-50 rounded-xl border border-stone-200">
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c] mb-2">1. Land-Lease Model</h3>
+            <p class="text-sm text-stone-600 leading-relaxed mb-3">
+              In communities such as Tanglewood, Buttonwood Bay, and Sebring Village, you purchase the manufactured home outright while leasing the underlying land parcel from professional community management on a monthly basis.
+            </p>
+            <ul class="text-xs text-stone-600 space-y-1.5">
+              <li>✓ <strong>Lower Purchase Price:</strong> Upfront acquisition costs are 40% to 60% lower than buying real land.</li>
+              <li>✓ <strong>All-Inclusive Services:</strong> Monthly rent covers lawn mowing, security gates, clubhouse, pool, and infrastructure maintenance.</li>
+              <li>✓ <strong>Tax Efficiency:</strong> You avoid paying Highlands County real estate taxes on the land parcel.</li>
+            </ul>
+          </div>
+
+          <div class="p-6 bg-stone-50 rounded-xl border border-stone-200">
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c] mb-2">2. Resident-Owned & Deeded Land</h3>
+            <p class="text-sm text-stone-600 leading-relaxed mb-3">
+              In resident-owned communities or subdivisions where manufactured homes are placed on deeded fee-simple lots, you own both the home structure and the underlying land parcel.
+            </p>
+            <ul class="text-xs text-stone-600 space-y-1.5">
+              <li>✓ <strong>No Monthly Land Rent:</strong> Monthly HOA dues are typically low ($50 – $150) covering basic common areas.</li>
+              <li>✓ <strong>Homestead Exemption:</strong> Primary Florida residents can claim the $50,000 Florida Homestead Exemption on real property.</li>
+              <li>✓ <strong>Traditional Financing:</strong> Deeded manufactured homes on permanent foundations qualify for standard mortgage financing.</li>
+            </ul>
+          </div>
+        </div>
+        <p>
+          Alyson Thomas helps buyers calculate the total true monthly carrying cost—including purchase price, monthly lot rent or HOA dues, utilities, and insurance—so you can make an informed, confident financial decision.
+        </p>
+      </section>
+
+      <!-- Section 4: Modern Manufactured Home Quality & Florida Wind Codes -->
+      <section class="mb-14 space-y-5 text-stone-700 text-base sm:text-lg leading-relaxed font-sans" aria-labelledby="construction-heading">
+        <h2 id="construction-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Modern Manufactured Home Construction & Florida Wind Codes
+        </h2>
+        <p>
+          Today's manufactured homes bear little resemblance to vintage mobile homes of the 1960s. Since the federal Manufactured Home Construction and Safety Standards (HUD Code) took effect in 1976—and were significantly strengthened following Hurricane Andrew in 1994—manufactured homes built for Florida are constructed to rigorous engineering guidelines.
+        </p>
+        <p>
+          Sebring is located in Highlands County within <strong>Florida Wind Zone II</strong>, requiring homes to be engineered to withstand 100+ mph wind loads. Key structural requirements include heavy-duty steel I-beam frames, hurricane strapping and ground-anchor tie-down systems, exterior shear-wall sheathing, and high-efficiency double-pane thermal windows. In addition, many homes feature durable metal roof-overs that provide decades of weather resistance and reduced cooling bills.
+        </p>
+        <p>
+          Step inside a modern Sebring manufactured residence and you will find drywall interiors, cathedral ceilings, modern open-concept kitchens with central islands, luxurious master suites with walk-in closets and walk-in showers, and dedicated indoor laundry rooms. Spacious Florida rooms and screened lanais seamlessly double your entertaining living space.
+        </p>
+      </section>
+
+      <!-- Section 5: Dual CTA (Valuation + Buyer Tour) -->
+      <section class="mb-14 bg-[#1b3a5c] rounded-2xl p-8 sm:p-12 text-white shadow-xl" aria-labelledby="cta-heading">
+        <div class="max-w-3xl">
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/30 mb-4">
+            Sebring 55+ Manufactured Home Specialist
+          </span>
+          <h2 id="cta-heading" class="font-serif text-2xl sm:text-4xl font-bold mb-4">
+            Own a Manufactured Home in Sebring? Find Out What It's Worth
+          </h2>
+          <p class="text-stone-200 text-base sm:text-lg leading-relaxed mb-6 font-sans">
+            Whether you own in Tanglewood, Whisper Lake, Buttonwood Bay, or Sebring Village, demand from relocating retirees and seasonal buyers is strong. Alyson Thomas provides verified comparative market valuations tailored to the unique park, lot position, and upgrades of your home.
+          </p>
+
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <Button href="/free-home-valuation/" variant="primary" size="lg">
+              Get Your Free Home Valuation →
+            </Button>
+            <Button href="/contact/" variant="outline" size="lg">
+              Schedule a Showing or Tour
+            </Button>
+            <a
+              href={`tel:${siteConfig.phone}`}
+              class="inline-flex items-center justify-center px-4 py-3 rounded-md font-bold text-amber-300 hover:text-white transition-all text-sm text-center"
+              aria-label={`Call Alyson Thomas directly at ${siteConfig.phoneDisplay}`}
+            >
+              📞 Call {siteConfig.phoneDisplay}
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 6: FAQ Accordion -->
+      <section class="mb-14" aria-labelledby="faq-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Buyer Information</span>
+          <h2 id="faq-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+            Frequently Asked Questions About Sebring Mobile Homes
+          </h2>
+          <p class="text-sm text-stone-600 mt-1">
+            Expert answers regarding park rules, financing, lot leases, and manufactured home ownership:
+          </p>
+        </div>
+
+        <FAQAccordion items={faqAccordionItems} title="" />
+      </section>
+
+      <!-- Back Link -->
+      <div class="text-center pt-6 border-t border-stone-200">
+        <a href="/homes-for-sale-sebring-fl/" class="text-sm font-bold text-[#1b3a5c] hover:underline inline-flex items-center gap-1.5">
+          <span>← Back to All Sebring Homes & Communities</span>
+        </a>
+      </div>
+    </div>
+  </article>
+</PageLayout>

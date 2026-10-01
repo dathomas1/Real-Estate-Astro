@@ -1,0 +1,137 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import { neighborhoodShowcasePlaceholders } from '@data/placeholderImages';
+
+const allNeighborhoods = await getCollection('neighborhoods');
+
+// Sort neighborhoods in a logical order (e.g., Tanglewood, Golf Hammock, Sun 'N Lake, Whisper Lake, Buttonwood Bay, Spring Lake, Sebring Village, Lakefront Homes)
+const preferredOrder = [
+  'tanglewood',
+  'golf-hammock',
+  'sun-n-lake',
+  'whisper-lake',
+  'buttonwood-bay',
+  'spring-lake',
+  'sebring-village',
+  'lakefront-homes',
+];
+
+const neighborhoods = [...allNeighborhoods].sort((a, b) => {
+  const indexA = preferredOrder.indexOf(a.data.slug);
+  const indexB = preferredOrder.indexOf(b.data.slug);
+  if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+  return a.data.name.localeCompare(b.data.name);
+});
+---
+
+<section class="py-16 sm:py-20 bg-white" id="neighborhoods">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="text-center max-w-3xl mx-auto mb-14">
+      <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-3">
+        Local Community Guides
+      </span>
+      <h2 class="font-serif text-3xl sm:text-4xl font-bold text-[#1b3a5c] mb-4">
+        Explore Sebring Neighborhoods & Communities
+      </h2>
+      <p class="text-base sm:text-lg text-stone-700 leading-relaxed font-sans">
+        From resort-style 55+ active adult enclaves to fairway estates and tranquil freshwater lakefront retreats, discover the distinct characteristics, amenities, and market conditions of Sebring's top subdivisions.
+      </p>
+    </div>
+
+    <!-- 8-Card Responsive Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {neighborhoods.map((item) => {
+        const placeholder = neighborhoodShowcasePlaceholders[item.data.slug];
+        return (
+          <article class="bg-stone-50 rounded-xl border border-stone-200 overflow-hidden flex flex-col justify-between hover:border-[#1b3a5c]/50 hover:shadow-md transition-all group">
+            <div>
+              {placeholder && (
+                <div class="relative w-full aspect-[16/10] bg-stone-200 overflow-hidden border-b border-stone-200">
+                  <Image
+                    src={placeholder.image}
+                    alt={placeholder.alt}
+                    width={placeholder.width}
+                    height={placeholder.height}
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div class="absolute top-2 left-2 bg-[#1b3a5c]/85 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded tracking-wider uppercase">
+                    Sebring Community
+                  </div>
+                </div>
+              )}
+
+              <div class="p-5">
+                <!-- Header & Pricing Indicator -->
+                <div class="flex items-start justify-between gap-2 mb-2">
+                  <h3 class="font-serif text-lg font-bold text-[#1b3a5c] group-hover:text-amber-700 transition-colors">
+                    <a href={`/sebring-neighborhoods/${item.data.slug}/`} class="focus:outline-none focus:underline">
+                      {item.data.name}
+                    </a>
+                  </h3>
+                  {item.data.medianPrice && (
+                    <span class="shrink-0 text-[11px] font-bold px-2 py-0.5 bg-amber-100 text-amber-900 border border-amber-300 rounded">
+                      {item.data.medianPrice}
+                    </span>
+                  )}
+                </div>
+
+                <!-- Description -->
+                <p class="text-xs sm:text-sm text-stone-700 leading-relaxed mb-4 line-clamp-3">
+                  {item.data.description}
+                </p>
+
+                <!-- Key Amenities / Highlights -->
+                {item.data.amenities && item.data.amenities.length > 0 && (
+                  <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-stone-600 block mb-1.5">
+                      Community Highlights:
+                    </span>
+                    <ul class="space-y-1">
+                      {item.data.amenities.slice(0, 3).map((amenity) => (
+                        <li class="text-xs text-stone-600 flex items-center gap-1.5">
+                          <span class="text-amber-600" aria-hidden="true">•</span>
+                          <span>{amenity}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <!-- Bottom Card Action Links -->
+            <div class="p-5 pt-3 border-t border-stone-200 flex items-center justify-between">
+              <a
+                href={`/sebring-neighborhoods/${item.data.slug}/`}
+                class="text-xs sm:text-sm font-bold text-[#1b3a5c] hover:text-[#b87a2e] inline-flex items-center gap-1 transition-colors"
+                aria-label={`View neighborhood guide for ${item.data.name}`}
+              >
+                <span>View Guide</span>
+                <span aria-hidden="true">→</span>
+              </a>
+              <a
+                href="/free-home-valuation/"
+                class="text-xs text-stone-500 hover:text-stone-900 underline"
+              >
+                Get Home Value
+              </a>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+
+    <!-- Bottom Hub Link -->
+    <div class="mt-12 text-center">
+      <p class="text-sm text-stone-600">
+        Looking for a specific subdivision or acreage outside Sebring city limits?
+        <a href="/homes-for-sale-sebring-fl/" class="font-bold text-[#1b3a5c] hover:underline ml-1">
+          Browse All Sebring & Highlands County Real Estate →
+        </a>
+      </p>
+    </div>
+  </div>
+</section>

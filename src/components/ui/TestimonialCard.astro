@@ -1,0 +1,61 @@
+---
+interface Props {
+  quote: string;
+  clientName: string;
+  neighborhood?: string;
+  year?: number;
+  isPlaceholder?: boolean;
+}
+
+const {
+  quote,
+  clientName,
+  neighborhood,
+  year = 2025,
+  isPlaceholder = false,
+} = Astro.props;
+---
+
+<article class="bg-white rounded-2xl p-6 sm:p-8 border border-stone-200 shadow-sm relative flex flex-col justify-between hover:shadow-md transition-shadow">
+  <div>
+    <!-- Placeholder Banner if flagged -->
+    {isPlaceholder && (
+      <div class="mb-4">
+        <span class="inline-block px-2.5 py-1 bg-amber-100 text-amber-900 border border-amber-300 text-[11px] font-bold uppercase tracking-wider rounded">
+          Sample Testimonial Format
+        </span>
+      </div>
+    )}
+
+    <!-- 5 Star Rating Rating -->
+    <div class="flex items-center gap-1 text-[#d4923a] text-lg mb-4" aria-label="5 out of 5 stars">
+      <span aria-hidden="true">★</span>
+      <span aria-hidden="true">★</span>
+      <span aria-hidden="true">★</span>
+      <span aria-hidden="true">★</span>
+      <span aria-hidden="true">★</span>
+    </div>
+
+    <!-- Testimonial Quote adhering to CRO Guide: Situation / Action / Result / Outcome -->
+    <blockquote class="font-serif italic text-base sm:text-lg text-stone-800 leading-relaxed mb-6">
+      "{quote}"
+    </blockquote>
+  </div>
+
+  <!-- Client Signature & Neighborhood -->
+  <footer class="pt-4 border-t border-stone-100 flex items-center justify-between flex-wrap gap-2">
+    <div>
+      <cite class="not-italic font-bold text-stone-900 text-sm sm:text-base block">
+        {clientName}
+      </cite>
+      {neighborhood && (
+        <span class="text-xs text-stone-600">
+          Homeowner in {neighborhood}, Sebring FL ({year})
+        </span>
+      )}
+    </div>
+    <span class="text-xs font-semibold text-[#8A4700] uppercase tracking-wider bg-amber-50 px-2 py-1 rounded border border-amber-200">
+      Verified Review
+    </span>
+  </footer>
+</article>

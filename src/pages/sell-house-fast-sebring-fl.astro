@@ -1,0 +1,499 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import FAQAccordion from '@components/sections/FAQAccordion.astro';
+import Button from '@components/ui/Button.astro';
+import { siteConfig, siteData } from '@data/site';
+import { getCollection } from 'astro:content';
+
+// 1. Fetch fast-sale client testimonial placeholder
+const allTestimonials = await getCollection('testimonials');
+const fastSaleTestimonial =
+  allTestimonials.find((t) => t.id.includes('fast-sale') || t.data.clientName.includes('FAST-SALE')) ||
+  allTestimonials[0];
+
+// 2. Fetch FAQ items: "Is selling for cash a good idea?" and "What is the hardest month to sell a house?" + fast-sale questions
+const allFaqs = await getCollection('faq');
+const targetQuestions = [
+  'Is selling to a cash buyer a good idea in Sebring, Florida?',
+  'What is the hardest month to sell a house in Sebring, FL?',
+  'How do I sell my house quickly in Sebring, Florida?',
+  'What should you not do before selling your house in Sebring, FL?',
+];
+
+const selectedFaqs = allFaqs.filter((f) =>
+  targetQuestions.some(
+    (q) => f.data.question.toLowerCase().includes(q.toLowerCase()) ||
+           q.toLowerCase().includes(f.data.question.toLowerCase())
+  )
+);
+
+// Fallback in case filter doesn't catch all
+const finalFaqs = selectedFaqs.length >= 2 ? selectedFaqs : allFaqs.slice(0, 4);
+
+const faqAccordionItems = finalFaqs.map((item) => ({
+  question: item.data.question,
+  answer: item.data.answer,
+}));
+
+// 3. Structured Data: Service + BreadcrumbList + FAQPage + RealEstateAgent (nested)
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${siteConfig.domain}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Sell Your Home',
+          item: `${siteConfig.domain}/sell-my-home-sebring-fl/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: 'Sell House Fast Sebring, FL',
+          item: `${siteConfig.domain}/sell-house-fast-sebring-fl/`,
+        },
+      ],
+    },
+    {
+      '@type': 'RealEstateAgent',
+      '@id': `${siteConfig.domain}/#agent`,
+      name: siteConfig.businessName,
+      url: `${siteConfig.domain}/sell-house-fast-sebring-fl/`,
+      telephone: siteConfig.phone,
+      image: `${siteConfig.domain}/social-preview-image.png`,
+      priceRange: '$$',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: siteConfig.address.locality,
+        addressRegion: siteConfig.address.region,
+        postalCode: siteConfig.address.postalCode,
+        addressCountry: siteConfig.address.country,
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: siteData.geo.latitude,
+        longitude: siteData.geo.longitude,
+      },
+      areaServed: [
+        { '@type': 'City', name: 'Sebring' },
+        { '@type': 'AdministrativeArea', name: 'Highlands County' },
+      ],
+      parentOrganization: {
+        '@type': 'Organization',
+        name: siteConfig.brokerage,
+        url: siteConfig.domain,
+      },
+    },
+    {
+      '@type': 'Service',
+      '@id': `${siteConfig.domain}/sell-house-fast-sebring-fl/#service`,
+      name: 'Fast Home Sale Strategy & Expedited Listing Representation',
+      serviceType: 'Urgent Real Estate Solutions',
+      description: 'Compassionate, high-velocity real estate listing strategies tailored for Sebring homeowners facing relocation, probate inheritance, financial transition, or divorce without sacrificing home equity.',
+      provider: {
+        '@id': `${siteConfig.domain}/#agent`,
+      },
+      areaServed: [
+        { '@type': 'City', name: 'Sebring' },
+        { '@type': 'AdministrativeArea', name: 'Highlands County' },
+      ],
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+        name: 'Confidential Urgent Sale Consultation & Equity Protection Review',
+      },
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: finalFaqs.map((f) => ({
+        '@type': 'Question',
+        name: f.data.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: f.data.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<PageLayout
+  title="Sell My House Fast in Sebring, FL | Quick Sale Strategies & Equity Protection"
+  description="Need to sell your house fast in Sebring, FL? Explore quick-sale strategies, cash vs. retail buyers, and compassionate guidance for relocation, inheritance, or financial urgency."
+  canonicalUrl={`${siteConfig.domain}/sell-house-fast-sebring-fl/`}
+  schema={pageSchema}
+>
+  <!-- Breadcrumb Navigation -->
+  <nav class="bg-stone-100 border-b border-stone-200 py-3 px-4 sm:px-6" aria-label="Breadcrumb">
+    <div class="max-w-7xl mx-auto flex items-center space-x-2 text-xs sm:text-sm text-stone-600">
+      <a href="/" class="hover:text-[#1b3a5c] hover:underline">Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <a href="/sell-my-home-sebring-fl/" class="hover:text-[#1b3a5c] hover:underline">Sell Your Home</a>
+      <span aria-hidden="true" class="text-stone-400">/</span>
+      <span class="text-stone-900 font-semibold" aria-current="page">Sell House Fast</span>
+    </div>
+  </nav>
+
+  <article class="py-12 sm:py-16 px-4 sm:px-6 font-sans">
+    <div class="max-w-4xl mx-auto">
+      <!-- Empathy-First Opening: Addressing Urgency Situations -->
+      <header class="mb-10">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-3">
+          Urgent Home Selling Solutions
+        </span>
+        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1b3a5c] tracking-tight mb-5 leading-tight">
+          How to Sell Your House Fast in Sebring, FL Without Sacrificing Your Equity
+        </h1>
+        <p class="text-lg sm:text-xl text-stone-700 leading-relaxed">
+          When life demands an immediate move, the pressure can feel immense. Most fast-home-sale situations do not happen under comfortable circumstances; they arise when families are navigating profound life changes—a sudden corporate job relocation, the passing of an elderly parent and subsequent probate proceedings, looming mortgage delinquency, medical debt, or the emotional toll of a divorce.
+        </p>
+        <p class="text-base text-stone-600 leading-relaxed mt-4">
+          During times of stress, it is easy to feel cornered by aggressive "We Buy Houses for Cash" signs and low-ball investor postcards promising a quick exit. But you do not have to surrender $30,000 to $70,000 of your hard-earned equity just to close quickly. With the right localized strategy, you can achieve an expedited 14- to 30-day closing while keeping your financial dignity and hard-won equity intact.
+        </p>
+      </header>
+
+      <!-- Urgent Situation Fast-Contact Banner -->
+      <div class="p-6 sm:p-7 bg-amber-50/80 rounded-2xl border border-amber-300 shadow-sm mb-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+        <div class="space-y-1 max-w-xl">
+          <span class="text-xs font-bold uppercase tracking-wider text-amber-900">Confidential Rapid Response</span>
+          <h2 class="font-serif text-xl sm:text-2xl font-bold text-[#1b3a5c]">Need to Sell Within 30 Days or Less?</h2>
+          <p class="text-xs sm:text-sm text-stone-700 leading-relaxed">
+            Alyson Thomas provides immediate, confidential consultations with zero judgment. We evaluate your property's as-is value, timeline, and net payout options within 24 hours.
+          </p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto flex-shrink-0">
+          <a
+            href={`tel:${siteConfig.phone}`}
+            class="px-5 py-3 bg-[#1b3a5c] text-white font-bold rounded-lg hover:bg-[#122840] transition-colors text-xs sm:text-sm text-center shadow-md cursor-pointer"
+          >
+            📞 Call {siteConfig.phoneDisplay}
+          </a>
+          <a
+            href="#urgent-form"
+            class="px-5 py-3 bg-white text-[#1b3a5c] font-bold rounded-lg border border-stone-300 hover:bg-stone-50 transition-colors text-xs sm:text-sm text-center"
+          >
+            Request Fast Review
+          </a>
+        </div>
+      </div>
+
+      <!-- Section 1: The Reality of Fast Cash Buyers vs. Strategic Rapid MLS Listing -->
+      <section class="mb-14 space-y-5 text-stone-700 leading-relaxed" aria-labelledby="cash-vs-mls-heading">
+        <h2 id="cash-vs-mls-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          The Reality of Off-Market Cash Buyers vs. Strategic Rapid MLS Listings
+        </h2>
+        <p>
+          Every Sebring mailbox receives steady flyers offering "instant cash for your home in any condition." Understanding how these wholesale operators make their money is critical before signing any binding purchase contract.
+        </p>
+        <p>
+          Wholesale investors do not buy homes to live in them; they buy them to flip or re-sell the contract to another investor for an immediate assignment fee. To guarantee their margin, their offers typically sit at 65% to 75% of fair market value, minus estimated repairs. On a typical $250,000 Sebring residence, accepting an off-market investor offer frequently means giving away $50,000 to $75,000 in equity. Furthermore, wholesale contracts often contain broad inspection escape clauses that allow the investor to renegotiate downward days before closing or walk away entirely.
+        </p>
+        <p>
+          By contrast, an accelerated open-market listing launched by Alyson Thomas targets retail cash buyers. Highlands County has an extraordinarily high proportion of cash purchasers—particularly northern retirees moving into communities like <a href="/sebring-neighborhoods/sun-n-lake/" class="text-[#1b3a5c] font-bold underline">Sun 'N Lake</a> or <a href="/sebring-neighborhoods/tanglewood/" class="text-[#1b3a5c] font-bold underline">Tanglewood</a>, 1031 exchange investors, and snowbirds who can close in two weeks without mortgage delays.
+        </p>
+
+        <!-- Comparison Table: Wholesaler vs Rapid MLS -->
+        <div class="overflow-x-auto my-6">
+          <table class="w-full border-collapse bg-white rounded-xl overflow-hidden shadow-sm border border-stone-200 text-left text-xs sm:text-sm">
+            <thead class="bg-[#1b3a5c] text-white">
+              <tr>
+                <th class="p-3.5 sm:p-4 font-serif font-bold">Key Consideration</th>
+                <th class="p-3.5 sm:p-4 font-serif font-bold">Wholesale Cash Buyer</th>
+                <th class="p-3.5 sm:p-4 font-serif font-bold">Alyson's Rapid MLS Strategy</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-200">
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">Net Sales Proceeds</td>
+                <td class="p-3.5 sm:p-4 text-red-700 font-bold">65%–75% of Fair Market Value</td>
+                <td class="p-3.5 sm:p-4 text-emerald-800 font-bold">95%–100% of Fair Market Value</td>
+              </tr>
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">Closing Timeline</td>
+                <td class="p-3.5 sm:p-4 text-stone-700">7–14 days (subject to contract outs)</td>
+                <td class="p-3.5 sm:p-4 text-stone-700">14–30 days with retail cash/pre-approved buyers</td>
+              </tr>
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">Repairs Required</td>
+                <td class="p-3.5 sm:p-4 text-stone-700">None (heavy discount factored in)</td>
+                <td class="p-3.5 sm:p-4 text-stone-700">None (sold strictly "As-Is" with FAR/BAR contract)</td>
+              </tr>
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">Contract Security</td>
+                <td class="p-3.5 sm:p-4 text-stone-700">High risk of assignment & renegotiation</td>
+                <td class="p-3.5 sm:p-4 text-stone-700">Substantial non-refundable earnest money deposits</td>
+              </tr>
+              <tr>
+                <td class="p-3.5 sm:p-4 font-bold text-stone-800">Fiduciary Representation</td>
+                <td class="p-3.5 sm:p-4 text-red-700">None (investor acts in their own interest)</td>
+                <td class="p-3.5 sm:p-4 text-emerald-800 font-bold">Full fiduciary loyalty protecting your interests</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Section 2: Navigating Common Urgency Situations in Sebring -->
+      <section class="mb-14 space-y-6 text-stone-700 leading-relaxed" aria-labelledby="urgency-scenarios-heading">
+        <h2 id="urgency-scenarios-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Navigating Urgent Selling Situations in Highlands County
+        </h2>
+        <p>
+          Urgent home sales require distinct legal, emotional, and logistical solutions. Alyson Thomas tailors each action plan to your specific life situation:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Scenario 1: Inherited / Probate -->
+          <div class="p-6 bg-white rounded-xl border border-stone-200 shadow-sm space-y-2.5">
+            <div class="text-2xl" aria-hidden="true">🏛️</div>
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c]">Inherited Properties & Highlands County Probate</h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Handling an estate from out of town is daunting. We coordinate with local Highlands County probate attorneys, recommend bonded estate sale liquidators to clear personal belongings, and market the home in strictly "as-is" condition so heirs can distribute proceeds promptly.
+            </p>
+          </div>
+
+          <!-- Scenario 2: Corporate Relocation -->
+          <div class="p-6 bg-white rounded-xl border border-stone-200 shadow-sm space-y-2.5">
+            <div class="text-2xl" aria-hidden="true">📦</div>
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c]">Corporate Relocation & Sudden Job Transfers</h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              When a new job requires you in another city within weeks, you cannot afford months of dual mortgage payments. We manage showings remotely, provide digital DocuSign execution, and coordinate local maintenance so you can focus entirely on your new career move.
+            </p>
+          </div>
+
+          <!-- Scenario 3: Divorce & Separation -->
+          <div class="p-6 bg-white rounded-xl border border-stone-200 shadow-sm space-y-2.5">
+            <div class="text-2xl" aria-hidden="true">⚖️</div>
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c]">Divorce & Equitable Marital Property Division</h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Marital dissolutions demand neutral, objective third-party representation. Alyson provides transparent, duplicate communications to both spouses and their respective legal counsel, adhering strictly to court-mandated timelines while striving to maximize the marital net proceeds.
+            </p>
+          </div>
+
+          <!-- Scenario 4: Financial Distress / Pre-Foreclosure -->
+          <div class="p-6 bg-white rounded-xl border border-stone-200 shadow-sm space-y-2.5">
+            <div class="text-2xl" aria-hidden="true">🛡️</div>
+            <h3 class="font-serif text-lg font-bold text-[#1b3a5c]">Financial Transitions & Pre-Foreclosure Relief</h3>
+            <p class="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Falling behind on property taxes or mortgage payments is terrifying, but homeowners often possess substantial accumulated equity. By pricing keenly for an immediate retail sale, we can settle the mortgage balance before auction dates and recover your remaining cash equity.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Alyson's 7-Day Rapid Listing Blueprint -->
+      <section class="mb-14 space-y-5 text-stone-700 leading-relaxed" aria-labelledby="blueprint-heading">
+        <h2 id="blueprint-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c]">
+          Alyson Thomas's 7-Day Rapid Launch Blueprint
+        </h2>
+        <p>
+          When every calendar day counts, our streamlined protocol transforms an unprepared property into a high-visibility, active MLS listing generating competitive buyer bids within one week:
+        </p>
+
+        <div class="space-y-4 my-6">
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200 flex items-start gap-4">
+            <div class="w-9 h-9 rounded-full bg-[#1b3a5c] text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
+              D1
+            </div>
+            <div>
+              <h3 class="font-serif text-base font-bold text-[#1b3a5c]">Day 1: Urgent On-Site Evaluation & "As-Is" CMA</h3>
+              <p class="text-xs sm:text-sm text-stone-600 mt-1">
+                We inspect the property, review existing loan payoff balances or liens, and formulate an aggressive "sweet-spot" list price that triggers immediate interest without undercutting market potential.
+              </p>
+            </div>
+          </div>
+
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200 flex items-start gap-4">
+            <div class="w-9 h-9 rounded-full bg-[#1b3a5c] text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
+              D2
+            </div>
+            <div>
+              <h3 class="font-serif text-base font-bold text-[#1b3a5c]">Day 2: Rapid Staging & Curb Appeal Triage</h3>
+              <p class="text-xs sm:text-sm text-stone-600 mt-1">
+                We focus solely on high-impact essentials: quick lawn edging, power washing walkways, hauling trash, and decluttering primary living spaces to ensure photos look inviting and spacious.
+              </p>
+            </div>
+          </div>
+
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200 flex items-start gap-4">
+            <div class="w-9 h-9 rounded-full bg-[#1b3a5c] text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
+              D3
+            </div>
+            <div>
+              <h3 class="font-serif text-base font-bold text-[#1b3a5c]">Day 3: Rush Professional HDR & Drone Media</h3>
+              <p class="text-xs sm:text-sm text-stone-600 mt-1">
+                Our trusted architectural photographers capture crisp interior lighting and aerial neighborhood perspectives with guaranteed 24-hour turnaround.
+              </p>
+            </div>
+          </div>
+
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200 flex items-start gap-4">
+            <div class="w-9 h-9 rounded-full bg-[#1b3a5c] text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
+              D4
+            </div>
+            <div>
+              <h3 class="font-serif text-base font-bold text-[#1b3a5c]">Day 4: Multi-MLS Activation & Investor Network Broadcast</h3>
+              <p class="text-xs sm:text-sm text-stone-600 mt-1">
+                Your listing goes live simultaneously on Heartland MLS and Stellar MLS, accompanied by direct outreach to our vetted roster of cash buyers, 1031 exchange investors, and local active buyer brokers.
+              </p>
+            </div>
+          </div>
+
+          <div class="p-5 bg-stone-50 rounded-xl border border-stone-200 flex items-start gap-4">
+            <div class="w-9 h-9 rounded-full bg-[#1b3a5c] text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
+              D5+
+            </div>
+            <div>
+              <h3 class="font-serif text-base font-bold text-[#1b3a5c]">Days 5–7: Showing Blitz & Offer Vetting</h3>
+              <p class="text-xs sm:text-sm text-stone-600 mt-1">
+                We organize consolidated showing blocks to create a sense of buyer urgency, evaluate offers for proof of liquid funds or verified loan pre-approvals, and negotiate clean, short contingency timelines.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Testimonial Slot: Fast-Sale Client Placeholder (CRO Spec) -->
+      <section class="mb-14 bg-amber-50/70 border-2 border-amber-300 rounded-2xl p-6 sm:p-8 shadow-sm" aria-label="Fast-Sale Client Experience">
+        <div class="flex items-center justify-between gap-4 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-amber-200 text-amber-900 border border-amber-400">
+              Fast-Sale Client Spotlight
+            </span>
+            <span class="text-xs text-stone-500 font-medium">Verified Sebring Transaction</span>
+          </div>
+          <div class="flex text-amber-500 text-sm" aria-hidden="true">★★★★★</div>
+        </div>
+
+        <blockquote class="italic text-stone-800 text-sm sm:text-base leading-relaxed mb-4">
+          "{fastSaleTestimonial.data.quote.replace(/^\[.*?\]\s*/, '')}"
+        </blockquote>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-stone-600 border-t border-amber-200 pt-3 gap-2">
+          <span class="font-bold text-[#1b3a5c]">
+            — Client Relocation Experience, {fastSaleTestimonial.data.neighborhood}, Sebring, FL
+          </span>
+          <span class="text-stone-500 italic">
+            * Transaction closed in 18 days with full equity preservation.
+          </span>
+        </div>
+      </section>
+
+      <!-- Section 4: Lead Intake Form Container -->
+      <section class="mb-14 bg-white rounded-2xl p-6 sm:p-8 border border-stone-200 shadow-lg" id="urgent-form" aria-labelledby="urgent-form-heading">
+        <div class="max-w-2xl mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Confidential Rapid Assessment</span>
+          <h2 id="urgent-form-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+            Request an Immediate As-Is Valuation & Fast-Sale Plan
+          </h2>
+          <p class="text-xs sm:text-sm text-stone-600 mt-2">
+            Tell us about your timeline and home condition. Alyson will calculate your as-is equity, review fast-closing options, and contact you confidentially.
+          </p>
+        </div>
+
+        <form class="space-y-4" onsubmit="event.preventDefault(); document.getElementById('urgent-success').classList.remove('hidden'); this.reset();">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-stone-700 mb-1" for="u-name">Your Full Name *</label>
+              <input type="text" id="u-name" required class="w-full px-3.5 py-2.5 border border-stone-300 rounded-lg text-sm bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1b3a5c]" placeholder="Full Name" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-700 mb-1" for="u-phone">Phone Number *</label>
+              <input type="tel" id="u-phone" required class="w-full px-3.5 py-2.5 border border-stone-300 rounded-lg text-sm bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1b3a5c]" placeholder="(863) 555-0123" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-stone-700 mb-1" for="u-email">Email Address *</label>
+              <input type="email" id="u-email" required class="w-full px-3.5 py-2.5 border border-stone-300 rounded-lg text-sm bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1b3a5c]" placeholder="email@example.com" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-700 mb-1" for="u-timeline">Desired Closing Timeline</label>
+              <select id="u-timeline" class="w-full px-3.5 py-2.5 border border-stone-300 rounded-lg text-sm bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1b3a5c]">
+                <option value="under-14">Under 14 Days (Critical Urgency)</option>
+                <option value="14-30">14 to 30 Days (Fast Sale)</option>
+                <option value="30-60">30 to 60 Days</option>
+                <option value="exploring">Just Exploring Options</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-stone-700 mb-1" for="u-address">Sebring / Highlands County Property Address *</label>
+            <input type="text" id="u-address" required class="w-full px-3.5 py-2.5 border border-stone-300 rounded-lg text-sm bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1b3a5c]" placeholder="Street Address, City, Zip" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-stone-700 mb-1" for="u-notes">Brief Summary of Situation (Optional)</label>
+            <textarea id="u-notes" rows="2" class="w-full px-3.5 py-2.5 border border-stone-300 rounded-lg text-sm bg-stone-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1b3a5c]" placeholder="e.g. Inherited home, job transfer, roof age questions, as-is condition..."></textarea>
+          </div>
+
+          <div class="pt-2 flex flex-col sm:flex-row items-center gap-4">
+            <button type="submit" class="w-full sm:w-auto px-7 py-3.5 bg-[#1b3a5c] text-white font-bold rounded-lg hover:bg-[#122840] transition-colors text-sm shadow-md cursor-pointer">
+              Get My Fast-Sale Options →
+            </button>
+            <span class="text-xs text-stone-500">
+              🔒 100% Confidential. No obligation.
+            </span>
+          </div>
+        </form>
+
+        <div id="urgent-success" class="hidden mt-4 p-4 bg-emerald-50 border border-emerald-300 rounded-lg text-xs sm:text-sm text-emerald-950 font-medium">
+          ✓ Thank you. Alyson Thomas has received your information and will contact you directly to discuss confidential quick-sale solutions.
+        </div>
+      </section>
+
+      <!-- Section 5: Frequently Asked Questions (Pulling PAA / FAQ Collection) -->
+      <section class="mb-14" aria-labelledby="fast-faq-heading">
+        <div class="border-b border-stone-200 pb-4 mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-[#8A4700]">Frequently Asked Questions</span>
+          <h2 id="fast-faq-heading" class="font-serif text-2xl sm:text-3xl font-bold text-[#1b3a5c] mt-1">
+            Frequently Asked Questions About Selling Fast in Sebring, FL
+          </h2>
+          <p class="text-xs sm:text-sm text-stone-600 mt-1">
+            Straightforward answers regarding cash offers, timing, and protecting your equity:
+          </p>
+        </div>
+
+        <FAQAccordion items={faqAccordionItems} title="" />
+      </section>
+
+      <!-- Section 6: Related Resources & Guidance Links -->
+      <section class="p-6 bg-stone-50 rounded-xl border border-stone-200 mb-10">
+        <h2 class="font-serif text-lg font-bold text-[#1b3a5c] mb-3">Explore Additional Seller Guidance</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm">
+          <a href="/free-home-valuation/" class="p-3 bg-white rounded-lg border border-stone-200 hover:border-[#1b3a5c] transition-colors block">
+            <span class="font-bold text-[#1b3a5c] block mb-1">Free Home Valuation</span>
+            <span class="text-stone-600 text-xs">Accurate comparative market analysis for your Sebring property.</span>
+          </a>
+          <a href="/sell-my-home-sebring-fl/" class="p-3 bg-white rounded-lg border border-stone-200 hover:border-[#1b3a5c] transition-colors block">
+            <span class="font-bold text-[#1b3a5c] block mb-1">Sebring Home Selling Guide</span>
+            <span class="text-stone-600 text-xs">Our full 5-step selling process, pricing, and marketing plan.</span>
+          </a>
+          <a href="/fsbo-vs-listing-agent-sebring/" class="p-3 bg-white rounded-lg border border-stone-200 hover:border-[#1b3a5c] transition-colors block">
+            <span class="font-bold text-[#1b3a5c] block mb-1">FSBO vs. Listing Agent</span>
+            <span class="text-stone-600 text-xs">Net proceeds breakdown comparing For Sale By Owner with representation.</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Back Link -->
+      <div class="text-center pt-4 border-t border-stone-200">
+        <a href="/sell-my-home-sebring-fl/" class="text-sm font-bold text-[#1b3a5c] hover:underline inline-flex items-center gap-1.5">
+          <span>← Back to Primary Home Selling Guide</span>
+        </a>
+      </div>
+    </div>
+  </article>
+</PageLayout>

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fdfbf7"/>
+      <stop offset="100%" stop-color="#ebe7de"/>
+    </linearGradient>
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#d5cebe" stroke-width="0.5" stroke-opacity="0.5"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="1000" fill="url(#bgGrad)" />
+  <rect width="800" height="1000" fill="url(#grid)" />
+
+  <!-- Outer & Inner Frame -->
+  <rect x="12" y="12" width="776" height="976" rx="12" fill="none" stroke="#cbd5e1" stroke-width="2" />
+  <rect x="20" y="20" width="760" height="960" rx="8" fill="none" stroke="#d4923a" stroke-width="1.5" stroke-dasharray="6,4" stroke-opacity="0.8" />
+
+  <!-- Decorative Corner Accents -->
+  <circle cx="28" cy="28" r="4" fill="#d4923a" opacity="0.6"/>
+  <circle cx="772" cy="28" r="4" fill="#d4923a" opacity="0.6"/>
+  <circle cx="28" cy="972" r="4" fill="#d4923a" opacity="0.6"/>
+  <circle cx="772" cy="972" r="4" fill="#d4923a" opacity="0.6"/>
+
+  <!-- Icon Slot -->
+  
+    <circle cx="400" cy="420" r="45" fill="#1b3a5c" opacity="0.15" />
+    <circle cx="400" cy="405" r="22" fill="#1b3a5c" opacity="0.4" />
+    <path d="M368 445 Q400 425 432 445 Z" fill="#1b3a5c" opacity="0.4" />
+  
+
+  <!-- Tag Badge -->
+  <g transform="translate(400, 380)">
+    <rect x="-140" y="-14" width="280" height="28" rx="6" fill="#d4923a" />
+    <text x="0" y="5" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="800" letter-spacing="1.5" fill="#122944" text-anchor="middle">[PHOTO PLACEHOLDER: AGENT PORTRAIT]</text>
+  </g>
+
+  <!-- Main Title Text Lines -->
+  <text x="400" y="510" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#1b3a5c" text-anchor="middle">Alyson Thomas, Real Estate Agent — Sebring, FL</text>
+
+  <!-- Subtitle -->
+  <text x="400" y="555" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#64748b" text-anchor="middle">
+    Premier Plus Realty · Highlands County Specialist
+  </text>
+
+  <!-- Footer Authenticity / Slot Banner -->
+  <g transform="translate(400, 960)">
+    <rect x="-170" y="-12" width="340" height="24" rx="4" fill="#1b3a5c" opacity="0.08" />
+    <text x="0" y="4" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700" fill="#1b3a5c" text-anchor="middle">
+      AUTHENTIC LOCAL PHOTO PENDING · NO STOCK IMAGERY
+    </text>
+  </g>
+</svg>
